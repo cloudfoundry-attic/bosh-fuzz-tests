@@ -1,0 +1,70 @@
+---
+name: Test Director
+port: {{ .Port }}
+mbus: nats://localhost:65010
+
+logging:
+  level: DEBUG
+
+redis:
+  host: 127.0.0.1
+  port: 63791
+  password:
+
+dir: /tmp/sandbox/boshdir
+
+scheduled_jobs:
+  - command: SnapshotDeployments
+    schedule: '*/2 * * * * *'
+  - command: ScheduledBackup
+    schedule: '*/1 * * * * *'
+
+db: &bosh_db
+  adapter: postgres
+  database: {{ .DatabaseName }}
+  # Settings are set to defaults since DbBackup
+  # currently does not support export without them
+  host: 127.0.0.1
+  port: 5432
+  user: postgres
+  password: password
+
+  # Failure to set `sslmode` will produce following error
+  # 'PG::Error: SSL error: decryption failed or bad record mac:'
+  sslmode: "disable"
+
+  connection_options:
+    max_connections: 32
+    pool_timeout: 10
+
+dns:
+  db: *bosh_db
+
+blobstore: &director_blobstore
+  provider: local
+  options:
+    blobstore_path: /tmp/sandbox/blobstore
+
+backup_destination:
+  provider: local
+  options:
+    blobstore_path: /tmp/sandbox/backup_destination
+
+compiled_package_cache:
+  <<: *director_blobstore
+
+snapshots:
+  enabled: true
+
+cloud:
+  plugin: dummy
+  properties:
+    nats: nats://localhost:65010
+    dir: /tmp/sandbox/boshcloud
+    agent:
+      blobstore:
+        <<: *director_blobstore
+      server:
+        host: 127.0.0.1
+        host: 127.0.0.1
+        password:

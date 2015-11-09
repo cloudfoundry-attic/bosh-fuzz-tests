@@ -1,0 +1,2 @@
+8cb9faa github.com/cloudfoundry/bosh-utils/.git
+b7145cb github.com/cloudfoundry-incubator/bosh-load-tests/.git
