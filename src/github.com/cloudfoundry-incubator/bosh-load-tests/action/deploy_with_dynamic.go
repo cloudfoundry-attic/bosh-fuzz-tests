@@ -34,11 +34,6 @@ func NewDeployWithDynamic(
 }
 
 func (d *deployWithDynamic) Execute() error {
-	err := d.cliRunner.TargetAndLogin(d.directorInfo.URL)
-	if err != nil {
-		return err
-	}
-
 	manifestTemplatePath, err := d.assetsProvider.FullPath("manifest.yml")
 	if err != nil {
 		return err
@@ -61,6 +56,11 @@ func (d *deployWithDynamic) Execute() error {
 		return err
 	}
 	err = d.fs.WriteFile(manifestPath.Name(), buffer.Bytes())
+	if err != nil {
+		return err
+	}
+
+	err = d.cliRunner.TargetAndLogin(d.directorInfo.URL)
 	if err != nil {
 		return err
 	}
