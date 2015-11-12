@@ -4,6 +4,7 @@ import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 	fakesys "github.com/cloudfoundry/bosh-utils/system/fakes"
 
@@ -41,7 +42,8 @@ var _ = Describe("Deployer", func() {
 			AvailabilityZones: [][]string{[]string{"z1"}, []string{"z1", "z2"}},
 		}
 
-		inputRandomizer := NewSeededInputRandomizer(parameters, 2, 64)
+		logger := boshlog.NewLogger(boshlog.LevelNone)
+		inputRandomizer := NewSeededInputRandomizer(parameters, 2, 64, logger)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputRandomizer, fs)
 	})
 

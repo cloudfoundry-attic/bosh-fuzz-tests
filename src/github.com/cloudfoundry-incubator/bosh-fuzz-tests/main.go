@@ -3,6 +3,7 @@ package main
 import (
 	"os"
 	"os/signal"
+	"strconv"
 	"syscall"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -20,7 +21,7 @@ import (
 
 func main() {
 	if len(os.Args) < 2 || len(os.Args) > 3 {
-		println("Usage: bft path/to/config.json [path/to/state.json]")
+		println("Usage: bft path/to/config.json seed")
 		os.Exit(1)
 	}
 
@@ -78,7 +79,15 @@ func main() {
 
 	logger.Debug("main", "Starting deploy")
 	renderer := bftdeployment.NewRenderer(fs)
-	randomizer := bftdeployment.NewInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys)
+
+	var randomizer bftdeployment.InputRandomizer
+
+	if len(os.Args) == 3 {
+		seed, _ := strconv.ParseInt(os.Args[2], 10, 64)
+		randomizer = bftdeployment.NewSeededInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, logger)
+	} else {
+		randomizer = bftdeployment.NewInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, logger)
+	}
 
 	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, randomizer, fs)
 	err = deployer.RunDeploys()

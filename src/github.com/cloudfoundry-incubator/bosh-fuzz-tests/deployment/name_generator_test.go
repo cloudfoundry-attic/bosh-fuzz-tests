@@ -19,6 +19,6 @@ var _ = Describe("NameGenerator", func() {
 	It("generates name of specified length", func() {
 		name := nameGenerator.Generate(5)
 		Expect(len(name)).To(Equal(5))
-		Expect(name).To(Equal("qSzaJ"))
+		Expect(name).To(Equal("qgvMT"))
 	})
 })

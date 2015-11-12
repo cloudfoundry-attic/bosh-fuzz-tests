@@ -2,6 +2,7 @@ package deployment_test
 
 import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
@@ -20,24 +21,25 @@ var _ = Describe("InputRandomizer", func() {
 			Instances:         []int{2, 4},
 			AvailabilityZones: [][]string{[]string{"z1"}, []string{"z1", "z2"}},
 		}
-		inputRandomizer = NewSeededInputRandomizer(parameters, 3, 64)
+		logger := boshlog.NewLogger(boshlog.LevelNone)
+		inputRandomizer = NewSeededInputRandomizer(parameters, 3, 64, logger)
 
 		inputs, err := inputRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(inputs).To(Equal([]Input{
 			{
-				Name:              "izSREqw4Qe",
+				Name:              "iHoNAwiIQ8",
 				Instances:         2,
 				AvailabilityZones: []string{"z1", "z2"},
 			},
 			{
-				Name:              "jaWC7",
+				Name:              "jKicN",
 				Instances:         4,
 				AvailabilityZones: []string{"z1"},
 			},
 			{
-				Name:              "c_VC5",
+				Name:              "cYdmz",
 				Instances:         2,
 				AvailabilityZones: []string{"z1"},
 			},
