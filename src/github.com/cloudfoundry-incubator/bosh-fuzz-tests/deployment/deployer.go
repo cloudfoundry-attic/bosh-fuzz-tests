@@ -1,4 +1,4 @@
-package manifest
+package deployment
 
 import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
@@ -36,18 +36,19 @@ func NewDeployer(
 }
 
 func (d *deployer) RunDeploys() error {
-	manifestPath, err := d.fs.TempFile("manifest-test")
+	manifestPath, err := d.fs.TempFile("manifest")
 	if err != nil {
 		return err
 	}
-	defer d.fs.RemoveAll(manifestPath.Name())
+	// defer d.fs.RemoveAll(manifestPath.Name())
+
+	cloudConfigPath, err := d.fs.TempFile("cloud-config")
+	if err != nil {
+		return err
+	}
+	// defer d.fs.RemoveAll(cloudConfigPath.Name())
 
 	inputs, err := d.randomizer.Generate()
-	if err != nil {
-		return err
-	}
-
-	err = d.cliRunner.TargetAndLogin(d.directorInfo.URL)
 	if err != nil {
 		return err
 	}
@@ -55,7 +56,12 @@ func (d *deployer) RunDeploys() error {
 	for _, input := range inputs {
 		input.DirectorUUID = d.directorInfo.UUID
 
-		err = d.renderer.Render(input, manifestPath.Name())
+		err = d.renderer.Render(input, manifestPath.Name(), cloudConfigPath.Name())
+		if err != nil {
+			return err
+		}
+
+		err = d.cliRunner.RunWithArgs("update", "cloud-config", cloudConfigPath.Name())
 		if err != nil {
 			return err
 		}

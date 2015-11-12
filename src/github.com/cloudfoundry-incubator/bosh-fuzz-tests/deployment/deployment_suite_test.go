@@ -1,4 +1,4 @@
-package manifest_test
+package deployment_test
 
 import (
 	. "github.com/onsi/ginkgo"
@@ -9,5 +9,5 @@ import (
 
 func TestManifest(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "Manifest Suite")
+	RunSpecs(t, "Deployment Suite")
 }

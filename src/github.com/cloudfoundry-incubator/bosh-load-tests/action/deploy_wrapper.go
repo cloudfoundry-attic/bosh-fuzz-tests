@@ -23,12 +23,12 @@ func (d *deployWrapper) RunWithDebug(args ...string) error {
 		matches := re.FindAllStringSubmatch(output, -1)
 		if len(matches) > 0 && len(matches[0][1]) > 1 {
 			taskId := matches[0][1]
-			err := d.cliRunner.RunWithArgs("task", taskId, "--debug")
-			if err != nil {
-				return err
+			debugErr := d.cliRunner.RunWithArgs("task", taskId, "--debug")
+			if debugErr != nil {
+				return debugErr
 			}
 		}
 	}
 
-	return nil
+	return err
 }

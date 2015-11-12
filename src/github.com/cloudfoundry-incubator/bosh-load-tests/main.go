@@ -11,10 +11,9 @@ import (
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
+	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 	bltenv "github.com/cloudfoundry-incubator/bosh-load-tests/environment"
 	bltflow "github.com/cloudfoundry-incubator/bosh-load-tests/flow"
-
-	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 )
 
 func main() {
@@ -27,7 +26,7 @@ func main() {
 	fs := boshsys.NewOsFileSystem(logger)
 	cmdRunner := boshsys.NewExecCmdRunner(logger)
 
-	config := bftconfig.NewConfig(fs)
+	config := bltconfig.NewConfig(fs)
 	err := config.Load(os.Args[1])
 	if err != nil {
 		panic(err)

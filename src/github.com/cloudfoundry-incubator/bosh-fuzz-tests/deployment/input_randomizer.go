@@ -1,4 +1,4 @@
-package manifest
+package deployment
 
 import (
 	"math/rand"

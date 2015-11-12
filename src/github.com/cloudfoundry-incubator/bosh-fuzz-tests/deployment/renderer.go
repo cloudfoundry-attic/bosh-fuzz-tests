@@ -1,4 +1,4 @@
-package manifest
+package deployment
 
 import (
 	"bytes"
@@ -16,7 +16,7 @@ type Input struct {
 }
 
 type Renderer interface {
-	Render(input Input, manifestPath string) error
+	Render(input Input, manifestPath string, cloudConfigPath string) error
 }
 
 type renderer struct {
@@ -29,7 +29,7 @@ func NewRenderer(fs boshsys.FileSystem) Renderer {
 	}
 }
 
-func (g *renderer) Render(input Input, manifestPath string) error {
+func (g *renderer) Render(input Input, manifestPath string, cloudConfigPath string) error {
 	deploymentTemplate := template.Must(template.New("deployment").Parse(DeploymentTemplate))
 
 	buffer := bytes.NewBuffer([]byte{})
@@ -42,6 +42,20 @@ func (g *renderer) Render(input Input, manifestPath string) error {
 	err = g.fs.WriteFile(manifestPath, buffer.Bytes())
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Saving generated manifest")
+	}
+
+	cloudTemplate := template.Must(template.New("cloud-config").Parse(CloudTemplate))
+
+	buffer = bytes.NewBuffer([]byte{})
+
+	err = cloudTemplate.Execute(buffer, input)
+	if err != nil {
+		return bosherr.WrapErrorf(err, "Generating cloud config")
+	}
+
+	err = g.fs.WriteFile(cloudConfigPath, buffer.Bytes())
+	if err != nil {
+		return bosherr.WrapErrorf(err, "Saving generated cloud config")
 	}
 
 	return nil

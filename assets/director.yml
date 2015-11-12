@@ -11,7 +11,7 @@ redis:
   port: 63791
   password:
 
-dir: /tmp/sandbox/boshdir
+dir: {{ .BaseDir }}/boshdir
 
 scheduled_jobs:
   - command: SnapshotDeployments
@@ -43,12 +43,12 @@ dns:
 blobstore: &director_blobstore
   provider: local
   options:
-    blobstore_path: /tmp/sandbox/blobstore
+    blobstore_path: {{ .BaseDir }}/blobstore
 
 backup_destination:
   provider: local
   options:
-    blobstore_path: /tmp/sandbox/backup_destination
+    blobstore_path: {{ .BaseDir }}/backup_destination
 
 compiled_package_cache:
   <<: *director_blobstore
@@ -60,7 +60,7 @@ cloud:
   plugin: dummy
   properties:
     nats: nats://localhost:65010
-    dir: /tmp/sandbox/boshcloud
+    dir: {{ .BaseDir }}/boshcloud
     agent:
       blobstore:
         <<: *director_blobstore

@@ -8,13 +8,14 @@ import (
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
+	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	bftdeployment "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 	bltenv "github.com/cloudfoundry-incubator/bosh-load-tests/environment"
-
-	bftdeploy "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 )
 
 func main() {
@@ -27,16 +28,22 @@ func main() {
 	fs := boshsys.NewOsFileSystem(logger)
 	cmdRunner := boshsys.NewExecCmdRunner(logger)
 
-	config := bltconfig.NewConfig(fs)
-	err := config.Load(os.Args[1])
+	testConfig := bftconfig.NewConfig(fs)
+	err := testConfig.Load(os.Args[1])
 	if err != nil {
 		panic(err)
 	}
 
-	assetsProvider := bltassets.NewProvider(config.AssetsPath)
+	envConfig := bltconfig.NewConfig(fs)
+	err = envConfig.Load(os.Args[1])
+	if err != nil {
+		panic(err)
+	}
+
+	assetsProvider := bltassets.NewProvider(envConfig.AssetsPath)
 
 	logger.Debug("main", "Setting up environment")
-	environmentProvider := bltenv.NewProvider(config, fs, cmdRunner, assetsProvider)
+	environmentProvider := bltenv.NewProvider(envConfig, fs, cmdRunner, assetsProvider)
 	environment := environmentProvider.Get()
 	err = environment.Setup()
 	if err != nil {
@@ -53,18 +60,27 @@ func main() {
 		os.Exit(1)
 	}()
 
-	logger.Debug("main", "Starting deploy")
-	cliRunnerFactory := bltclirunner.NewFactory(config.CliCmd, cmdRunner, fs)
+	cliRunnerFactory := bltclirunner.NewFactory(envConfig.CliCmd, cmdRunner, fs)
 	directorInfo, err := bltaction.NewDirectorInfo(environment.DirectorURL(), cliRunnerFactory)
 	if err != nil {
 		panic(err)
 	}
-
-	cliRunner := f.cliRunnerFactory.Create()
+	cliRunner := cliRunnerFactory.Create()
 	cliRunner.Configure()
 	defer cliRunner.Clean()
 
-	deployer := bftdeploy.NewDeployer(cliRunner, directorInfo, renderer, randomizer)
+	logger.Debug("main", "Preparing to deploy")
+	preparer := bftdeployment.NewPreparer(directorInfo, cliRunner, fs, assetsProvider)
+	err = preparer.Prepare()
+	if err != nil {
+		panic(err)
+	}
+
+	logger.Debug("main", "Starting deploy")
+	renderer := bftdeployment.NewRenderer(fs)
+	randomizer := bftdeployment.NewInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys)
+
+	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, randomizer, fs)
 	err = deployer.RunDeploys()
 	if err != nil {
 		panic(err)

@@ -11,7 +11,7 @@
   "parameters" : {
   	"name" : ["foo", "bar"],
   	"instances": [0, 1, 4, 5],
-	"availability_zones": [null, ["z1"], ["z1", "z2"], ["z3", "z1", "z2"]]
+    "availability_zones": [null, ["z1"], ["z1", "z2"], ["z3", "z1", "z2"]]
   },
   "number_of_consequent_deploys": 10
 }

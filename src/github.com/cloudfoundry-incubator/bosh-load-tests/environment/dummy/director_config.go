@@ -13,6 +13,7 @@ import (
 type DirectorOptions struct {
 	Port         int
 	DatabaseName string
+	BaseDir      string
 }
 
 type DirectorConfig struct {
@@ -77,6 +78,7 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 	buffer := bytes.NewBuffer([]byte{})
 	context := c.options
 	context.Port = port
+	context.BaseDir = c.baseDir
 	err := t.Execute(buffer, context)
 	if err != nil {
 		return err

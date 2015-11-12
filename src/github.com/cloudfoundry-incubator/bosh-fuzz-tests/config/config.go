@@ -4,13 +4,9 @@ import (
 	"encoding/json"
 
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-
-	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 )
 
 type Config struct {
-	*bltconfig.Config
-
 	fs boshsys.FileSystem
 
 	Parameters                Parameters `json:"parameters"`

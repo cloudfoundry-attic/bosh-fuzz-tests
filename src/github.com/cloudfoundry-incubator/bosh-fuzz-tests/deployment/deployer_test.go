@@ -1,4 +1,4 @@
-package manifest_test
+package deployment_test
 
 import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
@@ -7,7 +7,7 @@ import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 	fakesys "github.com/cloudfoundry/bosh-utils/system/fakes"
 
-	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/manifest"
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -29,8 +29,7 @@ var _ = Describe("Deployer", func() {
 		}
 		boshCmd := boshsys.Command{Name: "bosh"}
 
-		manifestFile := fakesys.NewFakeFile("cli-config-path", fs)
-		fs.ReturnTempFile = manifestFile
+		fs.ReturnTempFile = fakesys.NewFakeFile("cli-config-path", fs)
 
 		cliRunner := bltclirunner.NewRunner(boshCmd, cmdRunner, fs)
 		cliRunner.Configure()
@@ -47,21 +46,16 @@ var _ = Describe("Deployer", func() {
 	})
 
 	It("runs deploys with generated manifests", func() {
-		manifestFile := fakesys.NewFakeFile("manifest-path", fs)
-		fs.ReturnTempFile = manifestFile
+		fs.ReturnTempFile = fakesys.NewFakeFile("manifest-path", fs)
 
 		err := deployer.RunDeploys()
 		Expect(err).ToNot(HaveOccurred())
-		Expect(fs.FileExists("manifest-path")).To(BeFalse())
+		Expect(fs.FileExists("config-path")).To(BeFalse())
 
 		Expect(cmdRunner.RunComplexCommands).To(ConsistOf([]boshsys.Command{
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "target", "fake-director-url"},
-			},
-			{
-				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "login", "admin", "admin"},
+				Args: []string{"-n", "-c", "cli-config-path", "update", "cloud-config", "manifest-path"},
 			},
 			{
 				Name: "bosh",
@@ -70,6 +64,10 @@ var _ = Describe("Deployer", func() {
 			{
 				Name: "bosh",
 				Args: []string{"-n", "-c", "cli-config-path", "deploy"},
+			},
+			{
+				Name: "bosh",
+				Args: []string{"-n", "-c", "cli-config-path", "update", "cloud-config", "manifest-path"},
 			},
 			{
 				Name: "bosh",

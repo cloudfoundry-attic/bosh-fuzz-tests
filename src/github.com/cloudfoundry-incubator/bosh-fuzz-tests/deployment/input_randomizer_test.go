@@ -1,9 +1,9 @@
-package manifest_test
+package deployment_test
 
 import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 
-	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/manifest"
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
