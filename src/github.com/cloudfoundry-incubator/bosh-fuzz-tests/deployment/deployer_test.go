@@ -36,7 +36,7 @@ var _ = Describe("Deployer", func() {
 		renderer := NewRenderer(fs)
 
 		parameters := bftconfig.Parameters{
-			Name:              []string{"foo", "bar"},
+			NameLength:        []int{5, 10},
 			Instances:         []int{2, 4},
 			AvailabilityZones: [][]string{[]string{"z1"}, []string{"z1", "z2"}},
 		}

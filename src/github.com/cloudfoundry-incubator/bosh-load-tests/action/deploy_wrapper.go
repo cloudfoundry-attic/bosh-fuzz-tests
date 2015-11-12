@@ -21,7 +21,8 @@ func (d *deployWrapper) RunWithDebug(args ...string) error {
 	if err != nil {
 		re := regexp.MustCompile("bosh task ([0-9]+) --debug")
 		matches := re.FindAllStringSubmatch(output, -1)
-		if len(matches) > 0 && len(matches[0][1]) > 1 {
+
+		if len(matches) > 0 && len(matches[0]) > 1 {
 			taskId := matches[0][1]
 			debugErr := d.cliRunner.RunWithArgs("task", taskId, "--debug")
 			if debugErr != nil {

@@ -14,7 +14,7 @@ type Config struct {
 }
 
 type Parameters struct {
-	Name              []string   `json:"name"`
+	NameLength        []int      `json:"name_length"`
 	Instances         []int      `json:"instances"`
 	AvailabilityZones [][]string `json:"availability_zones"`
 }

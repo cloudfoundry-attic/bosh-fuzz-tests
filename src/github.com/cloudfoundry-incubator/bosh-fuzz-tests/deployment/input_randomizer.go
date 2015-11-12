@@ -37,9 +37,11 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 
 	inputs := []Input{}
 
+	nameGenerator := NewNameGenerator()
+
 	for i := 0; i < ir.numberOfConsequentDeploys; i++ {
 		inputs = append(inputs, Input{
-			Name:              ir.parameters.Name[rand.Intn(len(ir.parameters.Name))],
+			Name:              nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))]),
 			Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
 			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
 		})
