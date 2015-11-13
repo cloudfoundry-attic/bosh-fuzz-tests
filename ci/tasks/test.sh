@@ -30,7 +30,7 @@ echo 'Installing dependencies...'
 
 echo 'Running tests...'
 
-export GOPATH=$(realpath bosh-load-tests-workspace)
+export GOPATH=$(realpath bosh-fuzz-tests)
 
 bosh_src_path="$( cd bosh-src && pwd )"
 
