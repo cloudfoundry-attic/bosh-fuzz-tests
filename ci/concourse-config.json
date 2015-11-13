@@ -1,5 +1,5 @@
 {
-  "assets_path" : "bosh-load-tests-workspace/assets",
+  "assets_path" : "bosh-fuzz-tests/assets",
   "environment": "dummy",
   "director_migration_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director-migrate",
   "director_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director",
