@@ -1,0 +1,16 @@
+---
+platform: linux
+
+image: docker:///bosh/main
+
+inputs:
+- name: bosh-fuzz-tests
+  path: bosh-fuzz-tests
+- name: bosh-src
+  path: bosh-src
+
+run:
+  path: bosh-fuzz-tests/ci/tasks/test.sh
+
+params:
+  RUBY_VERSION: 2.1.7
