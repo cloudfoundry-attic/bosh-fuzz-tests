@@ -23,7 +23,8 @@ update:
 jobs:
 - name: {{ .Name }}
   instances: {{ .Instances }}
-  vm_type: default
+  vm_type: default{{ if .PersistentDiskSize }}
+  persistent_disk: {{ .PersistentDiskSize }}{{ end }}
   stemcell: default{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
   - {{ . }}{{ end }}{{ end }}

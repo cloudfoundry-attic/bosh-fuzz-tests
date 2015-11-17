@@ -26,10 +26,12 @@ var _ = Describe("Manifest/Renderer", func() {
 
 	It("creates manifest based on input values", func() {
 		input := Input{
-			Name:              "foo-job",
-			DirectorUUID:      "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Instances:         5,
-			AvailabilityZones: []string{"z1", "z2"},
+			Name:                     "foo-job",
+			DirectorUUID:             "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
+			Instances:                5,
+			AvailabilityZones:        []string{"z1", "z2"},
+			PersistentDiskSize:       100,
+			PersistentDiskDefinition: "persistent_disk_size",
 		}
 
 		err := renderer.Render(input, manifestPath, cloudConfigPath)
@@ -58,6 +60,7 @@ jobs:
 - name: foo-job
   instances: 5
   vm_type: default
+  persistent_disk: 100
   stemcell: default
   azs:
   - z1

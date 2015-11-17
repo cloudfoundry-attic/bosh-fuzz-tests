@@ -9,10 +9,12 @@ import (
 )
 
 type Input struct {
-	Name              string
-	DirectorUUID      string
-	Instances         int
-	AvailabilityZones []string
+	Name                     string
+	DirectorUUID             string
+	Instances                int
+	AvailabilityZones        []string
+	PersistentDiskSize       int
+	PersistentDiskDefinition string
 }
 
 type Renderer interface {
