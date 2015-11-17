@@ -25,5 +25,10 @@ compilation:
 
 vm_types:
 - name: default
-  cloud_properties: {}
+  cloud_properties: {}{{ if eq .PersistentDiskDefinition "disk_pool" }}
+
+disk_pools:
+- name: fast-disks
+  disk_size: {{ .PersistentDiskSize }}
+  cloud_properties: {}{{ end }}
 `
