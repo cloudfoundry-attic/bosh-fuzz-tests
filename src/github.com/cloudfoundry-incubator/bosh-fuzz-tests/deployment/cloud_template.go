@@ -30,5 +30,10 @@ vm_types:
 disk_pools:
 - name: fast-disks
   disk_size: {{ .PersistentDiskSize }}
+  cloud_properties: {}{{ end }}{{ if eq .PersistentDiskDefinition "disk_type" }}
+
+disk_types:
+- name: fast-disks
+  disk_size: {{ .PersistentDiskSize }}
   cloud_properties: {}{{ end }}
 `

@@ -24,7 +24,8 @@ jobs:
 - name: {{ .Name }}
   instances: {{ .Instances }}
   vm_type: default{{ if eq .PersistentDiskDefinition "disk_pool" }}
-  persistent_disk_pool: fast-disks{{ else if .PersistentDiskSize }}
+  persistent_disk_pool: fast-disks{{ else if eq .PersistentDiskDefinition "disk_type" }}
+  persistent_disk_type: fast-disks{{ else if .PersistentDiskSize }}
   persistent_disk: {{ .PersistentDiskSize }}{{ end }}
   stemcell: default{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
