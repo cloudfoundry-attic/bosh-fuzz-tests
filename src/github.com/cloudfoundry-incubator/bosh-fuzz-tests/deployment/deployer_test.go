@@ -37,9 +37,11 @@ var _ = Describe("Deployer", func() {
 		renderer := NewRenderer(fs)
 
 		parameters := bftconfig.Parameters{
-			NameLength:        []int{5, 10},
-			Instances:         []int{2, 4},
-			AvailabilityZones: [][]string{[]string{"z1"}, []string{"z1", "z2"}},
+			NameLength:               []int{5, 10},
+			Instances:                []int{2, 4},
+			AvailabilityZones:        [][]string{[]string{"z1"}, []string{"z1", "z2"}},
+			PersistentDiskDefinition: []string{"disk_type", "disk_pool"},
+			PersistentDiskSize:       []int{0, 100},
 		}
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)

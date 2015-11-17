@@ -14,9 +14,11 @@ type Config struct {
 }
 
 type Parameters struct {
-	NameLength        []int      `json:"name_length"`
-	Instances         []int      `json:"instances"`
-	AvailabilityZones [][]string `json:"availability_zones"`
+	NameLength               []int      `json:"name_length"`
+	Instances                []int      `json:"instances"`
+	AvailabilityZones        [][]string `json:"availability_zones"`
+	PersistentDiskDefinition []string   `json:"persistent_disk_definition"`
+	PersistentDiskSize       []int      `json:"persistent_disk_size"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

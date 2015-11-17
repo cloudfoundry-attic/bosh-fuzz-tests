@@ -48,9 +48,11 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 
 	for i := 0; i < ir.numberOfConsequentDeploys; i++ {
 		inputs = append(inputs, Input{
-			Name:              nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))]),
-			Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
-			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
+			Name:                     nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))]),
+			Instances:                ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
+			AvailabilityZones:        ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
+			PersistentDiskDefinition: ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))],
+			PersistentDiskSize:       ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))],
 		})
 	}
 	return inputs, nil
