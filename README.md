@@ -1,0 +1,36 @@
+# README
+
+To install:
+
+```
+cd ~/workspace
+git clone git@github.com:cloudfoundry-incubator/bosh-fuzz-tests.git
+cd bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests
+```
+
+To run ginkgo (to test changes):
+
+```
+export GOPATH=~/go
+export PATH=$GOPATH/bin:$PATh
+go get github.com/onsi/ginkgo
+bin/env ginkgo -r .
+```
+
+To run fuzz tests locally with BOSH director from local source (`/Users/pivotal/workspace/bosh` or
+as defined in `config.json`):
+
+```
+bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
+```
+
+To rerurn fuzz tests with the same input:
+
+* Search for `Seeding with` and copy the seed number
+* Run
+
+```
+bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json <SEED_NUMBER>
+```
+
+To run fuzz tests 
