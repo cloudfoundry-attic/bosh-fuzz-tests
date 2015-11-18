@@ -22,6 +22,7 @@ type Job struct {
 	PersistentDiskPool string
 	PersistentDiskType string
 	Network            string
+	MigratedFrom       []string
 }
 
 type CloudConfig struct {

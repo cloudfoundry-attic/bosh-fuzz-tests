@@ -16,6 +16,7 @@ type inputRandomizer struct {
 	parameters                bftconfig.Parameters
 	numberOfConsequentDeploys int
 	seed                      int64
+	nameGenerator             NameGenerator
 	logger                    boshlog.Logger
 }
 
@@ -23,8 +24,9 @@ func NewSeededInputRandomizer(parameters bftconfig.Parameters, numberOfConsequen
 	return &inputRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
-		seed:   seed,
-		logger: logger,
+		seed:          seed,
+		nameGenerator: NewNameGenerator(),
+		logger:        logger,
 	}
 }
 
@@ -32,8 +34,9 @@ func NewInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeplo
 	return &inputRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
-		seed:   time.Now().Unix(),
-		logger: logger,
+		seed:          time.Now().Unix(),
+		nameGenerator: NewNameGenerator(),
+		logger:        logger,
 	}
 }
 
@@ -44,43 +47,52 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 
 	inputs := []Input{}
 
-	nameGenerator := NewNameGenerator()
-
 	for i := 0; i < ir.numberOfConsequentDeploys; i++ {
-		input := Input{
-			Jobs: []Job{},
+		jobNames := ir.generateJobNames(i, inputs)
+		input := ir.generateInput(jobNames, true)
+
+		migratingJobs := []string{}
+		for _, j := range input.Jobs {
+			for _, m := range j.MigratedFrom {
+				migratingJobs = append(migratingJobs, m)
+			}
+		}
+		if len(migratingJobs) > 0 {
+			migratingInput := ir.generateInput(migratingJobs, false)
+			inputs = append(inputs, migratingInput)
 		}
 
-		numberOfJobs := ir.parameters.NumberOfJobs[rand.Intn(len(ir.parameters.NumberOfJobs))]
-		azs := map[string]bool{}
-		persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
+		inputs = append(inputs, input)
+	}
 
-		for jobNumber := 0; jobNumber < numberOfJobs; jobNumber++ {
-			var jobName string
-			if i > 0 && len(inputs[i-1].Jobs) > jobNumber {
-				jobName = inputs[i-1].Jobs[jobNumber].Name
-			}
+	return inputs, nil
+}
 
-			if jobName == "" {
-				jobName = nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))])
-			}
+func (ir *inputRandomizer) generateInput(jobNames []string, addMigratedFrom bool) Input {
+	input := Input{
+		Jobs: []Job{},
+	}
 
-			job := Job{
-				Name:              jobName,
-				Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
-				AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
-			}
+	azs := map[string]bool{}
+	persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
 
-			persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
+	for _, jobName := range jobNames {
+		job := Job{
+			Name:              jobName,
+			Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
+			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
+		}
 
+		persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
+		if persistentDiskSize != 0 {
 			if persistentDiskDefinition == "disk_pool" {
-				job.PersistentDiskPool = nameGenerator.Generate(10)
+				job.PersistentDiskPool = ir.nameGenerator.Generate(10)
 				input.CloudConfig.PersistentDiskPools = append(
 					input.CloudConfig.PersistentDiskPools,
 					DiskConfig{Name: job.PersistentDiskPool, Size: persistentDiskSize},
 				)
 			} else if persistentDiskDefinition == "disk_type" {
-				job.PersistentDiskType = nameGenerator.Generate(10)
+				job.PersistentDiskType = ir.nameGenerator.Generate(10)
 				input.CloudConfig.PersistentDiskTypes = append(
 					input.CloudConfig.PersistentDiskTypes,
 					DiskConfig{Name: job.PersistentDiskType, Size: persistentDiskSize},
@@ -88,25 +100,52 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 			} else {
 				job.PersistentDiskSize = persistentDiskSize
 			}
-
-			for _, az := range job.AvailabilityZones {
-				if azs[az] != true {
-					input.CloudConfig.AvailabilityZones = append(input.CloudConfig.AvailabilityZones, az)
-				}
-				azs[az] = true
-			}
-
-			if job.AvailabilityZones == nil {
-				job.Network = "no-az"
-
-			} else {
-				job.Network = "default"
-			}
-
-			input.Jobs = append(input.Jobs, job)
 		}
 
-		inputs = append(inputs, input)
+		for _, az := range job.AvailabilityZones {
+			if azs[az] != true {
+				input.CloudConfig.AvailabilityZones = append(input.CloudConfig.AvailabilityZones, az)
+			}
+			azs[az] = true
+		}
+
+		if job.AvailabilityZones == nil {
+			job.Network = "no-az"
+
+		} else {
+			job.Network = "default"
+		}
+
+		if addMigratedFrom {
+			migratedFromCount := ir.parameters.MigratedFromCount[rand.Intn(len(ir.parameters.MigratedFromCount))]
+			for i := 0; i < migratedFromCount; i++ {
+				migratedFromName := ir.nameGenerator.Generate(10)
+				job.MigratedFrom = append(job.MigratedFrom, migratedFromName)
+			}
+		}
+
+		input.Jobs = append(input.Jobs, job)
 	}
-	return inputs, nil
+
+	return input
+}
+
+func (ir *inputRandomizer) generateJobNames(i int, inputs []Input) []string {
+	numberOfJobs := ir.parameters.NumberOfJobs[rand.Intn(len(ir.parameters.NumberOfJobs))]
+	jobNames := []string{}
+
+	for j := 0; j < numberOfJobs; j++ {
+		var jobName string
+		if i > 0 && len(inputs[i-1].Jobs) > j {
+			jobName = inputs[i-1].Jobs[j].Name
+		}
+
+		if jobName == "" {
+			jobName = ir.nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))])
+		}
+
+		jobNames = append(jobNames, jobName)
+	}
+
+	return jobNames
 }

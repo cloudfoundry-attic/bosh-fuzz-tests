@@ -41,6 +41,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
 					Network:            "default",
+					MigratedFrom:       []string{"baz-job"},
 				},
 			},
 			CloudConfig: CloudConfig{
@@ -95,6 +96,8 @@ jobs:
   vm_type: default
   persistent_disk_pool: fast-disks
   stemcell: default
+  migrated_from:
+  - name: baz-job
   azs:
   - z3
   - z4
@@ -453,5 +456,4 @@ disk_types:
 		Expect(err).ToNot(HaveOccurred())
 		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
 	})
-
 })

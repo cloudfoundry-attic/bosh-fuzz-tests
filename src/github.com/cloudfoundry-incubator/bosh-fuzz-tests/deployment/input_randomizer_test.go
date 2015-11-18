@@ -15,7 +15,7 @@ var _ = Describe("InputRandomizer", func() {
 		inputRandomizer InputRandomizer
 	)
 
-	It("generates inputs with parameters shuffled", func() {
+	It("generates extra input for migrated", func() {
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5, 10},
 			Instances:                []int{2, 4},
@@ -23,6 +23,7 @@ var _ = Describe("InputRandomizer", func() {
 			PersistentDiskDefinition: []string{"disk_pool", "disk_type", "persistent_disk_size"},
 			PersistentDiskSize:       []int{0, 100, 200},
 			NumberOfJobs:             []int{1, 2},
+			MigratedFromCount:        []int{0, 2},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		inputRandomizer = NewSeededInputRandomizer(parameters, 2, 64, logger)
@@ -34,40 +35,63 @@ var _ = Describe("InputRandomizer", func() {
 			{
 				Jobs: []Job{
 					{
-						Name:               "qNAwiIQ8el",
-						Instances:          2,
-						AvailabilityZones:  []string{"z1", "z2"},
-						PersistentDiskType: "icN3O2GYdm",
-						Network:            "default",
+						Name:              "joNAw",
+						Instances:         4,
+						AvailabilityZones: []string{"z1"},
+						Network:           "default",
 					},
 					{
-						Name:               "eagRjDTBs3",
-						Instances:          4,
-						AvailabilityZones:  []string{"z1", "z2"},
-						PersistentDiskType: "rYND0xNg3R",
-						Network:            "default",
+						Name:              "gQ8el",
+						Instances:         4,
+						AvailabilityZones: []string{"z1", "z2"},
+						Network:           "default",
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1", "z2"},
-					PersistentDiskTypes: []DiskConfig{
-						{Name: "icN3O2GYdm", Size: 200},
-						{Name: "rYND0xNg3R", Size: 200},
+				},
+			},
+			{
+				Jobs: []Job{
+					{
+						Name:               "rU3YND0xNg",
+						Instances:          4,
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "gBUnQKBYoE",
+						Network:            "default",
+					},
+					{
+						Name:               "pRWDsiO5Qu",
+						Instances:          4,
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "a5gmsYqE7Y",
+						Network:            "default",
+					},
+				},
+				CloudConfig: CloudConfig{
+					AvailabilityZones: []string{"z1"},
+					PersistentDiskPools: []DiskConfig{
+						{Name: "gBUnQKBYoE", Size: 100},
+						{Name: "a5gmsYqE7Y", Size: 100},
 					},
 				},
 			},
 			{
 				Jobs: []Job{
 					{
-						Name:               "qNAwiIQ8el",
-						Instances:          2,
+						Name:               "joNAw",
+						Instances:          4,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskSize: 200,
+						PersistentDiskPool: "eagRjDTBs3",
 						Network:            "default",
+						MigratedFrom:       []string{"rU3YND0xNg", "pRWDsiO5Qu"},
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
+					PersistentDiskPools: []DiskConfig{
+						{Name: "eagRjDTBs3", Size: 100},
+					},
 				},
 			},
 		}))
