@@ -55,9 +55,18 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 		azs := map[string]bool{}
 		persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
 
-		for i := 0; i < numberOfJobs; i++ {
+		for jobNumber := 0; jobNumber < numberOfJobs; jobNumber++ {
+			var jobName string
+			if i > 0 && len(inputs[i-1].Jobs) > jobNumber {
+				jobName = inputs[i-1].Jobs[jobNumber].Name
+			}
+
+			if jobName == "" {
+				jobName = nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))])
+			}
+
 			job := Job{
-				Name:              nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))]),
+				Name:              jobName,
 				Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
 				AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
 			}

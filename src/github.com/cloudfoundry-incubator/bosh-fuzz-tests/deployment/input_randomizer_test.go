@@ -59,15 +59,15 @@ var _ = Describe("InputRandomizer", func() {
 			{
 				Jobs: []Job{
 					{
-						Name:               "mO5Qu",
-						Instances:          4,
-						AvailabilityZones:  []string{"z1", "z2"},
+						Name:               "qNAwiIQ8el",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1"},
 						PersistentDiskSize: 200,
 						Network:            "default",
 					},
 				},
 				CloudConfig: CloudConfig{
-					AvailabilityZones: []string{"z1", "z2"},
+					AvailabilityZones: []string{"z1"},
 				},
 			},
 		}))
