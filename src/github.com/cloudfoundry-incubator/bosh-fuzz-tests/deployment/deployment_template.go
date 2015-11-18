@@ -20,12 +20,12 @@ update:
   max_in_flight: 1
   update_watch_time: 20
 
-jobs:
+jobs:{{ range .Jobs }}
 - name: {{ .Name }}
   instances: {{ .Instances }}
-  vm_type: default{{ if eq .PersistentDiskDefinition "disk_pool" }}
-  persistent_disk_pool: fast-disks{{ else if eq .PersistentDiskDefinition "disk_type" }}
-  persistent_disk_type: fast-disks{{ else if .PersistentDiskSize }}
+  vm_type: default{{ if .PersistentDiskPool }}
+  persistent_disk_pool: {{ .PersistentDiskPool }}{{ else if .PersistentDiskType }}
+  persistent_disk_type: {{ .PersistentDiskType }}{{ else if .PersistentDiskSize }}
   persistent_disk: {{ .PersistentDiskSize }}{{ end }}
   stemcell: default{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
@@ -33,5 +33,6 @@ jobs:
   templates:
   - name: simple
     release: foo-release
-  networks: [{name: default}]
+  networks:
+  - name: {{ .Network }}{{ end }}
 `

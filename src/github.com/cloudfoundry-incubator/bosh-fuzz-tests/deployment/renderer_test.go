@@ -26,12 +26,32 @@ var _ = Describe("Manifest/Renderer", func() {
 
 	It("creates manifest based on input values", func() {
 		input := Input{
-			Name:                     "foo-job",
-			DirectorUUID:             "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Instances:                5,
-			AvailabilityZones:        []string{"z1", "z2"},
-			PersistentDiskSize:       100,
-			PersistentDiskDefinition: "persistent_disk_size",
+			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
+			Jobs: []Job{
+				{
+					Name:               "foo-job",
+					Instances:          5,
+					AvailabilityZones:  []string{"z1", "z2"},
+					PersistentDiskSize: 100,
+					Network:            "default",
+				},
+				{
+					Name:               "bar-job",
+					Instances:          2,
+					AvailabilityZones:  []string{"z3", "z4"},
+					PersistentDiskPool: "fast-disks",
+					Network:            "default",
+				},
+			},
+			CloudConfig: CloudConfig{
+				AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
+				PersistentDiskPools: []DiskConfig{
+					{
+						Name: "fast-disks",
+						Size: 200,
+					},
+				},
+			},
 		}
 
 		err := renderer.Render(input, manifestPath, cloudConfigPath)
@@ -68,7 +88,21 @@ jobs:
   templates:
   - name: simple
     release: foo-release
-  networks: [{name: default}]
+  networks:
+  - name: default
+- name: bar-job
+  instances: 2
+  vm_type: default
+  persistent_disk_pool: fast-disks
+  stemcell: default
+  azs:
+  - z3
+  - z4
+  templates:
+  - name: simple
+    release: foo-release
+  networks:
+  - name: default
 `
 
 		manifestContents, err := fs.ReadFileString(manifestPath)
@@ -80,6 +114,10 @@ azs:
 - name: z1
   cloud_properties: {}
 - name: z2
+  cloud_properties: {}
+- name: z3
+  cloud_properties: {}
+- name: z4
   cloud_properties: {}
 
 networks:
@@ -94,6 +132,16 @@ networks:
     azs:
     - z1
     - z2
+    - z3
+    - z4
+- name: no-az
+  subnets:
+  - range: "192.168.1.0/24"
+    gateway: "192.168.1.1"
+    dns: ["192.168.1.1", "192.168.1.2"]
+    static: ["192.168.1.10-192.168.1.30"]
+    reserved: []
+    cloud_properties: {}
 
 compilation:
   workers: 1
@@ -103,6 +151,11 @@ compilation:
 
 vm_types:
 - name: default
+  cloud_properties: {}
+
+disk_pools:
+- name: fast-disks
+  disk_size: 200
   cloud_properties: {}
 `
 
@@ -114,10 +167,15 @@ vm_types:
 	Context("when AvailabilityZone is nil", func() {
 		It("does not specify az key in manifest", func() {
 			input := Input{
-				Name:              "foo-job",
-				DirectorUUID:      "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-				Instances:         5,
-				AvailabilityZones: nil,
+				DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
+				Jobs: []Job{
+					{
+						Name:              "foo-job",
+						Instances:         5,
+						AvailabilityZones: nil,
+						Network:           "default",
+					},
+				},
 			}
 
 			err := renderer.Render(input, manifestPath, cloudConfigPath)
@@ -150,7 +208,8 @@ jobs:
   templates:
   - name: simple
     release: foo-release
-  networks: [{name: default}]
+  networks:
+  - name: default
 `
 
 			manifestContents, err := fs.ReadFileString(manifestPath)
@@ -161,6 +220,14 @@ jobs:
 
 networks:
 - name: default
+  subnets:
+  - range: "192.168.1.0/24"
+    gateway: "192.168.1.1"
+    dns: ["192.168.1.1", "192.168.1.2"]
+    static: ["192.168.1.10-192.168.1.30"]
+    reserved: []
+    cloud_properties: {}
+- name: no-az
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
@@ -185,20 +252,31 @@ vm_types:
 		})
 	})
 
-	Context("when a persistent_disk_definition is disk_pool", func() {
-		It("uses the disk pool", func() {
-			input := Input{
-				Name:                     "foo-job",
-				DirectorUUID:             "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-				Instances:                5,
-				AvailabilityZones:        nil,
-				PersistentDiskDefinition: "disk_pool",
-				PersistentDiskSize:       100,
-			}
+	It("uses the disk pool specified for job", func() {
+		input := Input{
+			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
+			Jobs: []Job{
+				{
+					Name:               "foo-job",
+					Instances:          5,
+					AvailabilityZones:  nil,
+					PersistentDiskPool: "fast-disks",
+					Network:            "default",
+				},
+			},
+			CloudConfig: CloudConfig{
+				PersistentDiskPools: []DiskConfig{
+					{
+						Name: "fast-disks",
+						Size: 100,
+					},
+				},
+			},
+		}
 
-			err := renderer.Render(input, manifestPath, cloudConfigPath)
-			Expect(err).ToNot(HaveOccurred())
-			expectedManifestContents := `---
+		err := renderer.Render(input, manifestPath, cloudConfigPath)
+		Expect(err).ToNot(HaveOccurred())
+		expectedManifestContents := `---
 name: foo-deployment
 
 director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
@@ -227,17 +305,26 @@ jobs:
   templates:
   - name: simple
     release: foo-release
-  networks: [{name: default}]
+  networks:
+  - name: default
 `
 
-			manifestContents, err := fs.ReadFileString(manifestPath)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(manifestContents).To(Equal(expectedManifestContents))
+		manifestContents, err := fs.ReadFileString(manifestPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(manifestContents).To(Equal(expectedManifestContents))
 
-			expectedCloudConfigContents := `---
+		expectedCloudConfigContents := `---
 
 networks:
 - name: default
+  subnets:
+  - range: "192.168.1.0/24"
+    gateway: "192.168.1.1"
+    dns: ["192.168.1.1", "192.168.1.2"]
+    static: ["192.168.1.10-192.168.1.30"]
+    reserved: []
+    cloud_properties: {}
+- name: no-az
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
@@ -261,25 +348,36 @@ disk_pools:
   cloud_properties: {}
 `
 
-			cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
-		})
+		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
 	})
-	Context("when a persistent_disk_definition is disk_type", func() {
-		It("uses the disk pool", func() {
-			input := Input{
-				Name:                     "foo-job",
-				DirectorUUID:             "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-				Instances:                5,
-				AvailabilityZones:        nil,
-				PersistentDiskDefinition: "disk_type",
-				PersistentDiskSize:       100,
-			}
 
-			err := renderer.Render(input, manifestPath, cloudConfigPath)
-			Expect(err).ToNot(HaveOccurred())
-			expectedManifestContents := `---
+	It("uses the disk type", func() {
+		input := Input{
+			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
+			Jobs: []Job{
+				{
+					Name:               "foo-job",
+					Instances:          5,
+					AvailabilityZones:  nil,
+					PersistentDiskType: "fast-disks",
+					Network:            "default",
+				},
+			},
+			CloudConfig: CloudConfig{
+				PersistentDiskTypes: []DiskConfig{
+					{
+						Name: "fast-disks",
+						Size: 100,
+					},
+				},
+			},
+		}
+
+		err := renderer.Render(input, manifestPath, cloudConfigPath)
+		Expect(err).ToNot(HaveOccurred())
+		expectedManifestContents := `---
 name: foo-deployment
 
 director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
@@ -308,17 +406,26 @@ jobs:
   templates:
   - name: simple
     release: foo-release
-  networks: [{name: default}]
+  networks:
+  - name: default
 `
 
-			manifestContents, err := fs.ReadFileString(manifestPath)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(manifestContents).To(Equal(expectedManifestContents))
+		manifestContents, err := fs.ReadFileString(manifestPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(manifestContents).To(Equal(expectedManifestContents))
 
-			expectedCloudConfigContents := `---
+		expectedCloudConfigContents := `---
 
 networks:
 - name: default
+  subnets:
+  - range: "192.168.1.0/24"
+    gateway: "192.168.1.1"
+    dns: ["192.168.1.1", "192.168.1.2"]
+    static: ["192.168.1.10-192.168.1.30"]
+    reserved: []
+    cloud_properties: {}
+- name: no-az
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
@@ -342,10 +449,9 @@ disk_types:
   cloud_properties: {}
 `
 
-			cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
-		})
+		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
 	})
 
 })

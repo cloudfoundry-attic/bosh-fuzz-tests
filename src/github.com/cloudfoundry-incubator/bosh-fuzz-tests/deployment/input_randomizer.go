@@ -47,13 +47,57 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 	nameGenerator := NewNameGenerator()
 
 	for i := 0; i < ir.numberOfConsequentDeploys; i++ {
-		inputs = append(inputs, Input{
-			Name:                     nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))]),
-			Instances:                ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
-			AvailabilityZones:        ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
-			PersistentDiskDefinition: ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))],
-			PersistentDiskSize:       ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))],
-		})
+		input := Input{
+			Jobs: []Job{},
+		}
+
+		numberOfJobs := ir.parameters.NumberOfJobs[rand.Intn(len(ir.parameters.NumberOfJobs))]
+		azs := map[string]bool{}
+		persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
+
+		for i := 0; i < numberOfJobs; i++ {
+			job := Job{
+				Name:              nameGenerator.Generate(ir.parameters.NameLength[rand.Intn(len(ir.parameters.NameLength))]),
+				Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
+				AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
+			}
+
+			persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
+
+			if persistentDiskDefinition == "disk_pool" {
+				job.PersistentDiskPool = nameGenerator.Generate(10)
+				input.CloudConfig.PersistentDiskPools = append(
+					input.CloudConfig.PersistentDiskPools,
+					DiskConfig{Name: job.PersistentDiskPool, Size: persistentDiskSize},
+				)
+			} else if persistentDiskDefinition == "disk_type" {
+				job.PersistentDiskType = nameGenerator.Generate(10)
+				input.CloudConfig.PersistentDiskTypes = append(
+					input.CloudConfig.PersistentDiskTypes,
+					DiskConfig{Name: job.PersistentDiskType, Size: persistentDiskSize},
+				)
+			} else {
+				job.PersistentDiskSize = persistentDiskSize
+			}
+
+			for _, az := range job.AvailabilityZones {
+				if azs[az] != true {
+					input.CloudConfig.AvailabilityZones = append(input.CloudConfig.AvailabilityZones, az)
+				}
+				azs[az] = true
+			}
+
+			if job.AvailabilityZones == nil {
+				job.Network = "no-az"
+
+			} else {
+				job.Network = "default"
+			}
+
+			input.Jobs = append(input.Jobs, job)
+		}
+
+		inputs = append(inputs, input)
 	}
 	return inputs, nil
 }

@@ -9,12 +9,30 @@ import (
 )
 
 type Input struct {
-	Name                     string
-	DirectorUUID             string
-	Instances                int
-	AvailabilityZones        []string
-	PersistentDiskSize       int
-	PersistentDiskDefinition string
+	DirectorUUID string
+	Jobs         []Job
+	CloudConfig  CloudConfig
+}
+
+type Job struct {
+	Name               string
+	Instances          int
+	AvailabilityZones  []string
+	PersistentDiskSize int
+	PersistentDiskPool string
+	PersistentDiskType string
+	Network            string
+}
+
+type CloudConfig struct {
+	AvailabilityZones   []string
+	PersistentDiskPools []DiskConfig
+	PersistentDiskTypes []DiskConfig
+}
+
+type DiskConfig struct {
+	Name string
+	Size int
 }
 
 type Renderer interface {

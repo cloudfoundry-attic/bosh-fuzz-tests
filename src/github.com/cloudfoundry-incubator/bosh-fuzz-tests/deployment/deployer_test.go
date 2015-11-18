@@ -42,6 +42,7 @@ var _ = Describe("Deployer", func() {
 			AvailabilityZones:        [][]string{[]string{"z1"}, []string{"z1", "z2"}},
 			PersistentDiskDefinition: []string{"disk_type", "disk_pool"},
 			PersistentDiskSize:       []int{0, 100},
+			NumberOfJobs:             []int{1, 2},
 		}
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
