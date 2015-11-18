@@ -49,16 +49,31 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 
 	for i := 0; i < ir.numberOfConsequentDeploys; i++ {
 		jobNames := ir.generateJobNames(i, inputs)
-		input := ir.generateInput(jobNames, true)
+		input := ir.generateInput(jobNames, false)
 
 		migratingJobs := []string{}
 		for _, j := range input.Jobs {
 			for _, m := range j.MigratedFrom {
-				migratingJobs = append(migratingJobs, m)
+				migratingJobs = append(migratingJobs, m.Name)
 			}
 		}
+
 		if len(migratingJobs) > 0 {
-			migratingInput := ir.generateInput(migratingJobs, false)
+			migratingInput := ir.generateInput(migratingJobs, true)
+
+			// If migrating job does not have az, we should specify az in migrated_from
+			for _, migratingJob := range migratingInput.Jobs {
+				if migratingJob.AvailabilityZones == nil {
+					for k, job := range input.Jobs {
+						for m, migratedFromConfig := range job.MigratedFrom {
+							if migratedFromConfig.Name == migratingJob.Name {
+								input.Jobs[k].MigratedFrom[m].AvailabilityZone = "z1"
+							}
+						}
+					}
+				}
+			}
+
 			inputs = append(inputs, migratingInput)
 		}
 
@@ -68,7 +83,7 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 	return inputs, nil
 }
 
-func (ir *inputRandomizer) generateInput(jobNames []string, addMigratedFrom bool) Input {
+func (ir *inputRandomizer) generateInput(jobNames []string, migratingDeployment bool) Input {
 	input := Input{
 		Jobs: []Job{},
 	}
@@ -116,11 +131,11 @@ func (ir *inputRandomizer) generateInput(jobNames []string, addMigratedFrom bool
 			job.Network = "default"
 		}
 
-		if addMigratedFrom {
+		if !migratingDeployment {
 			migratedFromCount := ir.parameters.MigratedFromCount[rand.Intn(len(ir.parameters.MigratedFromCount))]
 			for i := 0; i < migratedFromCount; i++ {
 				migratedFromName := ir.nameGenerator.Generate(10)
-				job.MigratedFrom = append(job.MigratedFrom, migratedFromName)
+				job.MigratedFrom = append(job.MigratedFrom, MigratedFromConfig{Name: migratedFromName})
 			}
 		}
 

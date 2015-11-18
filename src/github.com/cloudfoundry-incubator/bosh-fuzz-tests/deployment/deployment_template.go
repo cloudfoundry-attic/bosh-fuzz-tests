@@ -29,7 +29,8 @@ jobs:{{ range .Jobs }}
   persistent_disk: {{ .PersistentDiskSize }}{{ end }}
   stemcell: default{{ if .MigratedFrom }}
   migrated_from:{{ range .MigratedFrom }}
-  - name: {{ . }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
+  - name: {{ .Name }}{{ if .AvailabilityZone }}
+    az: {{ .AvailabilityZone }}{{ end }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
   - {{ . }}{{ end }}{{ end }}
   templates:

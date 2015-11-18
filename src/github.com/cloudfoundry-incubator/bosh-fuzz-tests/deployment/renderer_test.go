@@ -41,7 +41,9 @@ var _ = Describe("Manifest/Renderer", func() {
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
 					Network:            "default",
-					MigratedFrom:       []string{"baz-job"},
+					MigratedFrom: []MigratedFromConfig{
+						{Name: "baz-job", AvailabilityZone: "z5"},
+					},
 				},
 			},
 			CloudConfig: CloudConfig{
@@ -98,6 +100,7 @@ jobs:
   stemcell: default
   migrated_from:
   - name: baz-job
+    az: z5
   azs:
   - z3
   - z4

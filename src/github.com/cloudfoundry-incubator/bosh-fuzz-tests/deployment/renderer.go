@@ -22,7 +22,7 @@ type Job struct {
 	PersistentDiskPool string
 	PersistentDiskType string
 	Network            string
-	MigratedFrom       []string
+	MigratedFrom       []MigratedFromConfig
 }
 
 type CloudConfig struct {
@@ -34,6 +34,11 @@ type CloudConfig struct {
 type DiskConfig struct {
 	Name string
 	Size int
+}
+
+type MigratedFromConfig struct {
+	Name             string
+	AvailabilityZone string
 }
 
 type Renderer interface {

@@ -15,7 +15,7 @@ var _ = Describe("InputRandomizer", func() {
 		inputRandomizer InputRandomizer
 	)
 
-	It("generates extra input for migrated", func() {
+	It("generates extra input for migrated jobs", func() {
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5, 10},
 			Instances:                []int{2, 4},
@@ -84,13 +84,57 @@ var _ = Describe("InputRandomizer", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "eagRjDTBs3",
 						Network:            "default",
-						MigratedFrom:       []string{"rU3YND0xNg", "pRWDsiO5Qu"},
+						MigratedFrom: []MigratedFromConfig{
+							{Name: "rU3YND0xNg"},
+							{Name: "pRWDsiO5Qu"},
+						},
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []DiskConfig{
 						{Name: "eagRjDTBs3", Size: 100},
+					},
+				},
+			},
+		}))
+	})
+
+	It("when migrated job does not have az it sets random az in migrated_from", func() {
+		parameters := bftconfig.Parameters{
+			NameLength:               []int{5},
+			Instances:                []int{2},
+			AvailabilityZones:        [][]string{nil},
+			PersistentDiskDefinition: []string{"persistent_disk_size"},
+			PersistentDiskSize:       []int{0},
+			NumberOfJobs:             []int{1},
+			MigratedFromCount:        []int{1},
+		}
+		logger := boshlog.NewLogger(boshlog.LevelNone)
+		inputRandomizer = NewSeededInputRandomizer(parameters, 1, 64, logger)
+
+		inputs, err := inputRandomizer.Generate()
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(inputs).To(Equal([]Input{
+			{
+				Jobs: []Job{
+					{
+						Name:      "vgrKicN3O2",
+						Instances: 2,
+						Network:   "no-az",
+					},
+				},
+			},
+			{
+				Jobs: []Job{
+					{
+						Name:      "joNAw",
+						Instances: 2,
+						Network:   "no-az",
+						MigratedFrom: []MigratedFromConfig{
+							{Name: "vgrKicN3O2", AvailabilityZone: "z1"},
+						},
 					},
 				},
 			},
