@@ -36,6 +36,6 @@ jobs:{{ range .Jobs }}
   templates:
   - name: simple
     release: foo-release
-  networks:
-  - name: {{ .Network }}{{ end }}
+  networks:{{ range .Networks }}
+  - name: {{ .Name }}{{ end }}{{ end }}
 `

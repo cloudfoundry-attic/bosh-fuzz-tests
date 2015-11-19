@@ -46,10 +46,12 @@ var _ = Describe("Deployer", func() {
 			MigratedFromCount:        []int{0},
 		}
 
+		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}
+
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator := NewNameGenerator()
 		jobsRandomizer := NewSeededJobsRandomizer(parameters, 2, 64, nameGenerator, logger)
-		networksAssigner := NewSeededNetworksAssigner(5)
+		networksAssigner := NewSeededNetworksAssigner(networks, nameGenerator, 5)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs)
 	})
 

@@ -21,6 +21,7 @@ type Parameters struct {
 	PersistentDiskSize       []int      `json:"persistent_disk_size"`
 	NumberOfJobs             []int      `json:"number_of_jobs"`
 	MigratedFromCount        []int      `json:"migrated_from_count"`
+	Networks                 [][]string `json:"networks"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

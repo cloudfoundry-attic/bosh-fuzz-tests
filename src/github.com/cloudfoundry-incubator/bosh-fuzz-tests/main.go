@@ -87,10 +87,10 @@ func main() {
 	if len(os.Args) == 3 {
 		seed, _ := strconv.ParseInt(os.Args[2], 10, 64)
 		jobsRandomizer = bftdeployment.NewSeededJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, nameGenerator, logger)
-		networksAssigner = bftdeployment.NewSeededNetworksAssigner(seed)
+		networksAssigner = bftdeployment.NewSeededNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, seed)
 	} else {
 		jobsRandomizer = bftdeployment.NewJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
-		networksAssigner = bftdeployment.NewNetworksAssigner()
+		networksAssigner = bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator)
 	}
 
 	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs)

@@ -8,45 +8,6 @@ import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 )
 
-type Input struct {
-	DirectorUUID string
-	Jobs         []Job
-	CloudConfig  CloudConfig
-}
-
-type Job struct {
-	Name               string
-	Instances          int
-	AvailabilityZones  []string
-	PersistentDiskSize int
-	PersistentDiskPool string
-	PersistentDiskType string
-	Network            string
-	MigratedFrom       []MigratedFromConfig
-}
-
-type CloudConfig struct {
-	AvailabilityZones   []string
-	PersistentDiskPools []DiskConfig
-	PersistentDiskTypes []DiskConfig
-	Networks            []NetworkConfig
-}
-
-type DiskConfig struct {
-	Name string
-	Size int
-}
-
-type MigratedFromConfig struct {
-	Name             string
-	AvailabilityZone string
-}
-
-type NetworkConfig struct {
-	Name              string
-	AvailabilityZones []string
-}
-
 type Renderer interface {
 	Render(input Input, manifestPath string, cloudConfigPath string) error
 }

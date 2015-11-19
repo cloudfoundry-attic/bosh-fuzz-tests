@@ -33,14 +33,14 @@ var _ = Describe("Manifest/Renderer", func() {
 					Instances:          5,
 					AvailabilityZones:  []string{"z1", "z2"},
 					PersistentDiskSize: 100,
-					Network:            "default",
+					Networks:           []JobNetworkConfig{{Name: "default"}},
 				},
 				{
 					Name:               "bar-job",
 					Instances:          2,
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
-					Network:            "default",
+					Networks:           []JobNetworkConfig{{Name: "default"}},
 					MigratedFrom: []MigratedFromConfig{
 						{Name: "baz-job", AvailabilityZone: "z5"},
 					},
@@ -56,11 +56,16 @@ var _ = Describe("Manifest/Renderer", func() {
 				},
 				Networks: []NetworkConfig{
 					{
-						Name:              "default",
-						AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
+						Name: "default",
+						Subnets: []SubnetConfig{
+							{AvailabilityZones: []string{"z1", "z2", "z3", "z4"}},
+						},
 					},
 					{
 						Name: "no-az",
+						Subnets: []SubnetConfig{
+							{},
+						},
 					},
 				},
 			},
@@ -187,16 +192,22 @@ disk_pools:
 					{
 						Name:      "foo-job",
 						Instances: 5,
-						Network:   "default",
+						Networks:  []JobNetworkConfig{{Name: "default"}},
 					},
 				},
 				CloudConfig: CloudConfig{
 					Networks: []NetworkConfig{
 						{
 							Name: "default",
+							Subnets: []SubnetConfig{
+								{},
+							},
 						},
 						{
 							Name: "no-az",
+							Subnets: []SubnetConfig{
+								{},
+							},
 						},
 					},
 				},
@@ -284,7 +295,7 @@ vm_types:
 					Name:               "foo-job",
 					Instances:          5,
 					PersistentDiskPool: "fast-disks",
-					Network:            "default",
+					Networks:           []JobNetworkConfig{{Name: "default"}},
 				},
 			},
 			CloudConfig: CloudConfig{
@@ -297,9 +308,15 @@ vm_types:
 				Networks: []NetworkConfig{
 					{
 						Name: "default",
+						Subnets: []SubnetConfig{
+							{},
+						},
 					},
 					{
 						Name: "no-az",
+						Subnets: []SubnetConfig{
+							{},
+						},
 					},
 				},
 			},
@@ -392,7 +409,7 @@ disk_pools:
 					Name:               "foo-job",
 					Instances:          5,
 					PersistentDiskType: "fast-disks",
-					Network:            "default",
+					Networks:           []JobNetworkConfig{{Name: "default"}},
 				},
 			},
 			CloudConfig: CloudConfig{
@@ -405,9 +422,15 @@ disk_pools:
 				Networks: []NetworkConfig{
 					{
 						Name: "default",
+						Subnets: []SubnetConfig{
+							{},
+						},
 					},
 					{
 						Name: "no-az",
+						Subnets: []SubnetConfig{
+							{},
+						},
 					},
 				},
 			},

@@ -1,6 +1,8 @@
 package deployment_test
 
 import (
+	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
+
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
 	. "github.com/onsi/ginkgo"
@@ -10,13 +12,17 @@ import (
 var _ = Describe("NetworksAssigner", func() {
 	var (
 		networksAssigner NetworksAssigner
+		networks         [][]string
 	)
 
 	BeforeEach(func() {
-		networksAssigner = NewSeededNetworksAssigner(5)
+		networks = [][]string{[]string{"dynamic"}}
+		nameGenerator := &fakebftdepl.FakeNameGenerator{}
+		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net"}
+		networksAssigner = NewSeededNetworksAssigner(networks, nameGenerator, 5)
 	})
 
-	It("assigns random networks to the jobs", func() {
+	It("assigns network of the given type to job and cloud config", func() {
 		inputs := []Input{
 			{
 				Jobs: []Job{
@@ -41,18 +47,30 @@ var _ = Describe("NetworksAssigner", func() {
 						Name:              "foo",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
-						Network:           "default",
+						Networks: []JobNetworkConfig{
+							{Name: "foo-net"},
+						},
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					Networks: []NetworkConfig{
 						{
-							Name:              "default",
-							AvailabilityZones: []string{"z1"},
+							Name: "foo-net",
+							Type: "dynamic",
+							Subnets: []SubnetConfig{
+								{
+									AvailabilityZones: []string{"z1"},
+								},
+							},
 						},
 						{
-							Name: "no-az",
+							Name: "default",
+							Subnets: []SubnetConfig{
+								{
+									AvailabilityZones: []string{"z1"},
+								},
+							},
 						},
 					},
 				},

@@ -7,7 +7,7 @@ azs:{{ range .CloudConfig.AvailabilityZones }}
 
 networks:{{ range .CloudConfig.Networks }}
 - name: {{ .Name }}
-  subnets:
+  subnets:{{ range .Subnets }}
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
     dns: ["192.168.1.1", "192.168.1.2"]
@@ -15,7 +15,7 @@ networks:{{ range .CloudConfig.Networks }}
     reserved: []
     cloud_properties: {}{{ if .AvailabilityZones }}
     azs:{{ range .AvailabilityZones }}
-    - {{ . }}{{ end }}{{ end }}{{ end }}
+    - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}
 
 compilation:
   workers: 1
