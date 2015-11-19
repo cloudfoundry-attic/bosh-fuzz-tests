@@ -10,18 +10,18 @@ networks:{{ range .CloudConfig.Networks }}
   subnets:{{ range .Subnets }}
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}{{ if .AvailabilityZones }}
     azs:{{ range .AvailabilityZones }}
     - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}
 
 compilation:
-  workers: 1
-  network: default
-  cloud_properties: {}{{ if .CloudConfig.AvailabilityZones }}
-  az: {{ index .CloudConfig.AvailabilityZones 0 }}{{ end }}
+  workers: 1{{ with index .CloudConfig.Networks 0 }}
+  network: {{ .Name }}
+  cloud_properties: {}{{ with index .Subnets 0 }}{{ if .AvailabilityZones }}
+  az: {{ index .AvailabilityZones 0 }}{{ end }}{{ end }}{{ end }}
 
 vm_types:
 - name: default

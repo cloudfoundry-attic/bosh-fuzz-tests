@@ -60,14 +60,8 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "dynamic",
 							Subnets: []SubnetConfig{
 								{
-									AvailabilityZones: []string{"z1"},
-								},
-							},
-						},
-						{
-							Name: "default",
-							Subnets: []SubnetConfig{
-								{
+									IpRange:           "192.168.0.0/24",
+									Gateway:           "192.168.0.1",
 									AvailabilityZones: []string{"z1"},
 								},
 							},
@@ -77,6 +71,73 @@ var _ = Describe("NetworksAssigner", func() {
 			},
 		},
 		))
+	})
 
+	It("generates new subnet range for each subnet", func() {
+		inputs := []Input{
+			{
+				Jobs: []Job{
+					{
+						Name:              "foo",
+						Instances:         1,
+						AvailabilityZones: []string{"z1"},
+					},
+					{
+						Name:              "bar",
+						Instances:         1,
+						AvailabilityZones: []string{"z2"},
+					},
+				},
+				CloudConfig: CloudConfig{
+					AvailabilityZones: []string{"z1", "z2"},
+				},
+			},
+		}
+		networksAssigner.Assign(inputs)
+
+		Expect(inputs).To(Equal([]Input{
+			{
+				Jobs: []Job{
+					{
+						Name:              "foo",
+						Instances:         1,
+						AvailabilityZones: []string{"z1"},
+						Networks: []JobNetworkConfig{
+							{Name: "foo-net"},
+						},
+					},
+					{
+						Name:              "bar",
+						Instances:         1,
+						AvailabilityZones: []string{"z2"},
+						Networks: []JobNetworkConfig{
+							{Name: "foo-net"},
+						},
+					},
+				},
+				CloudConfig: CloudConfig{
+					AvailabilityZones: []string{"z1", "z2"},
+					Networks: []NetworkConfig{
+						{
+							Name: "foo-net",
+							Type: "dynamic",
+							Subnets: []SubnetConfig{
+								{
+									IpRange:           "192.168.0.0/24",
+									Gateway:           "192.168.0.1",
+									AvailabilityZones: []string{"z1"},
+								},
+								{
+									IpRange:           "192.168.1.0/24",
+									Gateway:           "192.168.1.1",
+									AvailabilityZones: []string{"z2"},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		))
 	})
 })

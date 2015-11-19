@@ -9,17 +9,27 @@ type NetworksAssigner interface {
 }
 
 type networksAssigner struct {
-	networks      [][]string
-	nameGenerator NameGenerator
-	seed          int64
+	networks       [][]string
+	nameGenerator  NameGenerator
+	ipPoolProvider IpPoolProvider
+	seed           int64
 }
 
 func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator) NetworksAssigner {
-	return &networksAssigner{networks: networks, nameGenerator: nameGenerator}
+	return &networksAssigner{
+		networks:       networks,
+		nameGenerator:  nameGenerator,
+		ipPoolProvider: NewIpPoolProvider(),
+	}
 }
 
 func NewSeededNetworksAssigner(networks [][]string, nameGenerator NameGenerator, seed int64) NetworksAssigner {
-	return &networksAssigner{networks: networks, nameGenerator: nameGenerator, seed: seed}
+	return &networksAssigner{
+		networks:       networks,
+		nameGenerator:  nameGenerator,
+		ipPoolProvider: NewIpPoolProvider(),
+		seed:           seed,
+	}
 }
 
 func (n *networksAssigner) Assign(inputs []Input) {
@@ -46,25 +56,20 @@ func (n *networksAssigner) Assign(inputs []Input) {
 				inputs[i].Jobs[j].Networks = append(inputs[i].Jobs[j].Networks, JobNetworkConfig{Name: network.Name})
 				if job.AvailabilityZones != nil {
 					subnet := SubnetConfig{AvailabilityZones: job.AvailabilityZones}
+					ipPool := n.ipPoolProvider.NewIpPool()
+
+					subnet.IpRange = ipPool.IpRange
+					subnet.Gateway = ipPool.Gateway
+
 					networkPool[k].Subnets = append(networkPool[k].Subnets, subnet)
 				}
 				// TODO: handle nil azs
-				// TODO: deduplicate to avoid overlapping subnets
+				// TODO: reuse same subnet with all azs
 			}
-
 		}
 
 		for _, network := range networkPool {
 			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
 		}
-
-		// Workaround: add default network to make compilation work
-		defaultNetwork := NetworkConfig{
-			Name: "default",
-			Subnets: []SubnetConfig{
-				SubnetConfig{inputs[i].CloudConfig.AvailabilityZones},
-			},
-		}
-		inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, defaultNetwork)
 	}
 }

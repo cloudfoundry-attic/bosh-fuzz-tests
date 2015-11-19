@@ -145,8 +145,8 @@ networks:
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
     azs:
@@ -158,8 +158,8 @@ networks:
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 
@@ -258,16 +258,16 @@ networks:
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 - name: no-az
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 
@@ -368,16 +368,16 @@ networks:
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 - name: no-az
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 
@@ -482,16 +482,16 @@ networks:
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 - name: no-az
   subnets:
   - range: "192.168.1.0/24"
     gateway: "192.168.1.1"
-    dns: ["192.168.1.1", "192.168.1.2"]
-    static: ["192.168.1.10-192.168.1.30"]
+    dns: ["8.8.8.8"]
+    static: []
     reserved: []
     cloud_properties: {}
 

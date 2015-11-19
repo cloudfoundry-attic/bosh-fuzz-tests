@@ -41,6 +41,8 @@ type NetworkConfig struct {
 }
 
 type SubnetConfig struct {
+	IpRange           string
+	Gateway           string
 	AvailabilityZones []string
 }
 
