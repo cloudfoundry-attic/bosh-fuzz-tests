@@ -104,7 +104,7 @@ var _ = Describe("InputRandomizer", func() {
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5},
 			Instances:                []int{2},
-			AvailabilityZones:        [][]string{nil},
+			AvailabilityZones:        [][]string{[]string{"z1"}, nil},
 			PersistentDiskDefinition: []string{"persistent_disk_size"},
 			PersistentDiskSize:       []int{0},
 			NumberOfJobs:             []int{1},
@@ -129,13 +129,17 @@ var _ = Describe("InputRandomizer", func() {
 			{
 				Jobs: []Job{
 					{
-						Name:      "joNAw",
-						Instances: 2,
-						Network:   "no-az",
+						Name:              "joNAw",
+						Instances:         2,
+						Network:           "default",
+						AvailabilityZones: []string{"z1"},
 						MigratedFrom: []MigratedFromConfig{
 							{Name: "vgrKicN3O2", AvailabilityZone: "z1"},
 						},
 					},
+				},
+				CloudConfig: CloudConfig{
+					AvailabilityZones: []string{"z1"},
 				},
 			},
 		}))

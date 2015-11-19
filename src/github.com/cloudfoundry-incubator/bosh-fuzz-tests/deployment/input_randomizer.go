@@ -61,18 +61,7 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 		if len(migratingJobs) > 0 {
 			migratingInput := ir.generateInput(migratingJobs, true)
 
-			// If migrating job does not have az, we should specify az in migrated_from
-			for _, migratingJob := range migratingInput.Jobs {
-				if migratingJob.AvailabilityZones == nil {
-					for k, job := range input.Jobs {
-						for m, migratedFromConfig := range job.MigratedFrom {
-							if migratedFromConfig.Name == migratingJob.Name {
-								input.Jobs[k].MigratedFrom[m].AvailabilityZone = "z1"
-							}
-						}
-					}
-				}
-			}
+			ir.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
 
 			inputs = append(inputs, migratingInput)
 		}
@@ -163,4 +152,22 @@ func (ir *inputRandomizer) generateJobNames(i int, inputs []Input) []string {
 	}
 
 	return jobNames
+}
+
+func (ir *inputRandomizer) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput Input, currentInput Input) {
+	for _, migratingJob := range migratingInput.Jobs {
+		if migratingJob.AvailabilityZones == nil {
+			for k, job := range currentInput.Jobs {
+				if job.AvailabilityZones == nil {
+					continue
+				}
+
+				for m, migratedFromConfig := range job.MigratedFrom {
+					if migratedFromConfig.Name == migratingJob.Name {
+						currentInput.Jobs[k].MigratedFrom[m].AvailabilityZone = currentInput.Jobs[k].AvailabilityZones[0]
+					}
+				}
+			}
+		}
+	}
 }
