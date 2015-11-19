@@ -26,7 +26,8 @@ var _ = Describe("InputRandomizer", func() {
 			MigratedFromCount:        []int{0, 2},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
-		inputRandomizer = NewSeededInputRandomizer(parameters, 2, 64, logger)
+		nameGenerator := NewNameGenerator()
+		inputRandomizer = NewSeededInputRandomizer(parameters, 2, 64, nameGenerator, logger)
 
 		inputs, err := inputRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
@@ -112,7 +113,8 @@ var _ = Describe("InputRandomizer", func() {
 			MigratedFromCount:        []int{1},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
-		inputRandomizer = NewSeededInputRandomizer(parameters, 1, 64, logger)
+		nameGenerator := NewNameGenerator()
+		inputRandomizer = NewSeededInputRandomizer(parameters, 1, 64, nameGenerator, logger)
 
 		inputs, err := inputRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())

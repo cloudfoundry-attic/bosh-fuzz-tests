@@ -81,12 +81,13 @@ func main() {
 	renderer := bftdeployment.NewRenderer(fs)
 
 	var randomizer bftdeployment.InputRandomizer
+	nameGenerator := bftdeployment.NewNameGenerator()
 
 	if len(os.Args) == 3 {
 		seed, _ := strconv.ParseInt(os.Args[2], 10, 64)
-		randomizer = bftdeployment.NewSeededInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, logger)
+		randomizer = bftdeployment.NewSeededInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, nameGenerator, logger)
 	} else {
-		randomizer = bftdeployment.NewInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, logger)
+		randomizer = bftdeployment.NewInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
 	}
 
 	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, randomizer, fs)

@@ -47,7 +47,8 @@ var _ = Describe("Deployer", func() {
 		}
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
-		inputRandomizer := NewSeededInputRandomizer(parameters, 2, 64, logger)
+		nameGenerator := NewNameGenerator()
+		inputRandomizer := NewSeededInputRandomizer(parameters, 2, 64, nameGenerator, logger)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputRandomizer, fs)
 	})
 

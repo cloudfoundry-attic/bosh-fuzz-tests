@@ -20,22 +20,22 @@ type inputRandomizer struct {
 	logger                    boshlog.Logger
 }
 
-func NewSeededInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, seed int64, logger boshlog.Logger) InputRandomizer {
+func NewSeededInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, seed int64, nameGenerator NameGenerator, logger boshlog.Logger) InputRandomizer {
 	return &inputRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
 		seed:          seed,
-		nameGenerator: NewNameGenerator(),
+		nameGenerator: nameGenerator,
 		logger:        logger,
 	}
 }
 
-func NewInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, logger boshlog.Logger) InputRandomizer {
+func NewInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, nameGenerator NameGenerator, logger boshlog.Logger) InputRandomizer {
 	return &inputRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
 		seed:          time.Now().Unix(),
-		nameGenerator: NewNameGenerator(),
+		nameGenerator: nameGenerator,
 		logger:        logger,
 	}
 }
