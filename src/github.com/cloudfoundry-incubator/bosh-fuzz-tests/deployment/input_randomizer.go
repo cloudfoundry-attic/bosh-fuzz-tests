@@ -87,6 +87,13 @@ func (ir *inputRandomizer) generateInput(jobNames []string, migratingDeployment 
 			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
 		}
 
+		// Workaround for this bug #108499370, migrating job and destination job cannot have nil az
+		if migratingDeployment {
+			for job.AvailabilityZones == nil {
+				job.AvailabilityZones = ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))]
+			}
+		}
+
 		persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
 		if persistentDiskSize != 0 {
 			if persistentDiskDefinition == "disk_pool" {
@@ -115,7 +122,6 @@ func (ir *inputRandomizer) generateInput(jobNames []string, migratingDeployment 
 
 		if job.AvailabilityZones == nil {
 			job.Network = "no-az"
-
 		} else {
 			job.Network = "default"
 		}

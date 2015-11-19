@@ -100,7 +100,8 @@ var _ = Describe("InputRandomizer", func() {
 		}))
 	})
 
-	It("when migrated job does not have az it sets random az in migrated_from", func() {
+	// Pending until #108499370
+	PIt("when migrated job does not have az it sets random az in migrated_from", func() {
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5},
 			Instances:                []int{2},
