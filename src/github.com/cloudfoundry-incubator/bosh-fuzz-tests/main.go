@@ -80,17 +80,20 @@ func main() {
 	logger.Debug("main", "Starting deploy")
 	renderer := bftdeployment.NewRenderer(fs)
 
-	var randomizer bftdeployment.InputRandomizer
+	var jobsRandomizer bftdeployment.JobsRandomizer
+	var networksAssigner bftdeployment.NetworksAssigner
 	nameGenerator := bftdeployment.NewNameGenerator()
 
 	if len(os.Args) == 3 {
 		seed, _ := strconv.ParseInt(os.Args[2], 10, 64)
-		randomizer = bftdeployment.NewSeededInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, nameGenerator, logger)
+		jobsRandomizer = bftdeployment.NewSeededJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, nameGenerator, logger)
+		networksAssigner = bftdeployment.NewSeededNetworksAssigner(seed)
 	} else {
-		randomizer = bftdeployment.NewInputRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
+		jobsRandomizer = bftdeployment.NewJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
+		networksAssigner = bftdeployment.NewNetworksAssigner()
 	}
 
-	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, randomizer, fs)
+	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs)
 	err = deployer.RunDeploys()
 	if err != nil {
 		panic(err)

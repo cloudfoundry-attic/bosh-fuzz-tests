@@ -54,6 +54,15 @@ var _ = Describe("Manifest/Renderer", func() {
 						Size: 200,
 					},
 				},
+				Networks: []NetworkConfig{
+					{
+						Name:              "default",
+						AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
+					},
+					{
+						Name: "no-az",
+					},
+				},
 			},
 		}
 
@@ -176,10 +185,19 @@ disk_pools:
 				DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
 				Jobs: []Job{
 					{
-						Name:              "foo-job",
-						Instances:         5,
-						AvailabilityZones: nil,
-						Network:           "default",
+						Name:      "foo-job",
+						Instances: 5,
+						Network:   "default",
+					},
+				},
+				CloudConfig: CloudConfig{
+					Networks: []NetworkConfig{
+						{
+							Name: "default",
+						},
+						{
+							Name: "no-az",
+						},
 					},
 				},
 			}
@@ -265,7 +283,6 @@ vm_types:
 				{
 					Name:               "foo-job",
 					Instances:          5,
-					AvailabilityZones:  nil,
 					PersistentDiskPool: "fast-disks",
 					Network:            "default",
 				},
@@ -275,6 +292,14 @@ vm_types:
 					{
 						Name: "fast-disks",
 						Size: 100,
+					},
+				},
+				Networks: []NetworkConfig{
+					{
+						Name: "default",
+					},
+					{
+						Name: "no-az",
 					},
 				},
 			},
@@ -366,7 +391,6 @@ disk_pools:
 				{
 					Name:               "foo-job",
 					Instances:          5,
-					AvailabilityZones:  nil,
 					PersistentDiskType: "fast-disks",
 					Network:            "default",
 				},
@@ -376,6 +400,14 @@ disk_pools:
 					{
 						Name: "fast-disks",
 						Size: 100,
+					},
+				},
+				Networks: []NetworkConfig{
+					{
+						Name: "default",
+					},
+					{
+						Name: "no-az",
 					},
 				},
 			},

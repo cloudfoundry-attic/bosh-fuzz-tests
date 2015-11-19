@@ -29,6 +29,7 @@ type CloudConfig struct {
 	AvailabilityZones   []string
 	PersistentDiskPools []DiskConfig
 	PersistentDiskTypes []DiskConfig
+	Networks            []NetworkConfig
 }
 
 type DiskConfig struct {
@@ -39,6 +40,11 @@ type DiskConfig struct {
 type MigratedFromConfig struct {
 	Name             string
 	AvailabilityZone string
+}
+
+type NetworkConfig struct {
+	Name              string
+	AvailabilityZones []string
 }
 
 type Renderer interface {

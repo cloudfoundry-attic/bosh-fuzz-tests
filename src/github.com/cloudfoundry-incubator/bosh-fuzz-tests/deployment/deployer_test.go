@@ -48,8 +48,9 @@ var _ = Describe("Deployer", func() {
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator := NewNameGenerator()
-		inputRandomizer := NewSeededInputRandomizer(parameters, 2, 64, nameGenerator, logger)
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputRandomizer, fs)
+		jobsRandomizer := NewSeededJobsRandomizer(parameters, 2, 64, nameGenerator, logger)
+		networksAssigner := NewSeededNetworksAssigner(5)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs)
 	})
 
 	It("runs deploys with generated manifests", func() {

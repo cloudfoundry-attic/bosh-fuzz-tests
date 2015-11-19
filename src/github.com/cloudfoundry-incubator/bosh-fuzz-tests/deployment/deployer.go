@@ -12,26 +12,30 @@ type Deployer interface {
 }
 
 type deployer struct {
-	cliRunner    bltclirunner.Runner
-	directorInfo bltaction.DirectorInfo
-	renderer     Renderer
-	randomizer   InputRandomizer
-	fs           boshsys.FileSystem
+	cliRunner        bltclirunner.Runner
+	directorInfo     bltaction.DirectorInfo
+	renderer         Renderer
+	jobsRandomizer   JobsRandomizer
+	networksAssigner NetworksAssigner
+
+	fs boshsys.FileSystem
 }
 
 func NewDeployer(
 	cliRunner bltclirunner.Runner,
 	directorInfo bltaction.DirectorInfo,
 	renderer Renderer,
-	randomizer InputRandomizer,
+	jobsRandomizer JobsRandomizer,
+	networksAssigner NetworksAssigner,
 	fs boshsys.FileSystem,
 ) Deployer {
 	return &deployer{
-		cliRunner:    cliRunner,
-		directorInfo: directorInfo,
-		renderer:     renderer,
-		randomizer:   randomizer,
-		fs:           fs,
+		cliRunner:        cliRunner,
+		directorInfo:     directorInfo,
+		renderer:         renderer,
+		jobsRandomizer:   jobsRandomizer,
+		networksAssigner: networksAssigner,
+		fs:               fs,
 	}
 }
 
@@ -40,18 +44,20 @@ func (d *deployer) RunDeploys() error {
 	if err != nil {
 		return err
 	}
-	// defer d.fs.RemoveAll(manifestPath.Name())
+	defer d.fs.RemoveAll(manifestPath.Name())
 
 	cloudConfigPath, err := d.fs.TempFile("cloud-config")
 	if err != nil {
 		return err
 	}
-	// defer d.fs.RemoveAll(cloudConfigPath.Name())
+	defer d.fs.RemoveAll(cloudConfigPath.Name())
 
-	inputs, err := d.randomizer.Generate()
+	inputs, err := d.jobsRandomizer.Generate()
 	if err != nil {
 		return err
 	}
+
+	d.networksAssigner.Assign(inputs)
 
 	for _, input := range inputs {
 		input.DirectorUUID = d.directorInfo.UUID

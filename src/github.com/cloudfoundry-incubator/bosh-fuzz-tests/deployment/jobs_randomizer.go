@@ -8,11 +8,11 @@ import (
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
-type InputRandomizer interface {
+type JobsRandomizer interface {
 	Generate() ([]Input, error)
 }
 
-type inputRandomizer struct {
+type jobsRandomizer struct {
 	parameters                bftconfig.Parameters
 	numberOfConsequentDeploys int
 	seed                      int64
@@ -20,8 +20,8 @@ type inputRandomizer struct {
 	logger                    boshlog.Logger
 }
 
-func NewSeededInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, seed int64, nameGenerator NameGenerator, logger boshlog.Logger) InputRandomizer {
-	return &inputRandomizer{
+func NewSeededJobsRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, seed int64, nameGenerator NameGenerator, logger boshlog.Logger) JobsRandomizer {
+	return &jobsRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
 		seed:          seed,
@@ -30,8 +30,8 @@ func NewSeededInputRandomizer(parameters bftconfig.Parameters, numberOfConsequen
 	}
 }
 
-func NewInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, nameGenerator NameGenerator, logger boshlog.Logger) InputRandomizer {
-	return &inputRandomizer{
+func NewJobsRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, nameGenerator NameGenerator, logger boshlog.Logger) JobsRandomizer {
+	return &jobsRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
 		seed:          time.Now().Unix(),
@@ -40,8 +40,8 @@ func NewInputRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeplo
 	}
 }
 
-func (ir *inputRandomizer) Generate() ([]Input, error) {
-	ir.logger.Info("inputRandomizer", "Seeding with %d", ir.seed)
+func (ir *jobsRandomizer) Generate() ([]Input, error) {
+	ir.logger.Info("jobsRandomizer", "Seeding with %d", ir.seed)
 
 	rand.Seed(ir.seed)
 
@@ -72,7 +72,7 @@ func (ir *inputRandomizer) Generate() ([]Input, error) {
 	return inputs, nil
 }
 
-func (ir *inputRandomizer) generateInput(jobNames []string, migratingDeployment bool) Input {
+func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment bool) Input {
 	input := Input{
 		Jobs: []Job{},
 	}
@@ -120,12 +120,6 @@ func (ir *inputRandomizer) generateInput(jobNames []string, migratingDeployment 
 			azs[az] = true
 		}
 
-		if job.AvailabilityZones == nil {
-			job.Network = "no-az"
-		} else {
-			job.Network = "default"
-		}
-
 		if !migratingDeployment {
 			migratedFromCount := ir.parameters.MigratedFromCount[rand.Intn(len(ir.parameters.MigratedFromCount))]
 			for i := 0; i < migratedFromCount; i++ {
@@ -140,7 +134,7 @@ func (ir *inputRandomizer) generateInput(jobNames []string, migratingDeployment 
 	return input
 }
 
-func (ir *inputRandomizer) generateJobNames(i int, inputs []Input) []string {
+func (ir *jobsRandomizer) generateJobNames(i int, inputs []Input) []string {
 	numberOfJobs := ir.parameters.NumberOfJobs[rand.Intn(len(ir.parameters.NumberOfJobs))]
 	jobNames := []string{}
 
@@ -160,7 +154,7 @@ func (ir *inputRandomizer) generateJobNames(i int, inputs []Input) []string {
 	return jobNames
 }
 
-func (ir *inputRandomizer) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput Input, currentInput Input) {
+func (ir *jobsRandomizer) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput Input, currentInput Input) {
 	for _, migratingJob := range migratingInput.Jobs {
 		if migratingJob.AvailabilityZones == nil {
 			for k, job := range currentInput.Jobs {

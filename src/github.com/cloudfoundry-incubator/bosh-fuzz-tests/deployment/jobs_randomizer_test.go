@@ -10,9 +10,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("InputRandomizer", func() {
+var _ = Describe("JobsRandomizer", func() {
 	var (
-		inputRandomizer InputRandomizer
+		jobsRandomizer JobsRandomizer
 	)
 
 	It("generates extra input for migrated jobs", func() {
@@ -27,9 +27,9 @@ var _ = Describe("InputRandomizer", func() {
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator := NewNameGenerator()
-		inputRandomizer = NewSeededInputRandomizer(parameters, 2, 64, nameGenerator, logger)
+		jobsRandomizer = NewSeededJobsRandomizer(parameters, 2, 64, nameGenerator, logger)
 
-		inputs, err := inputRandomizer.Generate()
+		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(inputs).To(Equal([]Input{
@@ -39,13 +39,11 @@ var _ = Describe("InputRandomizer", func() {
 						Name:              "joNAw",
 						Instances:         4,
 						AvailabilityZones: []string{"z1"},
-						Network:           "default",
 					},
 					{
 						Name:              "gQ8el",
 						Instances:         4,
 						AvailabilityZones: []string{"z1", "z2"},
-						Network:           "default",
 					},
 				},
 				CloudConfig: CloudConfig{
@@ -59,14 +57,12 @@ var _ = Describe("InputRandomizer", func() {
 						Instances:          4,
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "gBUnQKBYoE",
-						Network:            "default",
 					},
 					{
 						Name:               "pRWDsiO5Qu",
 						Instances:          4,
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "a5gmsYqE7Y",
-						Network:            "default",
 					},
 				},
 				CloudConfig: CloudConfig{
@@ -84,7 +80,6 @@ var _ = Describe("InputRandomizer", func() {
 						Instances:          4,
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "eagRjDTBs3",
-						Network:            "default",
 						MigratedFrom: []MigratedFromConfig{
 							{Name: "rU3YND0xNg"},
 							{Name: "pRWDsiO5Qu"},
@@ -114,9 +109,9 @@ var _ = Describe("InputRandomizer", func() {
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator := NewNameGenerator()
-		inputRandomizer = NewSeededInputRandomizer(parameters, 1, 64, nameGenerator, logger)
+		jobsRandomizer = NewSeededJobsRandomizer(parameters, 1, 64, nameGenerator, logger)
 
-		inputs, err := inputRandomizer.Generate()
+		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(inputs).To(Equal([]Input{
@@ -125,7 +120,6 @@ var _ = Describe("InputRandomizer", func() {
 					{
 						Name:      "vgrKicN3O2",
 						Instances: 2,
-						Network:   "no-az",
 					},
 				},
 			},
@@ -134,7 +128,6 @@ var _ = Describe("InputRandomizer", func() {
 					{
 						Name:              "joNAw",
 						Instances:         2,
-						Network:           "default",
 						AvailabilityZones: []string{"z1"},
 						MigratedFrom: []MigratedFromConfig{
 							{Name: "vgrKicN3O2", AvailabilityZone: "z1"},
