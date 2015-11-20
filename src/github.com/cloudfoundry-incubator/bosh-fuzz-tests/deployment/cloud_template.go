@@ -19,10 +19,10 @@ networks:{{ range .CloudConfig.Networks }}
     - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}
 
 compilation:
-  workers: 1{{ with index .CloudConfig.Networks 0 }}
-  network: {{ .Name }}
-  cloud_properties: {}{{ with index .Subnets 0 }}{{ if .AvailabilityZones }}
-  az: {{ index .AvailabilityZones 0 }}{{ end }}{{ end }}{{ end }}
+  workers: 1
+  network: {{ .CloudConfig.CompilationNetwork }}
+  cloud_properties: {}{{ if .CloudConfig.CompilationAvailabilityZone }}
+  az: {{ .CloudConfig.CompilationAvailabilityZone }}{{ end }}
 
 vm_types:
 - name: default

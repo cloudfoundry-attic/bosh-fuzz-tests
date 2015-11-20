@@ -80,6 +80,8 @@ var _ = Describe("Manifest/Renderer", func() {
 						},
 					},
 				},
+				CompilationNetwork:          "default",
+				CompilationAvailabilityZone: "z1",
 			},
 		}
 
@@ -228,6 +230,7 @@ disk_pools:
 							},
 						},
 					},
+					CompilationNetwork: "default",
 				},
 			}
 
@@ -341,6 +344,7 @@ vm_types:
 						},
 					},
 				},
+				CompilationNetwork: "default",
 			},
 		}
 
@@ -459,6 +463,7 @@ disk_pools:
 						},
 					},
 				},
+				CompilationNetwork: "default",
 			},
 		}
 

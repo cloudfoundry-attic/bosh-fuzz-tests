@@ -40,21 +40,25 @@ func (n *networksAssigner) Assign(inputs []Input) {
 	for i, _ := range inputs {
 		networkPoolWithAzs := []NetworkConfig{}
 		networkTypes := n.networks[rand.Intn(len(n.networks))]
+
 		for _, networkType := range networkTypes {
-			networkPoolWithAzs = append(networkPoolWithAzs, NetworkConfig{
+			network := NetworkConfig{
 				Name: n.nameGenerator.Generate(7),
 				Type: networkType,
-			})
+			}
+			networkPoolWithAzs = append(networkPoolWithAzs, network)
 		}
 
 		networkPoolWithoutAzs := []NetworkConfig{}
 		networkTypes = n.networks[rand.Intn(len(n.networks))]
 		for _, networkType := range networkTypes {
-			networkPoolWithoutAzs = append(networkPoolWithoutAzs, NetworkConfig{
+			network := NetworkConfig{
 				Name: n.nameGenerator.Generate(7),
 				Type: networkType,
-			})
+			}
+			networkPoolWithoutAzs = append(networkPoolWithoutAzs, network)
 		}
+
 		// TODO: shuffle networks
 
 		for j, job := range inputs[i].Jobs {
@@ -66,10 +70,25 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			}
 		}
 
+		compilationNetworks := []NetworkConfig{}
 		for _, network := range append(networkPoolWithAzs, networkPoolWithoutAzs...) {
 			if len(network.Subnets) > 0 || network.Type == "vip" {
 				inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
+
+				if network.Type != "vip" {
+					compilationNetworks = append(compilationNetworks, network)
+				}
 			}
+		}
+
+		compilationNetwork := compilationNetworks[rand.Intn(len(compilationNetworks))]
+		inputs[i].CloudConfig.CompilationNetwork = compilationNetwork.Name
+		azs := []string{}
+		for _, s := range compilationNetwork.Subnets {
+			azs = append(azs, s.AvailabilityZones...)
+		}
+		if len(azs) > 0 {
+			inputs[i].CloudConfig.CompilationAvailabilityZone = azs[rand.Intn(len(azs))]
 		}
 	}
 }

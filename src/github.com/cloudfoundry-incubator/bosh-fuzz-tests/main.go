@@ -44,13 +44,17 @@ func main() {
 	assetsProvider := bltassets.NewProvider(envConfig.AssetsPath)
 
 	logger.Debug("main", "Setting up environment")
+
 	environmentProvider := bltenv.NewProvider(envConfig, fs, cmdRunner, assetsProvider)
 	environment := environmentProvider.Get()
-	err = environment.Setup()
-	if err != nil {
-		panic(err)
+
+	if !envConfig.GenerateManifestOnly {
+		err = environment.Setup()
+		if err != nil {
+			panic(err)
+		}
+		defer environment.Shutdown()
 	}
-	defer environment.Shutdown()
 
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
@@ -62,7 +66,17 @@ func main() {
 	}()
 
 	cliRunnerFactory := bltclirunner.NewFactory(envConfig.CliCmd, cmdRunner, fs)
-	directorInfo, err := bltaction.NewDirectorInfo(environment.DirectorURL(), cliRunnerFactory)
+
+	var directorInfo bltaction.DirectorInfo
+	if envConfig.GenerateManifestOnly {
+		directorInfo = bltaction.DirectorInfo{
+			UUID: "blah",
+			URL:  "xxx",
+		}
+	} else {
+		directorInfo, err = bltaction.NewDirectorInfo(environment.DirectorURL(), cliRunnerFactory)
+	}
+
 	if err != nil {
 		panic(err)
 	}
@@ -70,11 +84,13 @@ func main() {
 	cliRunner.Configure()
 	defer cliRunner.Clean()
 
-	logger.Debug("main", "Preparing to deploy")
-	preparer := bftdeployment.NewPreparer(directorInfo, cliRunner, fs, assetsProvider)
-	err = preparer.Prepare()
-	if err != nil {
-		panic(err)
+	if !envConfig.GenerateManifestOnly {
+		logger.Debug("main", "Preparing to deploy")
+		preparer := bftdeployment.NewPreparer(directorInfo, cliRunner, fs, assetsProvider)
+		err = preparer.Prepare()
+		if err != nil {
+			panic(err)
+		}
 	}
 
 	logger.Debug("main", "Starting deploy")
@@ -93,7 +109,7 @@ func main() {
 		networksAssigner = bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator)
 	}
 
-	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs)
+	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, envConfig.GenerateManifestOnly)
 	err = deployer.RunDeploys()
 	if err != nil {
 		panic(err)

@@ -12,13 +12,13 @@ type Deployer interface {
 }
 
 type deployer struct {
-	cliRunner        bltclirunner.Runner
-	directorInfo     bltaction.DirectorInfo
-	renderer         Renderer
-	jobsRandomizer   JobsRandomizer
-	networksAssigner NetworksAssigner
-
-	fs boshsys.FileSystem
+	cliRunner            bltclirunner.Runner
+	directorInfo         bltaction.DirectorInfo
+	renderer             Renderer
+	jobsRandomizer       JobsRandomizer
+	networksAssigner     NetworksAssigner
+	fs                   boshsys.FileSystem
+	generateManifestOnly bool
 }
 
 func NewDeployer(
@@ -28,14 +28,16 @@ func NewDeployer(
 	jobsRandomizer JobsRandomizer,
 	networksAssigner NetworksAssigner,
 	fs boshsys.FileSystem,
+	generateManifestOnly bool,
 ) Deployer {
 	return &deployer{
-		cliRunner:        cliRunner,
-		directorInfo:     directorInfo,
-		renderer:         renderer,
-		jobsRandomizer:   jobsRandomizer,
-		networksAssigner: networksAssigner,
-		fs:               fs,
+		cliRunner:            cliRunner,
+		directorInfo:         directorInfo,
+		renderer:             renderer,
+		jobsRandomizer:       jobsRandomizer,
+		networksAssigner:     networksAssigner,
+		fs:                   fs,
+		generateManifestOnly: generateManifestOnly,
 	}
 }
 
@@ -67,20 +69,22 @@ func (d *deployer) RunDeploys() error {
 			return err
 		}
 
-		err = d.cliRunner.RunWithArgs("update", "cloud-config", cloudConfigPath.Name())
-		if err != nil {
-			return err
-		}
+		if !d.generateManifestOnly {
+			err = d.cliRunner.RunWithArgs("update", "cloud-config", cloudConfigPath.Name())
+			if err != nil {
+				return err
+			}
 
-		err = d.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-		if err != nil {
-			return err
-		}
+			err = d.cliRunner.RunWithArgs("deployment", manifestPath.Name())
+			if err != nil {
+				return err
+			}
 
-		deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
-		err = deployWrapper.RunWithDebug("deploy")
-		if err != nil {
-			return err
+			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
+			err = deployWrapper.RunWithDebug("deploy")
+			if err != nil {
+				return err
+			}
 		}
 	}
 

@@ -18,10 +18,12 @@ type Job struct {
 }
 
 type CloudConfig struct {
-	AvailabilityZones   []string
-	PersistentDiskPools []DiskConfig
-	PersistentDiskTypes []DiskConfig
-	Networks            []NetworkConfig
+	AvailabilityZones           []string
+	PersistentDiskPools         []DiskConfig
+	PersistentDiskTypes         []DiskConfig
+	Networks                    []NetworkConfig
+	CompilationNetwork          string
+	CompilationAvailabilityZone string
 }
 
 type DiskConfig struct {

@@ -52,7 +52,7 @@ var _ = Describe("Deployer", func() {
 		nameGenerator := NewNameGenerator()
 		jobsRandomizer := NewSeededJobsRandomizer(parameters, 2, 64, nameGenerator, logger)
 		networksAssigner := NewSeededNetworksAssigner(networks, nameGenerator, 5)
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, false)
 	})
 
 	It("runs deploys with generated manifests", func() {

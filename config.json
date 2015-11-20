@@ -19,5 +19,6 @@
     "migrated_from_count": [0, 1, 2],
     "networks": [["dynamic"], ["dynamic", "vip"], ["manual"], ["manual", "manual"]]
   },
-  "number_of_consequent_deploys": 10
+  "number_of_consequent_deploys": 10,
+  "generate_manifest_only": false
 }
