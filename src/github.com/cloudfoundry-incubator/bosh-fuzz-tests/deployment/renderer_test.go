@@ -33,14 +33,24 @@ var _ = Describe("Manifest/Renderer", func() {
 					Instances:          5,
 					AvailabilityZones:  []string{"z1", "z2"},
 					PersistentDiskSize: 100,
-					Networks:           []JobNetworkConfig{{Name: "default"}},
+					Networks: []JobNetworkConfig{
+						{
+							Name:          "default",
+							DefaultDNSnGW: true,
+						},
+					},
 				},
 				{
 					Name:               "bar-job",
 					Instances:          2,
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
-					Networks:           []JobNetworkConfig{{Name: "default"}},
+					Networks: []JobNetworkConfig{
+						{
+							Name:          "default",
+							DefaultDNSnGW: true,
+						},
+					},
 					MigratedFrom: []MigratedFromConfig{
 						{Name: "baz-job", AvailabilityZone: "z5"},
 					},
@@ -57,12 +67,14 @@ var _ = Describe("Manifest/Renderer", func() {
 				Networks: []NetworkConfig{
 					{
 						Name: "default",
+						Type: "manual",
 						Subnets: []SubnetConfig{
 							{AvailabilityZones: []string{"z1", "z2", "z3", "z4"}},
 						},
 					},
 					{
 						Name: "no-az",
+						Type: "dynamic",
 						Subnets: []SubnetConfig{
 							{},
 						},
@@ -107,6 +119,7 @@ jobs:
     release: foo-release
   networks:
   - name: default
+    default: [dns, gateway]
 - name: bar-job
   instances: 2
   vm_type: default
@@ -123,6 +136,7 @@ jobs:
     release: foo-release
   networks:
   - name: default
+    default: [dns, gateway]
 `
 
 		manifestContents, err := fs.ReadFileString(manifestPath)
@@ -142,9 +156,10 @@ azs:
 
 networks:
 - name: default
+  type: manual
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
@@ -155,9 +170,10 @@ networks:
     - z3
     - z4
 - name: no-az
+  type: dynamic
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
@@ -199,12 +215,14 @@ disk_pools:
 					Networks: []NetworkConfig{
 						{
 							Name: "default",
+							Type: "manual",
 							Subnets: []SubnetConfig{
 								{},
 							},
 						},
 						{
 							Name: "no-az",
+							Type: "dynamic",
 							Subnets: []SubnetConfig{
 								{},
 							},
@@ -255,17 +273,19 @@ jobs:
 
 networks:
 - name: default
+  type: manual
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
     cloud_properties: {}
 - name: no-az
+  type: dynamic
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
@@ -308,12 +328,14 @@ vm_types:
 				Networks: []NetworkConfig{
 					{
 						Name: "default",
+						Type: "manual",
 						Subnets: []SubnetConfig{
 							{},
 						},
 					},
 					{
 						Name: "no-az",
+						Type: "dynamic",
 						Subnets: []SubnetConfig{
 							{},
 						},
@@ -365,17 +387,19 @@ jobs:
 
 networks:
 - name: default
+  type: manual
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
     cloud_properties: {}
 - name: no-az
+  type: dynamic
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
@@ -422,12 +446,14 @@ disk_pools:
 				Networks: []NetworkConfig{
 					{
 						Name: "default",
+						Type: "manual",
 						Subnets: []SubnetConfig{
 							{},
 						},
 					},
 					{
 						Name: "no-az",
+						Type: "dynamic",
 						Subnets: []SubnetConfig{
 							{},
 						},
@@ -479,17 +505,19 @@ jobs:
 
 networks:
 - name: default
+  type: manual
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []
     cloud_properties: {}
 - name: no-az
+  type: dynamic
   subnets:
-  - range: "192.168.1.0/24"
-    gateway: "192.168.1.1"
+  - range: 
+    gateway: 
     dns: ["8.8.8.8"]
     static: []
     reserved: []

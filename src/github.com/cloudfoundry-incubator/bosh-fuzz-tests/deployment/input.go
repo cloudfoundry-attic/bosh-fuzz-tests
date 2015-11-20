@@ -47,5 +47,6 @@ type SubnetConfig struct {
 }
 
 type JobNetworkConfig struct {
-	Name string
+	Name          string
+	DefaultDNSnGW bool
 }

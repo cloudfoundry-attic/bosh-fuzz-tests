@@ -48,7 +48,10 @@ var _ = Describe("NetworksAssigner", func() {
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
 						Networks: []JobNetworkConfig{
-							{Name: "foo-net"},
+							{
+								Name:          "foo-net",
+								DefaultDNSnGW: true,
+							},
 						},
 					},
 				},
@@ -103,7 +106,10 @@ var _ = Describe("NetworksAssigner", func() {
 						Instances:         1,
 						AvailabilityZones: []string{"z1"},
 						Networks: []JobNetworkConfig{
-							{Name: "foo-net"},
+							{
+								Name:          "foo-net",
+								DefaultDNSnGW: true,
+							},
 						},
 					},
 					{
@@ -111,7 +117,10 @@ var _ = Describe("NetworksAssigner", func() {
 						Instances:         1,
 						AvailabilityZones: []string{"z2"},
 						Networks: []JobNetworkConfig{
-							{Name: "foo-net"},
+							{
+								Name:          "foo-net",
+								DefaultDNSnGW: true,
+							},
 						},
 					},
 				},

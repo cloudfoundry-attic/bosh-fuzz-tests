@@ -37,5 +37,6 @@ jobs:{{ range .Jobs }}
   - name: simple
     release: foo-release
   networks:{{ range .Networks }}
-  - name: {{ .Name }}{{ end }}{{ end }}
+  - name: {{ .Name }}{{ if .DefaultDNSnGW }}
+    default: [dns, gateway]{{ end }}{{ end }}{{ end }}
 `

@@ -41,12 +41,13 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		networkPool := []NetworkConfig{}
 		networkTypes := n.networks[rand.Intn(len(n.networks))]
 		for _, networkType := range networkTypes {
-			networkName := n.nameGenerator.Generate(10)
+			networkName := n.nameGenerator.Generate(7)
 			networkPool = append(networkPool, NetworkConfig{
 				Name: networkName,
 				Type: networkType,
 			})
 		}
+		// TODO: shuffle networks
 
 		for j, job := range inputs[i].Jobs {
 			totalNumberOfJobNetworks := rand.Intn(len(networkPool)) + 1
@@ -54,7 +55,8 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			for _, k := range networksToPick {
 				network := networkPool[k]
 				inputs[i].Jobs[j].Networks = append(inputs[i].Jobs[j].Networks, JobNetworkConfig{Name: network.Name})
-				if job.AvailabilityZones != nil {
+
+				if network.Type != "vip" {
 					subnet := SubnetConfig{AvailabilityZones: job.AvailabilityZones}
 					ipPool := n.ipPoolProvider.NewIpPool()
 
@@ -66,10 +68,13 @@ func (n *networksAssigner) Assign(inputs []Input) {
 				// TODO: handle nil azs
 				// TODO: reuse same subnet with all azs
 			}
+			inputs[i].Jobs[j].Networks[rand.Intn(totalNumberOfJobNetworks)].DefaultDNSnGW = true
 		}
 
 		for _, network := range networkPool {
-			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
+			if len(network.Subnets) > 0 || network.Type == "vip" {
+				inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
+			}
 		}
 	}
 }
