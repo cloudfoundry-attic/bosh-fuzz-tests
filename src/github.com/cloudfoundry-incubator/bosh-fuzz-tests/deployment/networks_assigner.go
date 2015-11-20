@@ -50,25 +50,7 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		// TODO: shuffle networks
 
 		for j, job := range inputs[i].Jobs {
-			totalNumberOfJobNetworks := rand.Intn(len(networkPool)) + 1
-			networksToPick := rand.Perm(len(networkPool))[:totalNumberOfJobNetworks]
-			for _, k := range networksToPick {
-				network := networkPool[k]
-				inputs[i].Jobs[j].Networks = append(inputs[i].Jobs[j].Networks, JobNetworkConfig{Name: network.Name})
-
-				if network.Type != "vip" {
-					subnet := SubnetConfig{AvailabilityZones: job.AvailabilityZones}
-					ipPool := n.ipPoolProvider.NewIpPool()
-
-					subnet.IpRange = ipPool.IpRange
-					subnet.Gateway = ipPool.Gateway
-
-					networkPool[k].Subnets = append(networkPool[k].Subnets, subnet)
-				}
-				// TODO: handle nil azs
-				// TODO: reuse same subnet with all azs
-			}
-			inputs[i].Jobs[j].Networks[rand.Intn(totalNumberOfJobNetworks)].DefaultDNSnGW = true
+			inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPool, job.AvailabilityZones)
 		}
 
 		for _, network := range networkPool {
@@ -77,4 +59,31 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			}
 		}
 	}
+}
+
+func (n *networksAssigner) generateJobNetworks(networkPool []NetworkConfig, azs []string) []JobNetworkConfig {
+	jobNetworks := []JobNetworkConfig{}
+
+	totalNumberOfJobNetworks := rand.Intn(len(networkPool)) + 1
+	networksToPick := rand.Perm(len(networkPool))[:totalNumberOfJobNetworks]
+	for _, k := range networksToPick {
+		network := networkPool[k]
+		jobNetworks = append(jobNetworks, JobNetworkConfig{Name: network.Name})
+
+		if network.Type != "vip" {
+			subnet := SubnetConfig{AvailabilityZones: azs}
+			ipPool := n.ipPoolProvider.NewIpPool()
+
+			subnet.IpRange = ipPool.IpRange
+			subnet.Gateway = ipPool.Gateway
+
+			networkPool[k].Subnets = append(networkPool[k].Subnets, subnet)
+		}
+		// TODO: handle nil azs
+		// TODO: reuse same subnet with all azs
+	}
+
+	jobNetworks[rand.Intn(totalNumberOfJobNetworks)].DefaultDNSnGW = true
+
+	return jobNetworks
 }
