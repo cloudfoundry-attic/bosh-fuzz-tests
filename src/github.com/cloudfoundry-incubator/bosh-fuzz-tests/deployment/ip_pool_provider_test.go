@@ -27,5 +27,9 @@ var _ = Describe("IpPoolProvider", func() {
 			ipPool = ipPoolProvider.NewIpPool()
 			Expect(ipPool.IpRange).To(Equal("192.168.2.0/24"))
 		})
+		It("alternates gateway's last IP between .1 and .254", func() {
+			ipPool := ipPoolProvider.NewIpPool()
+			Expect(ipPool.IpRange).To(Equal("192.168.0.0/24"))
+		})
 	})
 })

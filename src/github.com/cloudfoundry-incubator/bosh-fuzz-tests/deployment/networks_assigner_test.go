@@ -140,7 +140,7 @@ var _ = Describe("NetworksAssigner", func() {
 								},
 								{
 									IpRange:           "192.168.1.0/24",
-									Gateway:           "192.168.1.1",
+									Gateway:           "192.168.1.254",
 									AvailabilityZones: []string{"z2"},
 								},
 							},

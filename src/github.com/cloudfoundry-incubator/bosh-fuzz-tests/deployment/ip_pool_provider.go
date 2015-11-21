@@ -14,7 +14,8 @@ type IpPoolProvider interface {
 }
 
 type ipPoolProvider struct {
-	called int
+	called             int
+	gatewayFourthOctet int
 }
 
 func NewIpPoolProvider() IpPoolProvider {
@@ -22,8 +23,14 @@ func NewIpPoolProvider() IpPoolProvider {
 }
 
 func (p *ipPoolProvider) NewIpPool() IpPool {
+	if p.gatewayFourthOctet == 1 {
+		p.gatewayFourthOctet = 254
+	} else {
+		p.gatewayFourthOctet = 1
+	}
+
 	ipRange := fmt.Sprintf("192.168.%d.0/24", p.called)
-	gateway := fmt.Sprintf("192.168.%d.1", p.called)
+	gateway := fmt.Sprintf("192.168.%d.%d", p.called, p.gatewayFourthOctet)
 	p.called += 1
 
 	return IpPool{

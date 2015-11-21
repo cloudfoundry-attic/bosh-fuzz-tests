@@ -108,6 +108,7 @@ func (n *networksAssigner) generateJobNetworks(networkPool []NetworkConfig, azs 
 
 			subnet.IpRange = ipPool.IpRange
 			subnet.Gateway = ipPool.Gateway
+			// subnet.Reserved = ipPool.Reserved
 
 			networkPool[k].Subnets = append(networkPool[k].Subnets, subnet)
 		}
