@@ -11,8 +11,6 @@ cd bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests
 To run ginkgo (to test changes):
 
 ```
-export GOPATH=~/go
-export PATH=$GOPATH/bin:$PATh
 go get github.com/onsi/ginkgo
 bin/env ginkgo -r .
 ```
