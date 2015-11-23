@@ -9,26 +9,23 @@ type NetworksAssigner interface {
 }
 
 type networksAssigner struct {
-	networks       [][]string
-	nameGenerator  NameGenerator
-	ipPoolProvider IpPoolProvider
-	seed           int64
+	networks      [][]string
+	nameGenerator NameGenerator
+	seed          int64
 }
 
 func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator) NetworksAssigner {
 	return &networksAssigner{
-		networks:       networks,
-		nameGenerator:  nameGenerator,
-		ipPoolProvider: NewIpPoolProvider(),
+		networks:      networks,
+		nameGenerator: nameGenerator,
 	}
 }
 
 func NewSeededNetworksAssigner(networks [][]string, nameGenerator NameGenerator, seed int64) NetworksAssigner {
 	return &networksAssigner{
-		networks:       networks,
-		nameGenerator:  nameGenerator,
-		ipPoolProvider: NewIpPoolProvider(),
-		seed:           seed,
+		networks:      networks,
+		nameGenerator: nameGenerator,
+		seed:          seed,
 	}
 }
 
@@ -37,21 +34,27 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		rand.Seed(n.seed)
 	}
 
+	ipPoolProvider := NewIpPoolProvider()
+
 	for i, _ := range inputs {
 		networkPoolWithAzs := []NetworkConfig{}
-		networkTypes := n.networks[rand.Intn(len(n.networks))]
+		var networkTypes []string
 
-		for _, networkType := range networkTypes {
-			network := NetworkConfig{
-				Name: n.nameGenerator.Generate(7),
-				Type: networkType,
+		if len(inputs[i].CloudConfig.AvailabilityZones) > 0 {
+			networkTypes = n.networks[rand.Intn(len(n.networks))]
+
+			for _, networkType := range networkTypes {
+				network := NetworkConfig{
+					Name: n.nameGenerator.Generate(7),
+					Type: networkType,
+				}
+				networkPoolWithAzs = append(networkPoolWithAzs, network)
 			}
-			networkPoolWithAzs = append(networkPoolWithAzs, network)
-		}
 
-		for k, network := range networkPoolWithAzs {
-			if network.Type != "vip" {
-				networkPoolWithAzs[k].Subnets = n.generateSubnets(inputs[i].CloudConfig.AvailabilityZones)
+			for k, network := range networkPoolWithAzs {
+				if network.Type != "vip" {
+					networkPoolWithAzs[k].Subnets = n.generateSubnets(inputs[i].CloudConfig.AvailabilityZones)
+				}
 			}
 		}
 
@@ -77,7 +80,7 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		for k, network := range allNetworks {
 			for s, _ := range network.Subnets {
 				if network.Type == "manual" {
-					ipPool := n.ipPoolProvider.NewIpPool()
+					ipPool := ipPoolProvider.NewIpPool()
 					allNetworks[k].Subnets[s].IpRange = ipPool.IpRange
 					allNetworks[k].Subnets[s].Gateway = ipPool.Gateway
 					// subnet.Reserved = ipPool.Reserved
