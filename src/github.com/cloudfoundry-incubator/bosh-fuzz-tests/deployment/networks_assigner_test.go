@@ -69,6 +69,16 @@ var _ = Describe("NetworksAssigner", func() {
 								},
 							},
 						},
+						{
+							Name: "bar-net",
+							Type: "manual",
+							Subnets: []SubnetConfig{
+								{
+									IpRange: "192.168.1.0/24",
+									Gateway: "192.168.1.254",
+								},
+							},
+						},
 					},
 					CompilationNetwork:          "foo-net",
 					CompilationAvailabilityZone: "z1",
@@ -136,13 +146,32 @@ var _ = Describe("NetworksAssigner", func() {
 								{
 									IpRange:           "192.168.0.0/24",
 									Gateway:           "192.168.0.1",
-									AvailabilityZones: []string{"z1", "z2"},
+									AvailabilityZones: []string{"z2"},
+								},
+								{
+									IpRange:           "192.168.1.0/24",
+									Gateway:           "192.168.1.254",
+									AvailabilityZones: []string{"z2", "z1"},
+								},
+							},
+						},
+						{
+							Name: "bar-net",
+							Type: "manual",
+							Subnets: []SubnetConfig{
+								{
+									IpRange: "192.168.2.0/24",
+									Gateway: "192.168.2.1",
+								},
+								{
+									IpRange: "192.168.3.0/24",
+									Gateway: "192.168.3.254",
 								},
 							},
 						},
 					},
 					CompilationNetwork:          "foo-net",
-					CompilationAvailabilityZone: "z2",
+					CompilationAvailabilityZone: "z1",
 				},
 			},
 		},

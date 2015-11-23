@@ -49,6 +49,12 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			networkPoolWithAzs = append(networkPoolWithAzs, network)
 		}
 
+		for k, network := range networkPoolWithAzs {
+			if network.Type != "vip" {
+				networkPoolWithAzs[k].Subnets = n.generateSubnets(inputs[i].CloudConfig.AvailabilityZones)
+			}
+		}
+
 		networkPoolWithoutAzs := []NetworkConfig{}
 		networkTypes = n.networks[rand.Intn(len(n.networks))]
 		for _, networkType := range networkTypes {
@@ -59,20 +65,29 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			networkPoolWithoutAzs = append(networkPoolWithoutAzs, network)
 		}
 
-		// TODO: shuffle networks
-
-		for k, network := range networkPoolWithAzs {
+		for k, network := range networkPoolWithoutAzs {
 			if network.Type != "vip" {
-				networkPoolWithAzs[k].Subnets = n.generateSubnets(inputs[i].CloudConfig.AvailabilityZones)
+				networkPoolWithoutAzs[k].Subnets = n.generateSubnetsWithoutAzs()
+			}
+		}
 
-				for s, _ := range networkPoolWithAzs[k].Subnets {
-					if network.Type == "manual" {
-						ipPool := n.ipPoolProvider.NewIpPool()
-						networkPoolWithAzs[k].Subnets[s].IpRange = ipPool.IpRange
-						networkPoolWithAzs[k].Subnets[s].Gateway = ipPool.Gateway
-						// subnet.Reserved = ipPool.Reserved
-					}
+		compilationNetworks := []NetworkConfig{}
+		allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
+
+		for k, network := range allNetworks {
+			for s, _ := range network.Subnets {
+				if network.Type == "manual" {
+					ipPool := n.ipPoolProvider.NewIpPool()
+					allNetworks[k].Subnets[s].IpRange = ipPool.IpRange
+					allNetworks[k].Subnets[s].Gateway = ipPool.Gateway
+					// subnet.Reserved = ipPool.Reserved
 				}
+			}
+
+			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
+
+			if network.Type != "vip" {
+				compilationNetworks = append(compilationNetworks, network)
 			}
 		}
 
@@ -82,17 +97,6 @@ func (n *networksAssigner) Assign(inputs []Input) {
 
 			} else {
 				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithAzs, job.AvailabilityZones)
-			}
-		}
-
-		compilationNetworks := []NetworkConfig{}
-		for _, network := range append(networkPoolWithAzs, networkPoolWithoutAzs...) {
-			if len(network.Subnets) > 0 || network.Type == "vip" {
-				inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
-
-				if network.Type != "vip" {
-					compilationNetworks = append(compilationNetworks, network)
-				}
 			}
 		}
 
@@ -136,6 +140,17 @@ func (n *networksAssigner) generateSubnets(azs []string) []SubnetConfig {
 	return subnets
 }
 
+func (n *networksAssigner) generateSubnetsWithoutAzs() []SubnetConfig {
+	subnets := []SubnetConfig{}
+	numberOfSubnets := rand.Intn(3) + 1 // up to 3
+
+	for i := 0; i < numberOfSubnets; i++ {
+		subnets = append(subnets, SubnetConfig{})
+	}
+
+	return subnets
+}
+
 func (n *networksAssigner) randomCombination(items []string) []string {
 	combination := []string{}
 	totalNumberOfItems := rand.Intn(len(items)) + 1
@@ -145,30 +160,4 @@ func (n *networksAssigner) randomCombination(items []string) []string {
 	}
 
 	return combination
-}
-
-type PlacedAZs struct {
-	azs map[string]bool
-}
-
-func NewPlacedAZs() *PlacedAZs {
-	return &PlacedAZs{
-		azs: map[string]bool{},
-	}
-}
-
-func (a *PlacedAZs) Place(azs []string) {
-	for _, az := range azs {
-		a.azs[az] = true
-	}
-}
-
-func (a *PlacedAZs) AllPlaced(azs []string) bool {
-	for _, az := range azs {
-		if !a.azs[az] {
-			return false
-		}
-	}
-
-	return true
 }
