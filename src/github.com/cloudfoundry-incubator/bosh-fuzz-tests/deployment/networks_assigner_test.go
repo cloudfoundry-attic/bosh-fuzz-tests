@@ -16,7 +16,7 @@ var _ = Describe("NetworksAssigner", func() {
 	)
 
 	BeforeEach(func() {
-		networks = [][]string{[]string{"dynamic"}}
+		networks = [][]string{[]string{"manual"}}
 		nameGenerator := &fakebftdepl.FakeNameGenerator{}
 		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net"}
 		networksAssigner = NewSeededNetworksAssigner(networks, nameGenerator, 5)
@@ -60,7 +60,7 @@ var _ = Describe("NetworksAssigner", func() {
 					Networks: []NetworkConfig{
 						{
 							Name: "foo-net",
-							Type: "dynamic",
+							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
 									IpRange:           "192.168.0.0/24",
@@ -131,23 +131,18 @@ var _ = Describe("NetworksAssigner", func() {
 					Networks: []NetworkConfig{
 						{
 							Name: "foo-net",
-							Type: "dynamic",
+							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
 									IpRange:           "192.168.0.0/24",
 									Gateway:           "192.168.0.1",
-									AvailabilityZones: []string{"z1"},
-								},
-								{
-									IpRange:           "192.168.1.0/24",
-									Gateway:           "192.168.1.254",
-									AvailabilityZones: []string{"z2"},
+									AvailabilityZones: []string{"z1", "z2"},
 								},
 							},
 						},
 					},
 					CompilationNetwork:          "foo-net",
-					CompilationAvailabilityZone: "z1",
+					CompilationAvailabilityZone: "z2",
 				},
 			},
 		},

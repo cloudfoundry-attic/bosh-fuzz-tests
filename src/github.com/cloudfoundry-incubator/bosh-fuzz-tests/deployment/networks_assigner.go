@@ -61,6 +61,21 @@ func (n *networksAssigner) Assign(inputs []Input) {
 
 		// TODO: shuffle networks
 
+		for k, network := range networkPoolWithAzs {
+			if network.Type != "vip" {
+				networkPoolWithAzs[k].Subnets = n.generateSubnets(inputs[i].CloudConfig.AvailabilityZones)
+
+				for s, _ := range networkPoolWithAzs[k].Subnets {
+					if network.Type == "manual" {
+						ipPool := n.ipPoolProvider.NewIpPool()
+						networkPoolWithAzs[k].Subnets[s].IpRange = ipPool.IpRange
+						networkPoolWithAzs[k].Subnets[s].Gateway = ipPool.Gateway
+						// subnet.Reserved = ipPool.Reserved
+					}
+				}
+			}
+		}
+
 		for j, job := range inputs[i].Jobs {
 			if job.AvailabilityZones == nil {
 				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithoutAzs, nil)
@@ -101,21 +116,59 @@ func (n *networksAssigner) generateJobNetworks(networkPool []NetworkConfig, azs 
 	for _, k := range networksToPick {
 		network := networkPool[k]
 		jobNetworks = append(jobNetworks, JobNetworkConfig{Name: network.Name})
-
-		if network.Type != "vip" {
-			subnet := SubnetConfig{AvailabilityZones: azs}
-			ipPool := n.ipPoolProvider.NewIpPool()
-
-			subnet.IpRange = ipPool.IpRange
-			subnet.Gateway = ipPool.Gateway
-			// subnet.Reserved = ipPool.Reserved
-
-			networkPool[k].Subnets = append(networkPool[k].Subnets, subnet)
-		}
-		// TODO: reuse same subnet with all azs
 	}
 
 	jobNetworks[rand.Intn(totalNumberOfJobNetworks)].DefaultDNSnGW = true
 
 	return jobNetworks
+}
+
+func (n *networksAssigner) generateSubnets(azs []string) []SubnetConfig {
+	subnets := []SubnetConfig{}
+
+	placedAzs := NewPlacedAZs()
+	for !placedAzs.AllPlaced(azs) {
+		newAzs := n.randomCombination(azs)
+		placedAzs.Place(newAzs)
+		subnets = append(subnets, SubnetConfig{AvailabilityZones: newAzs})
+	}
+
+	return subnets
+}
+
+func (n *networksAssigner) randomCombination(items []string) []string {
+	combination := []string{}
+	totalNumberOfItems := rand.Intn(len(items)) + 1
+	itemsToPick := rand.Perm(len(items))[:totalNumberOfItems]
+	for _, i := range itemsToPick {
+		combination = append(combination, items[i])
+	}
+
+	return combination
+}
+
+type PlacedAZs struct {
+	azs map[string]bool
+}
+
+func NewPlacedAZs() *PlacedAZs {
+	return &PlacedAZs{
+		azs: map[string]bool{},
+	}
+}
+
+func (a *PlacedAZs) Place(azs []string) {
+	for _, az := range azs {
+		a.azs[az] = true
+	}
+}
+
+func (a *PlacedAZs) AllPlaced(azs []string) bool {
+	for _, az := range azs {
+		if !a.azs[az] {
+			return false
+		}
+	}
+
+	return true
 }
