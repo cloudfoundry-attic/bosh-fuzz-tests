@@ -83,7 +83,7 @@ func (n *networksAssigner) Assign(inputs []Input) {
 					ipPool := ipPoolProvider.NewIpPool()
 					allNetworks[k].Subnets[s].IpRange = ipPool.IpRange
 					allNetworks[k].Subnets[s].Gateway = ipPool.Gateway
-					// subnet.Reserved = ipPool.Reserved
+					allNetworks[k].Subnets[s].Reserved = ipPool.Reserved
 				}
 			}
 

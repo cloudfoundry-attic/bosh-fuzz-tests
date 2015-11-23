@@ -69,7 +69,16 @@ var _ = Describe("Manifest/Renderer", func() {
 						Name: "default",
 						Type: "manual",
 						Subnets: []SubnetConfig{
-							{AvailabilityZones: []string{"z1", "z2", "z3", "z4"}},
+							{
+								IpRange: "192.168.1.0/24",
+								Gateway: "192.168.1.254",
+								Reserved: []string{
+									"192.168.1.11",
+									"192.168.1.120",
+									"192.168.1.186-192.168.1.234",
+								},
+								AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
+							},
 						},
 					},
 					{
@@ -160,11 +169,14 @@ networks:
 - name: default
   type: manual
   subnets:
-  - range: 
-    gateway: 
+  - range: 192.168.1.0/24
+    gateway: 192.168.1.254
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
+    reserved:
+    - 192.168.1.11
+    - 192.168.1.120
+    - 192.168.1.186-192.168.1.234
     cloud_properties: {}
     azs:
     - z1
@@ -178,7 +190,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 
 compilation:
@@ -282,7 +293,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 - name: no-az
   type: dynamic
@@ -291,7 +301,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 
 compilation:
@@ -397,7 +406,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 - name: no-az
   type: dynamic
@@ -406,7 +414,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 
 compilation:
@@ -516,7 +523,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 - name: no-az
   type: dynamic
@@ -525,7 +531,6 @@ networks:
     gateway: 
     dns: ["8.8.8.8"]
     static: []
-    reserved: []
     cloud_properties: {}
 
 compilation:

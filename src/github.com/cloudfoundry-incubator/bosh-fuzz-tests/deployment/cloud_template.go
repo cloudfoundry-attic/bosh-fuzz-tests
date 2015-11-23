@@ -12,8 +12,9 @@ networks:{{ range .CloudConfig.Networks }}
   - range: {{ .IpRange }}
     gateway: {{ .Gateway }}
     dns: ["8.8.8.8"]
-    static: []
-    reserved: []
+    static: []{{ if .Reserved }}
+    reserved:{{ range .Reserved }}
+    - {{ . }}{{ end }}{{ end }}
     cloud_properties: {}{{ if .AvailabilityZones }}
     azs:{{ range .AvailabilityZones }}
     - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}

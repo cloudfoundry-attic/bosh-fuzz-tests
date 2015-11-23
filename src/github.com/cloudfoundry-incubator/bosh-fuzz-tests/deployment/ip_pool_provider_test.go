@@ -1,6 +1,8 @@
 package deployment_test
 
 import (
+	"math/rand"
+
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
 	. "github.com/onsi/ginkgo"
@@ -13,6 +15,7 @@ var _ = Describe("IpPoolProvider", func() {
 	)
 
 	BeforeEach(func() {
+		rand.Seed(65)
 		ipPoolProvider = NewIpPoolProvider()
 	})
 
@@ -30,6 +33,15 @@ var _ = Describe("IpPoolProvider", func() {
 		It("alternates gateway's last IP between .1 and .254", func() {
 			ipPool := ipPoolProvider.NewIpPool()
 			Expect(ipPool.IpRange).To(Equal("192.168.0.0/24"))
+		})
+
+		It("generates list of reserved IPs", func() {
+			ipPool := ipPoolProvider.NewIpPool()
+			Expect(ipPool.Reserved).To(Equal([]string{
+				"192.168.0.3",
+				"192.168.0.54-192.168.0.221",
+				"192.168.0.223-192.168.0.242",
+			}))
 		})
 	})
 })
