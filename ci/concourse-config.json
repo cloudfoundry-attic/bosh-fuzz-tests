@@ -15,7 +15,9 @@
     "availability_zones": [null, ["z1"], ["z1", "z2"], ["z3", "z1", "z2"]],
     "persistent_disk_size": [0, 100, 200],
     "persistent_disk_definition": ["disk_pool", "disk_type", "persistent_disk"],
-    "number_of_jobs": [1, 2, 3]
+    "number_of_jobs": [1, 2, 3],
+    "migrated_from_count": [0, 1, 2],
+    "networks": [["dynamic"], ["dynamic", "manual"], ["dynamic", "dynamic"], ["manual"], ["manual", "manual"]]
   },
   "number_of_consequent_deploys": 10
 }

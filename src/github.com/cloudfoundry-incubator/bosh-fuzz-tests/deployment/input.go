@@ -47,6 +47,7 @@ type SubnetConfig struct {
 	Gateway           string
 	AvailabilityZones []string
 	Reserved          []string
+	Static            []string
 }
 
 type JobNetworkConfig struct {

@@ -80,7 +80,8 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		for k, network := range allNetworks {
 			for s, _ := range network.Subnets {
 				if network.Type == "manual" {
-					ipPool := ipPoolProvider.NewIpPool()
+					// TODO: calculate needed IPs on a job
+					ipPool := ipPoolProvider.NewIpPool(10)
 					allNetworks[k].Subnets[s].IpRange = ipPool.IpRange
 					allNetworks[k].Subnets[s].Gateway = ipPool.Gateway
 					allNetworks[k].Subnets[s].Reserved = ipPool.Reserved

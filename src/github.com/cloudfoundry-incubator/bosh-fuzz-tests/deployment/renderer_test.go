@@ -169,15 +169,14 @@ networks:
 - name: default
   type: manual
   subnets:
-  - range: 192.168.1.0/24
+  - cloud_properties: {}
+    range: 192.168.1.0/24
     gateway: 192.168.1.254
     dns: ["8.8.8.8"]
-    static: []
     reserved:
     - 192.168.1.11
     - 192.168.1.120
     - 192.168.1.186-192.168.1.234
-    cloud_properties: {}
     azs:
     - z1
     - z2
@@ -186,11 +185,8 @@ networks:
 - name: no-az
   type: dynamic
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 
 compilation:
   workers: 1
@@ -289,19 +285,13 @@ networks:
 - name: default
   type: manual
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 - name: no-az
   type: dynamic
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 
 compilation:
   workers: 1
@@ -402,19 +392,13 @@ networks:
 - name: default
   type: manual
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 - name: no-az
   type: dynamic
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 
 compilation:
   workers: 1
@@ -519,19 +503,13 @@ networks:
 - name: default
   type: manual
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 - name: no-az
   type: dynamic
   subnets:
-  - range: 
-    gateway: 
+  - cloud_properties: {}
     dns: ["8.8.8.8"]
-    static: []
-    cloud_properties: {}
 
 compilation:
   workers: 1
