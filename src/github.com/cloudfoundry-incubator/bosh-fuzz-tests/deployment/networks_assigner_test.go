@@ -40,7 +40,7 @@ var _ = Describe("NetworksAssigner", func() {
 
 		networksAssigner.Assign(inputs)
 
-		Expect(inputs).To(Equal([]Input{
+		Expect(inputs).To(BeEquivalentTo([]Input{
 			{
 				Jobs: []Job{
 					{
@@ -51,6 +51,7 @@ var _ = Describe("NetworksAssigner", func() {
 							{
 								Name:          "foo-net",
 								DefaultDNSnGW: true,
+								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
 							},
 						},
 					},
@@ -63,16 +64,19 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
-									IpRange:           "192.168.0.0/24",
-									Gateway:           "192.168.0.1",
-									AvailabilityZones: []string{"z1"},
-									Reserved: []string{
-										"192.168.0.71-192.168.0.75",
-										"192.168.0.78-192.168.0.88",
-										"192.168.0.90-192.168.0.113",
-										"192.168.0.190",
-										"192.168.0.231",
+									IpPool: &IpPool{
+										IpRange: "192.168.0.0/24",
+										Gateway: "192.168.0.1",
+										Reserved: []string{
+											"192.168.0.15-192.168.0.58",
+											"192.168.0.157-192.168.0.203",
+										},
+										Static: []string{
+											"192.168.0.222",
+											"192.168.0.110",
+										},
 									},
+									AvailabilityZones: []string{"z1"},
 								},
 							},
 						},
@@ -81,16 +85,22 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
-									IpRange: "192.168.1.0/24",
-									Gateway: "192.168.1.254",
-									Reserved: []string{
-										"192.168.1.153",
+									IpPool: &IpPool{
+										IpRange: "192.168.1.0/24",
+										Gateway: "192.168.1.254",
+										Reserved: []string{
+											"192.168.1.41-192.168.1.111",
+											"192.168.1.132",
+											"192.168.1.235",
+										},
+										AvailableIps: []string{"192.168.1.154"},
 									},
 								},
 							},
 						},
 					},
-					CompilationNetwork: "bar-net",
+					CompilationNetwork:          "foo-net",
+					CompilationAvailabilityZone: "z1",
 				},
 			},
 		},
@@ -153,23 +163,32 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
-									IpRange:           "192.168.0.0/24",
-									Gateway:           "192.168.0.1",
-									AvailabilityZones: []string{"z2"},
-									Reserved: []string{
-										"192.168.0.85-192.168.0.98",
-										"192.168.0.100-192.168.0.133",
+									IpPool: &IpPool{
+										IpRange: "192.168.0.0/24",
+										Gateway: "192.168.0.1",
+										Reserved: []string{
+											"192.168.0.71-192.168.0.75",
+											"192.168.0.78-192.168.0.88",
+											"192.168.0.90-192.168.0.113",
+											"192.168.0.190",
+											"192.168.0.231",
+										},
 									},
+									AvailabilityZones: []string{"z1"},
 								},
 								{
-									IpRange:           "192.168.1.0/24",
-									Gateway:           "192.168.1.254",
-									AvailabilityZones: []string{"z2", "z1"},
-									Reserved: []string{
-										"192.168.1.132-192.168.1.142",
-										"192.168.1.144-192.168.1.161",
-										"192.168.1.170",
+									IpPool: &IpPool{
+										IpRange: "192.168.0.0/24",
+										Gateway: "192.168.0.1",
+										Reserved: []string{
+											"192.168.0.71-192.168.0.75",
+											"192.168.0.78-192.168.0.88",
+											"192.168.0.90-192.168.0.113",
+											"192.168.0.190",
+											"192.168.0.231",
+										},
 									},
+									AvailabilityZones: []string{"z1"},
 								},
 							},
 						},
@@ -178,19 +197,32 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
-									IpRange:  "192.168.2.0/24",
-									Gateway:  "192.168.2.1",
-									Reserved: []string{"192.168.2.243"},
+									IpPool: &IpPool{
+										IpRange: "192.168.0.0/24",
+										Gateway: "192.168.0.1",
+										Reserved: []string{
+											"192.168.0.71-192.168.0.75",
+											"192.168.0.78-192.168.0.88",
+											"192.168.0.90-192.168.0.113",
+											"192.168.0.190",
+											"192.168.0.231",
+										},
+									},
+									AvailabilityZones: []string{"z1"},
 								},
 								{
-									IpRange: "192.168.3.0/24",
-									Gateway: "192.168.3.254",
-									Reserved: []string{
-										"192.168.3.224-192.168.3.227",
-										"192.168.3.229-192.168.3.242",
-										"192.168.3.246",
-										"192.168.3.251",
+									IpPool: &IpPool{
+										IpRange: "192.168.0.0/24",
+										Gateway: "192.168.0.1",
+										Reserved: []string{
+											"192.168.0.71-192.168.0.75",
+											"192.168.0.78-192.168.0.88",
+											"192.168.0.90-192.168.0.113",
+											"192.168.0.190",
+											"192.168.0.231",
+										},
 									},
+									AvailabilityZones: []string{"z1"},
 								},
 							},
 						},

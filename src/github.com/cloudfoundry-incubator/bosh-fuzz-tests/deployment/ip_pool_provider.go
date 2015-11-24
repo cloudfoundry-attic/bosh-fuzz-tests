@@ -4,16 +4,30 @@ import (
 	"fmt"
 	"math/rand"
 	"sort"
+
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 type IpPool struct {
-	IpRange  string
-	Gateway  string
-	Reserved []string
+	IpRange      string
+	Gateway      string
+	Reserved     []string
+	Static       []string
+	AvailableIps []string
+}
+
+func (i *IpPool) NextStaticIp() (string, error) {
+	var ip string
+	if len(i.AvailableIps) == 0 {
+		return "", bosherr.Error("No more available")
+	}
+	ip, i.AvailableIps = i.AvailableIps[0], i.AvailableIps[1:]
+	i.Static = append(i.Static, ip)
+	return ip, nil
 }
 
 type IpPoolProvider interface {
-	NewIpPool(numOfNeededIPs int) IpPool
+	NewIpPool(numOfNeededIPs int) *IpPool
 }
 
 type ipPoolProvider struct {
@@ -25,7 +39,11 @@ func NewIpPoolProvider() IpPoolProvider {
 	return &ipPoolProvider{}
 }
 
-func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) IpPool {
+func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *IpPool {
+	if numOfNeededIPs == 0 {
+		numOfNeededIPs = rand.Intn(10)
+	}
+
 	if p.gatewayFourthOctet == 1 {
 		p.gatewayFourthOctet = 254
 	} else {
@@ -62,9 +80,16 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) IpPool {
 	reservedRangeGenerator := NewReservedRangeGenerator(prefix, decider)
 	reservedRanges := reservedRangeGenerator.Generate(usedIps, reservedBorders)
 
-	return IpPool{
-		IpRange:  ipRange,
-		Gateway:  gateway,
-		Reserved: reservedRanges,
+	availableIps := []string{}
+	shuffledUsedIpsIndeces := rand.Perm(len(usedIps))
+	for _, ipIndex := range shuffledUsedIpsIndeces {
+		availableIps = append(availableIps, fmt.Sprintf("%s.%d", prefix, usedIps[ipIndex]))
+	}
+
+	return &IpPool{
+		IpRange:      ipRange,
+		Gateway:      gateway,
+		Reserved:     reservedRanges,
+		AvailableIps: availableIps,
 	}
 }

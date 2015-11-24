@@ -46,5 +46,23 @@ var _ = Describe("IpPoolProvider", func() {
 				"192.168.0.242",
 			}))
 		})
+
+		It("generates list of available IPs", func() {
+			ipPool := ipPoolProvider.NewIpPool(3)
+			ip, err := ipPool.NextStaticIp()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(ip).To(Equal("192.168.0.207"))
+
+			ip, err = ipPool.NextStaticIp()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(ip).To(Equal("192.168.0.206"))
+
+			ip, err = ipPool.NextStaticIp()
+			Expect(err).ToNot(HaveOccurred())
+			Expect(ip).To(Equal("192.168.0.4"))
+
+			ip, err = ipPool.NextStaticIp()
+			Expect(err).To(HaveOccurred())
+		})
 	})
 })

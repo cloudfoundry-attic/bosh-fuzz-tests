@@ -74,33 +74,48 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			}
 		}
 
-		compilationNetworks := []NetworkConfig{}
+		for j, job := range inputs[i].Jobs {
+			if job.AvailabilityZones == nil {
+				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithoutAzs, nil)
+			} else {
+				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithAzs, job.AvailabilityZones)
+			}
+		}
+
 		allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
+		jobsOnNetworks := n.aggregateNetworkJobs(inputs[i].Jobs)
+
+		compilationNetworks := []NetworkConfig{}
+		decider := NewRandomDecider()
 
 		for k, network := range allNetworks {
-			for s, _ := range network.Subnets {
-				if network.Type == "manual" {
-					// TODO: calculate needed IPs on a job
-					ipPool := ipPoolProvider.NewIpPool(10)
-					allNetworks[k].Subnets[s].IpRange = ipPool.IpRange
-					allNetworks[k].Subnets[s].Gateway = ipPool.Gateway
-					allNetworks[k].Subnets[s].Reserved = ipPool.Reserved
-				}
-			}
-
 			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
 
 			if network.Type != "vip" {
 				compilationNetworks = append(compilationNetworks, network)
 			}
-		}
 
-		for j, job := range inputs[i].Jobs {
-			if job.AvailabilityZones == nil {
-				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithoutAzs, nil)
+			if network.Type == "manual" {
+				jobsOnNetwork := jobsOnNetworks[network.Name]
 
-			} else {
-				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithAzs, job.AvailabilityZones)
+				for s, _ := range network.Subnets {
+					ipPool := ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
+					allNetworks[k].Subnets[s].IpPool = ipPool
+				}
+
+				for _, job := range jobsOnNetwork.Jobs {
+					if decider.IsYes() { // use static IPs
+						for ji := 0; ji < job.Instances; ji++ {
+							s := rand.Intn(len(network.Subnets))
+							staticIp, _ := allNetworks[k].Subnets[s].IpPool.NextStaticIp()
+							for j, jobNetwork := range job.Networks {
+								if jobNetwork.Name == network.Name {
+									job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
+								}
+							}
+						}
+					}
+				}
 			}
 		}
 
@@ -153,6 +168,26 @@ func (n *networksAssigner) generateSubnetsWithoutAzs() []SubnetConfig {
 	}
 
 	return subnets
+}
+
+type JobsOnNetwork struct {
+	Jobs           []Job
+	TotalInstances int
+}
+
+func (n *networksAssigner) aggregateNetworkJobs(jobs []Job) map[string]JobsOnNetwork {
+	jobsOnNetworks := map[string]JobsOnNetwork{}
+
+	for _, job := range jobs {
+		for _, jobNetwork := range job.Networks {
+			jobsOnNetworks[jobNetwork.Name] = JobsOnNetwork{
+				Jobs:           append(jobsOnNetworks[jobNetwork.Name].Jobs, job),
+				TotalInstances: jobsOnNetworks[jobNetwork.Name].TotalInstances + job.Instances,
+			}
+		}
+	}
+
+	return jobsOnNetworks
 }
 
 func (n *networksAssigner) randomCombination(items []string) []string {

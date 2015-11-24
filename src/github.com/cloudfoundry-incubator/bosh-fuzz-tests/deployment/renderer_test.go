@@ -36,6 +36,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					Networks: []JobNetworkConfig{
 						{
 							Name:          "default",
+							StaticIps:     []string{"192.168.1.5"},
 							DefaultDNSnGW: true,
 						},
 					},
@@ -70,12 +71,17 @@ var _ = Describe("Manifest/Renderer", func() {
 						Type: "manual",
 						Subnets: []SubnetConfig{
 							{
-								IpRange: "192.168.1.0/24",
-								Gateway: "192.168.1.254",
-								Reserved: []string{
-									"192.168.1.11",
-									"192.168.1.120",
-									"192.168.1.186-192.168.1.234",
+								IpPool: &IpPool{
+									IpRange: "192.168.1.0/24",
+									Gateway: "192.168.1.254",
+									Reserved: []string{
+										"192.168.1.11",
+										"192.168.1.120",
+										"192.168.1.186-192.168.1.234",
+									},
+									Static: []string{
+										"192.168.1.5",
+									},
 								},
 								AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
 							},
@@ -131,6 +137,8 @@ jobs:
   networks:
   - name: default
     default: [dns, gateway]
+    static_ips:
+    - 192.168.1.5
 - name: bar-job
   instances: 2
   vm_type: default
@@ -170,9 +178,11 @@ networks:
   type: manual
   subnets:
   - cloud_properties: {}
+    dns: ["8.8.8.8"]
     range: 192.168.1.0/24
     gateway: 192.168.1.254
-    dns: ["8.8.8.8"]
+    static:
+    - 192.168.1.5
     reserved:
     - 192.168.1.11
     - 192.168.1.120

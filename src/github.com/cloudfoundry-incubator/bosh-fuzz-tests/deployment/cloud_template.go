@@ -9,13 +9,14 @@ networks:{{ range .CloudConfig.Networks }}
 - name: {{ .Name }}
   type: {{ .Type }}{{ if .Subnets }}
   subnets:{{ range .Subnets }}
-  - cloud_properties: {}{{ if .IpRange }}
+  - cloud_properties: {}
+    dns: ["8.8.8.8"]{{ with .IpPool }}{{ if .IpRange }}
     range: {{ .IpRange }}{{ end }}{{ if .Gateway }}
-    gateway: {{ .Gateway }}{{ end }}
-    dns: ["8.8.8.8"]{{ if .Static }}
-    static: []{{ end }}{{ if .Reserved }}
+    gateway: {{ .Gateway }}{{ end }}{{ if .Static }}
+    static:{{ range .Static }}
+    - {{ . }}{{ end }}{{ end }}{{ if .Reserved }}
     reserved:{{ range .Reserved }}
-    - {{ . }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
+    - {{ . }}{{ end }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
     azs:{{ range .AvailabilityZones }}
     - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}
 

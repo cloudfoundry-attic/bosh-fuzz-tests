@@ -43,14 +43,12 @@ type NetworkConfig struct {
 }
 
 type SubnetConfig struct {
-	IpRange           string
-	Gateway           string
 	AvailabilityZones []string
-	Reserved          []string
-	Static            []string
+	IpPool            *IpPool
 }
 
 type JobNetworkConfig struct {
 	Name          string
 	DefaultDNSnGW bool
+	StaticIps     []string
 }
