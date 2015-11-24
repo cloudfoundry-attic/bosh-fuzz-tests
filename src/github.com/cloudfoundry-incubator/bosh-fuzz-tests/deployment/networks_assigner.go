@@ -9,23 +9,29 @@ type NetworksAssigner interface {
 }
 
 type networksAssigner struct {
-	networks      [][]string
-	nameGenerator NameGenerator
-	seed          int64
+	networks        [][]string
+	nameGenerator   NameGenerator
+	ipPoolProvider  IpPoolProvider
+	staticIpDecider Decider
+	seed            int64
 }
 
-func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator) NetworksAssigner {
+func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider Decider) NetworksAssigner {
 	return &networksAssigner{
-		networks:      networks,
-		nameGenerator: nameGenerator,
+		networks:        networks,
+		nameGenerator:   nameGenerator,
+		ipPoolProvider:  ipPoolProvider,
+		staticIpDecider: staticIpDecider,
 	}
 }
 
-func NewSeededNetworksAssigner(networks [][]string, nameGenerator NameGenerator, seed int64) NetworksAssigner {
+func NewSeededNetworksAssigner(networks [][]string, nameGenerator NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider Decider, seed int64) NetworksAssigner {
 	return &networksAssigner{
-		networks:      networks,
-		nameGenerator: nameGenerator,
-		seed:          seed,
+		networks:        networks,
+		nameGenerator:   nameGenerator,
+		ipPoolProvider:  ipPoolProvider,
+		staticIpDecider: staticIpDecider,
+		seed:            seed,
 	}
 }
 
@@ -181,21 +187,18 @@ func (n *networksAssigner) randomCombination(items []string) []string {
 }
 
 func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job) {
-	ipPoolProvider := NewIpPoolProvider()
-	decider := NewRandomDecider()
-
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
 
 	for k, network := range networks {
 		if network.Type == "manual" {
 			jobsOnNetwork := jobsOnNetworks[network.Name]
 			for s, _ := range network.Subnets {
-				ipPool := ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
+				ipPool := n.ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
 				networks[k].Subnets[s].IpPool = ipPool
 			}
 
 			for _, job := range jobsOnNetwork.Jobs {
-				if decider.IsYes() { // use static IPs
+				if n.staticIpDecider.IsYes() { // use static IPs
 					for ji := 0; ji < job.Instances; ji++ {
 						s := rand.Intn(len(network.Subnets))
 						staticIp, _ := networks[k].Subnets[s].IpPool.NextStaticIp()

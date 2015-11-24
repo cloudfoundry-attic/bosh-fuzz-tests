@@ -47,7 +47,7 @@ var _ = Describe("IpPoolProvider", func() {
 			}))
 		})
 
-		It("generates list of available IPs", func() {
+		It("generates list of static IPs", func() {
 			ipPool := ipPoolProvider.NewIpPool(3)
 			ip, err := ipPool.NextStaticIp()
 			Expect(err).ToNot(HaveOccurred())
@@ -63,6 +63,8 @@ var _ = Describe("IpPoolProvider", func() {
 
 			ip, err = ipPool.NextStaticIp()
 			Expect(err).To(HaveOccurred())
+
+			Expect(ipPool.Static).To(Equal([]string{"192.168.0.207", "192.168.0.206", "192.168.0.4"}))
 		})
 	})
 })

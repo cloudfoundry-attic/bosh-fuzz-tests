@@ -2,6 +2,7 @@ package deployment_test
 
 import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -51,7 +52,9 @@ var _ = Describe("Deployer", func() {
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator := NewNameGenerator()
 		jobsRandomizer := NewSeededJobsRandomizer(parameters, 2, 64, nameGenerator, logger)
-		networksAssigner := NewSeededNetworksAssigner(networks, nameGenerator, 5)
+		ipPoolProvider := NewIpPoolProvider()
+		staticIpDecider := &fakebftdepl.FakeDecider{}
+		networksAssigner := NewSeededNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider, 5)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, false)
 	})
 
