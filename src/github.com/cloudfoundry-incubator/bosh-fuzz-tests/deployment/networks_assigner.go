@@ -34,7 +34,10 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		rand.Seed(n.seed)
 	}
 
-	ipPoolProvider := NewIpPoolProvider()
+	// 1. Generate Networks with/without AZs (network with types)
+	// 2. Assign networks to each job (network with AZs) (job with network name)
+	// 3. Generate IP specs for each network (network with IP specs)
+	// 4. Aggregate instances to compute static IPs (network with static IPs) (job with static I)
 
 	for i, _ := range inputs {
 		networkPoolWithAzs := []NetworkConfig{}
@@ -83,39 +86,15 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		}
 
 		allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
-		jobsOnNetworks := n.aggregateNetworkJobs(inputs[i].Jobs)
+		n.assignStaticIps(allNetworks, inputs[i].Jobs)
 
 		compilationNetworks := []NetworkConfig{}
-		decider := NewRandomDecider()
 
-		for k, network := range allNetworks {
+		for _, network := range allNetworks {
 			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
 
 			if network.Type != "vip" {
 				compilationNetworks = append(compilationNetworks, network)
-			}
-
-			if network.Type == "manual" {
-				jobsOnNetwork := jobsOnNetworks[network.Name]
-
-				for s, _ := range network.Subnets {
-					ipPool := ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
-					allNetworks[k].Subnets[s].IpPool = ipPool
-				}
-
-				for _, job := range jobsOnNetwork.Jobs {
-					if decider.IsYes() { // use static IPs
-						for ji := 0; ji < job.Instances; ji++ {
-							s := rand.Intn(len(network.Subnets))
-							staticIp, _ := allNetworks[k].Subnets[s].IpPool.NextStaticIp()
-							for j, jobNetwork := range job.Networks {
-								if jobNetwork.Name == network.Name {
-									job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
-								}
-							}
-						}
-					}
-				}
 			}
 		}
 
@@ -199,4 +178,35 @@ func (n *networksAssigner) randomCombination(items []string) []string {
 	}
 
 	return combination
+}
+
+func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job) {
+	ipPoolProvider := NewIpPoolProvider()
+	decider := NewRandomDecider()
+
+	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
+
+	for k, network := range networks {
+		if network.Type == "manual" {
+			jobsOnNetwork := jobsOnNetworks[network.Name]
+			for s, _ := range network.Subnets {
+				ipPool := ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
+				networks[k].Subnets[s].IpPool = ipPool
+			}
+
+			for _, job := range jobsOnNetwork.Jobs {
+				if decider.IsYes() { // use static IPs
+					for ji := 0; ji < job.Instances; ji++ {
+						s := rand.Intn(len(network.Subnets))
+						staticIp, _ := networks[k].Subnets[s].IpPool.NextStaticIp()
+						for j, jobNetwork := range job.Networks {
+							if jobNetwork.Name == network.Name {
+								job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }
