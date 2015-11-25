@@ -204,11 +204,13 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 			for _, job := range jobsOnNetwork.Jobs {
 				if n.staticIpDecider.IsYes() { // use static IPs
 					for ji := 0; ji < job.Instances; ji++ {
-						s := rand.Intn(len(network.Subnets))
-						staticIp, _ := networks[k].Subnets[s].IpPool.NextStaticIp()
-						for j, jobNetwork := range job.Networks {
-							if jobNetwork.Name == network.Name {
-								job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
+						subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
+						if found {
+							staticIp, _ := subnetIpPool.NextStaticIp()
+							for j, jobNetwork := range job.Networks {
+								if jobNetwork.Name == network.Name {
+									job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
+								}
 							}
 						}
 					}
@@ -227,4 +229,24 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 			}
 		}
 	}
+}
+
+func (n *networksAssigner) findIpPoolWithJobAZ(subnets []SubnetConfig, azs []string) (*IpPool, bool) {
+	shuffledSubnetIdxs := rand.Perm(len(subnets))
+	shuffledSubnets := []SubnetConfig{}
+	for _, i := range shuffledSubnetIdxs {
+		shuffledSubnets = append(shuffledSubnets, subnets[i])
+	}
+
+	for i, subnet := range shuffledSubnets {
+		for _, subnetAz := range subnet.AvailabilityZones {
+			for _, jobAz := range azs {
+				if subnetAz == jobAz {
+					return shuffledSubnets[i].IpPool, true
+				}
+			}
+		}
+	}
+
+	return &IpPool{}, false
 }
