@@ -17,10 +17,18 @@ var _ = Describe("NetworksAssigner", func() {
 	)
 
 	BeforeEach(func() {
-		networks = [][]string{[]string{"manual"}}
+		networks = [][]string{[]string{"manual", "vip"}}
 		nameGenerator := &fakebftdepl.FakeNameGenerator{}
-		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net"}
+		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net", "qux-net"}
 		ipPoolProvider := &fakebftdepl.FakeIpPoolProvider{}
+		vipPool := &IpPool{
+			AvailableIps: []string{
+				"10.10.0.6",
+				"10.10.0.32",
+			},
+		}
+		ipPoolProvider.RegisterIpPool(vipPool)
+
 		ipPool := &IpPool{
 			IpRange: "192.168.0.0/24",
 			Gateway: "192.168.0.1",
@@ -51,7 +59,7 @@ var _ = Describe("NetworksAssigner", func() {
 		}
 		staticIpDecider := &fakebftdepl.FakeDecider{}
 		staticIpDecider.IsYesYes = true
-		networksAssigner = NewSeededNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider, 5)
+		networksAssigner = NewSeededNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider, 32)
 	})
 
 	It("assigns network of the given type to job and cloud config", func() {
@@ -81,6 +89,10 @@ var _ = Describe("NetworksAssigner", func() {
 						AvailabilityZones: []string{"z1"},
 						Networks: []JobNetworkConfig{
 							{
+								Name:      "bar-net",
+								StaticIps: []string{"10.10.0.6", "10.10.0.32"},
+							},
+							{
 								Name:          "foo-net",
 								DefaultDNSnGW: true,
 								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
@@ -103,6 +115,10 @@ var _ = Describe("NetworksAssigner", func() {
 						},
 						{
 							Name: "bar-net",
+							Type: "vip",
+						},
+						{
+							Name: "baz-net",
 							Type: "manual",
 							Subnets: []SubnetConfig{
 								{
@@ -110,9 +126,12 @@ var _ = Describe("NetworksAssigner", func() {
 								},
 							},
 						},
+						{
+							Name: "qux-net",
+							Type: "vip",
+						},
 					},
-					CompilationNetwork:          "foo-net",
-					CompilationAvailabilityZone: "z1",
+					CompilationNetwork: "baz-net",
 				},
 			},
 		},

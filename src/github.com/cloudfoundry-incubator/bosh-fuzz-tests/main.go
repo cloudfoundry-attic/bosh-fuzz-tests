@@ -100,14 +100,15 @@ func main() {
 	var networksAssigner bftdeployment.NetworksAssigner
 	nameGenerator := bftdeployment.NewNameGenerator()
 	ipPoolProvider := bftdeployment.NewIpPoolProvider()
+	staticIpDecider := bftdeployment.NewRandomDecider()
 
 	if len(os.Args) == 3 {
 		seed, _ := strconv.ParseInt(os.Args[2], 10, 64)
 		jobsRandomizer = bftdeployment.NewSeededJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, nameGenerator, logger)
-		networksAssigner = bftdeployment.NewSeededNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, seed)
+		networksAssigner = bftdeployment.NewSeededNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, staticIpDecider, seed)
 	} else {
 		jobsRandomizer = bftdeployment.NewJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
-		networksAssigner = bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider)
+		networksAssigner = bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, staticIpDecider)
 	}
 
 	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, envConfig.GenerateManifestOnly)

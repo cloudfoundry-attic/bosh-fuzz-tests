@@ -94,17 +94,17 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
 		n.assignStaticIps(allNetworks, inputs[i].Jobs)
 
-		compilationNetworks := []NetworkConfig{}
+		nonVipNetworks := []NetworkConfig{}
 
 		for _, network := range allNetworks {
 			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
 
 			if network.Type != "vip" {
-				compilationNetworks = append(compilationNetworks, network)
+				nonVipNetworks = append(nonVipNetworks, network)
 			}
 		}
 
-		compilationNetwork := compilationNetworks[rand.Intn(len(compilationNetworks))]
+		compilationNetwork := nonVipNetworks[rand.Intn(len(nonVipNetworks))]
 		inputs[i].CloudConfig.CompilationNetwork = compilationNetwork.Name
 		azs := []string{}
 		for _, s := range compilationNetwork.Subnets {
@@ -189,9 +189,12 @@ func (n *networksAssigner) randomCombination(items []string) []string {
 func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job) {
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
 
+	vipIpPool := n.ipPoolProvider.NewIpPool(254)
+
 	for k, network := range networks {
+		jobsOnNetwork := jobsOnNetworks[network.Name]
+
 		if network.Type == "manual" {
-			jobsOnNetwork := jobsOnNetworks[network.Name]
 			for s, _ := range network.Subnets {
 				ipPool := n.ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
 				networks[k].Subnets[s].IpPool = ipPool
@@ -206,6 +209,17 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 							if jobNetwork.Name == network.Name {
 								job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
 							}
+						}
+					}
+				}
+			}
+		} else if network.Type == "vip" {
+			for _, job := range jobsOnNetwork.Jobs {
+				for j, jobNetwork := range job.Networks {
+					if jobNetwork.Name == network.Name {
+						for ji := 0; ji < job.Instances; ji++ {
+							staticIp, _ := vipIpPool.NextStaticIp()
+							job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
 						}
 					}
 				}
