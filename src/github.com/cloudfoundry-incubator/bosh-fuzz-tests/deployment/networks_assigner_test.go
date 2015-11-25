@@ -1,6 +1,8 @@
 package deployment_test
 
 import (
+	"math/rand"
+
 	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
@@ -17,6 +19,8 @@ var _ = Describe("NetworksAssigner", func() {
 	)
 
 	BeforeEach(func() {
+		rand.Seed(32)
+
 		networks = [][]string{[]string{"manual", "vip"}}
 		nameGenerator := &fakebftdepl.FakeNameGenerator{}
 		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net", "qux-net"}
@@ -59,7 +63,7 @@ var _ = Describe("NetworksAssigner", func() {
 		}
 		staticIpDecider := &fakebftdepl.FakeDecider{}
 		staticIpDecider.IsYesYes = true
-		networksAssigner = NewSeededNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider, 32)
+		networksAssigner = NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
 	})
 
 	It("assigns network of the given type to job and cloud config", func() {

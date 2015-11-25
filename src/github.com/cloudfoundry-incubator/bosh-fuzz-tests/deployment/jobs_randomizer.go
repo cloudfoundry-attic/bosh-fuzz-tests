@@ -2,7 +2,6 @@ package deployment
 
 import (
 	"math/rand"
-	"time"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -15,36 +14,20 @@ type JobsRandomizer interface {
 type jobsRandomizer struct {
 	parameters                bftconfig.Parameters
 	numberOfConsequentDeploys int
-	seed                      int64
 	nameGenerator             NameGenerator
 	logger                    boshlog.Logger
-}
-
-func NewSeededJobsRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, seed int64, nameGenerator NameGenerator, logger boshlog.Logger) JobsRandomizer {
-	return &jobsRandomizer{
-		parameters:                parameters,
-		numberOfConsequentDeploys: numberOfConsequentDeploys,
-		seed:          seed,
-		nameGenerator: nameGenerator,
-		logger:        logger,
-	}
 }
 
 func NewJobsRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, nameGenerator NameGenerator, logger boshlog.Logger) JobsRandomizer {
 	return &jobsRandomizer{
 		parameters:                parameters,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
-		seed:          time.Now().Unix(),
-		nameGenerator: nameGenerator,
-		logger:        logger,
+		nameGenerator:             nameGenerator,
+		logger:                    logger,
 	}
 }
 
 func (ir *jobsRandomizer) Generate() ([]Input, error) {
-	ir.logger.Info("jobsRandomizer", "Seeding with %d", ir.seed)
-
-	rand.Seed(ir.seed)
-
 	inputs := []Input{}
 
 	for i := 0; i < ir.numberOfConsequentDeploys; i++ {

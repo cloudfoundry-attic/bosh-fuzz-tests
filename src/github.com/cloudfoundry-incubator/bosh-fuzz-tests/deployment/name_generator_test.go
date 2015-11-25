@@ -1,6 +1,8 @@
 package deployment_test
 
 import (
+	"math/rand"
+
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
 	. "github.com/onsi/ginkgo"
@@ -13,7 +15,8 @@ var _ = Describe("NameGenerator", func() {
 	)
 
 	BeforeEach(func() {
-		nameGenerator = NewSeededNameGenerator(5)
+		rand.Seed(5)
+		nameGenerator = NewNameGenerator()
 	})
 
 	It("generates name of specified length", func() {

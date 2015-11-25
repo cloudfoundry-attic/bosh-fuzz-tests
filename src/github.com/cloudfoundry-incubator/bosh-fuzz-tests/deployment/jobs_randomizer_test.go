@@ -1,6 +1,8 @@
 package deployment_test
 
 import (
+	"math/rand"
+
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
@@ -26,8 +28,9 @@ var _ = Describe("JobsRandomizer", func() {
 			MigratedFromCount:        []int{0, 2},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
+		rand.Seed(64)
 		nameGenerator := NewNameGenerator()
-		jobsRandomizer = NewSeededJobsRandomizer(parameters, 2, 64, nameGenerator, logger)
+		jobsRandomizer = NewJobsRandomizer(parameters, 2, nameGenerator, logger)
 
 		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
@@ -107,8 +110,9 @@ var _ = Describe("JobsRandomizer", func() {
 			MigratedFromCount:        []int{1},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
+		rand.Seed(64)
 		nameGenerator := NewNameGenerator()
-		jobsRandomizer = NewSeededJobsRandomizer(parameters, 1, 64, nameGenerator, logger)
+		jobsRandomizer = NewJobsRandomizer(parameters, 1, nameGenerator, logger)
 
 		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())

@@ -1,10 +1,12 @@
 package main
 
 import (
+	"math/rand"
 	"os"
 	"os/signal"
 	"strconv"
 	"syscall"
+	"time"
 
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
@@ -96,20 +98,22 @@ func main() {
 	logger.Debug("main", "Starting deploy")
 	renderer := bftdeployment.NewRenderer(fs)
 
-	var jobsRandomizer bftdeployment.JobsRandomizer
-	var networksAssigner bftdeployment.NetworksAssigner
+	var seed int64
+	if len(os.Args) == 3 {
+		seed, _ = strconv.ParseInt(os.Args[2], 10, 64)
+	} else {
+		seed = time.Now().Unix()
+	}
+
+	logger.Info("main", "Seeding with %d", seed)
+	rand.Seed(seed)
+
 	nameGenerator := bftdeployment.NewNameGenerator()
-	ipPoolProvider := bftdeployment.NewIpPoolProvider()
 	staticIpDecider := bftdeployment.NewRandomDecider()
 
-	if len(os.Args) == 3 {
-		seed, _ := strconv.ParseInt(os.Args[2], 10, 64)
-		jobsRandomizer = bftdeployment.NewSeededJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, seed, nameGenerator, logger)
-		networksAssigner = bftdeployment.NewSeededNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, staticIpDecider, seed)
-	} else {
-		jobsRandomizer = bftdeployment.NewJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
-		networksAssigner = bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, staticIpDecider)
-	}
+	ipPoolProvider := bftdeployment.NewIpPoolProvider()
+	jobsRandomizer := bftdeployment.NewJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
+	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, staticIpDecider)
 
 	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, envConfig.GenerateManifestOnly)
 	err = deployer.RunDeploys()

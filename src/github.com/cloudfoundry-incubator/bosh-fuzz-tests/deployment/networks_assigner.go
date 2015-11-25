@@ -13,7 +13,6 @@ type networksAssigner struct {
 	nameGenerator   NameGenerator
 	ipPoolProvider  IpPoolProvider
 	staticIpDecider Decider
-	seed            int64
 }
 
 func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider Decider) NetworksAssigner {
@@ -25,21 +24,7 @@ func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator, ipPoo
 	}
 }
 
-func NewSeededNetworksAssigner(networks [][]string, nameGenerator NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider Decider, seed int64) NetworksAssigner {
-	return &networksAssigner{
-		networks:        networks,
-		nameGenerator:   nameGenerator,
-		ipPoolProvider:  ipPoolProvider,
-		staticIpDecider: staticIpDecider,
-		seed:            seed,
-	}
-}
-
 func (n *networksAssigner) Assign(inputs []Input) {
-	if n.seed != 0 {
-		rand.Seed(n.seed)
-	}
-
 	// 1. Generate Networks with/without AZs (network with types)
 	// 2. Assign networks to each job (network with AZs) (job with network name)
 	// 3. Generate IP specs for each network (network with IP specs)

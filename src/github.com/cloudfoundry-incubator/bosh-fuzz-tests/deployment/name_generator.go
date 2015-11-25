@@ -9,22 +9,13 @@ type NameGenerator interface {
 }
 
 type nameGenerator struct {
-	seed int64
 }
 
 func NewNameGenerator() NameGenerator {
 	return &nameGenerator{}
 }
 
-func NewSeededNameGenerator(seed int64) NameGenerator {
-	return &nameGenerator{seed: seed}
-}
-
 func (n *nameGenerator) Generate(length int) string {
-	if n.seed != 0 {
-		rand.Seed(n.seed)
-	}
-
 	b := make([]rune, length)
 	b[0] = firstCharRunes[rand.Intn(len(firstCharRunes))]
 
