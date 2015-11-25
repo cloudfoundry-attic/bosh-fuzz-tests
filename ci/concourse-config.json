@@ -17,7 +17,7 @@
     "persistent_disk_definition": ["disk_pool", "disk_type", "persistent_disk"],
     "number_of_jobs": [1, 2, 3],
     "migrated_from_count": [0, 1, 2],
-    "networks": [["dynamic"], ["dynamic", "manual"], ["dynamic", "dynamic"], ["manual"], ["manual", "manual"]]
+    "networks": [["dynamic", "vip"], ["dynamic", "manual"], ["dynamic", "vip", "dynamic"], ["manual"], ["vip", "manual", "manual"], ["manual", "dynamic", "vip"]]
   },
   "number_of_consequent_deploys": 10
 }
