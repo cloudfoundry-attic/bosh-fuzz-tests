@@ -202,28 +202,35 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 
 			for _, job := range jobsOnNetwork.Jobs {
 				if n.staticIpDecider.IsYes() { // use static IPs
-					for ji := 0; ji < job.Instances; ji++ {
-						s := rand.Intn(len(network.Subnets))
-						staticIp, _ := networks[k].Subnets[s].IpPool.NextStaticIp()
-						for j, jobNetwork := range job.Networks {
-							if jobNetwork.Name == network.Name {
-								job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
-							}
+					jobNetwork, found := n.findJobNetworkWithName(network.Name, job.Networks)
+					if found {
+						for ji := 0; ji < job.Instances; ji++ {
+							s := rand.Intn(len(network.Subnets))
+							staticIp, _ := networks[k].Subnets[s].IpPool.NextStaticIp()
+							jobNetwork.StaticIps = append(jobNetwork.StaticIps, staticIp)
 						}
 					}
 				}
 			}
 		} else if network.Type == "vip" {
 			for _, job := range jobsOnNetwork.Jobs {
-				for j, jobNetwork := range job.Networks {
-					if jobNetwork.Name == network.Name {
-						for ji := 0; ji < job.Instances; ji++ {
-							staticIp, _ := vipIpPool.NextStaticIp()
-							job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
-						}
+				jobNetwork, found := n.findJobNetworkWithName(network.Name, job.Networks)
+				if found {
+					for ji := 0; ji < job.Instances; ji++ {
+						staticIp, _ := vipIpPool.NextStaticIp()
+						jobNetwork.StaticIps = append(jobNetwork.StaticIps, staticIp)
 					}
 				}
 			}
 		}
 	}
+}
+
+func (n *networksAssigner) findJobNetworkWithName(networkName string, jobNetworks []JobNetworkConfig) (JobNetworkConfig, bool) {
+	for j, jobNetwork := range jobNetworks {
+		if jobNetwork.Name == networkName {
+			return jobNetworks[j], true
+		}
+	}
+	return JobNetworkConfig{}, false
 }
