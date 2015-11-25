@@ -11,7 +11,7 @@
   "parameters" : {
     "NOTE" : "name_length is 253 - 65 (DNS name limit - BOSH UUID domain name)",
     "name_length" : [5, 188],
-    "instances": [0, 1, 4, 5],
+    "instances": [1, 4, 5],
     "availability_zones": [null, ["z1"], ["z1", "z2"], ["z3", "z1", "z2"]],
     "persistent_disk_size": [0, 100, 200],
     "persistent_disk_definition": ["disk_pool", "disk_type", "persistent_disk"],
