@@ -14,6 +14,8 @@ func (f *FakeIpPoolProvider) NewIpPool(numOfNeededIPs int) *bftdeployment.IpPool
 	return ipPool
 }
 
+func (f *FakeIpPoolProvider) Reset() {}
+
 func (f *FakeIpPoolProvider) RegisterIpPool(ipPool *bftdeployment.IpPool) {
 	f.IpPools = append(f.IpPools, ipPool)
 }

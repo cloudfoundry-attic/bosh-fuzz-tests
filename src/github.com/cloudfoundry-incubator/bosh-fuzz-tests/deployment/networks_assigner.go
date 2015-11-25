@@ -46,6 +46,8 @@ func (n *networksAssigner) Assign(inputs []Input) {
 	// 4. Aggregate instances to compute static IPs (network with static IPs) (job with static I)
 
 	for i, _ := range inputs {
+		n.ipPoolProvider.Reset()
+
 		networkPoolWithAzs := []NetworkConfig{}
 		var networkTypes []string
 
@@ -188,7 +190,6 @@ func (n *networksAssigner) randomCombination(items []string) []string {
 
 func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job) {
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
-
 	vipIpPool := n.ipPoolProvider.NewIpPool(254)
 
 	for k, network := range networks {

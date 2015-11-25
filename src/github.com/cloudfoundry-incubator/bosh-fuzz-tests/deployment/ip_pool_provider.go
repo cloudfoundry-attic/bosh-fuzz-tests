@@ -28,6 +28,7 @@ func (i *IpPool) NextStaticIp() (string, error) {
 
 type IpPoolProvider interface {
 	NewIpPool(numOfNeededIPs int) *IpPool
+	Reset()
 }
 
 type ipPoolProvider struct {
@@ -92,4 +93,8 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *IpPool {
 		Reserved:     reservedRanges,
 		AvailableIps: availableIps,
 	}
+}
+
+func (p *ipPoolProvider) Reset() {
+	p.called = 0
 }
