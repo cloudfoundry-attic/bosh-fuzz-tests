@@ -177,6 +177,10 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
 	vipIpPool := n.ipPoolProvider.NewIpPool(254)
 
+	// only use 1 network with static IPs because it is hard to generate multiple networks with
+	// static IPs that can be distributed evenly across azs
+	hasNetworkWithStaticIps := false
+
 	for k, network := range networks {
 		jobsOnNetwork := jobsOnNetworks[network.Name]
 
@@ -187,7 +191,8 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 			}
 
 			for _, job := range jobsOnNetwork.Jobs {
-				if n.staticIpDecider.IsYes() { // use static IPs
+				if !hasNetworkWithStaticIps && n.staticIpDecider.IsYes() { // use static IPs
+					hasNetworkWithStaticIps = true
 					for ji := 0; ji < job.Instances; ji++ {
 						subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
 						if found {
