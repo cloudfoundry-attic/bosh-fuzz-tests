@@ -34,11 +34,18 @@ func (s *stemcell) Apply(input bftinput.Input) bftinput.Input {
 		}
 	}
 
+	usedStemcells := map[string]bool{}
+
 	if len(input.CloudConfig.VmTypes) > 0 {
 		for _, vmType := range input.CloudConfig.VmTypes {
 			stemcellConfig.Version = s.stemcellVersions[rand.Intn(len(s.stemcellVersions))]
 			stemcellConfig.Alias = fmt.Sprintf("stemcell-%s", stemcellConfig.Version)
-			input.Stemcells = append(input.Stemcells, stemcellConfig)
+
+			if usedStemcells[stemcellConfig.Alias] != true {
+				input.Stemcells = append(input.Stemcells, stemcellConfig)
+			}
+			usedStemcells[stemcellConfig.Alias] = true
+
 			for j := range input.Jobs {
 				if input.Jobs[j].VmType == vmType.Name {
 					input.Jobs[j].Stemcell = stemcellConfig.Alias
