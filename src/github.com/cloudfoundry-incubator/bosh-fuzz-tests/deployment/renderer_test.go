@@ -35,6 +35,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					AvailabilityZones:  []string{"z1", "z2"},
 					PersistentDiskSize: 100,
 					VmType:             "default",
+					Stemcell:           "default",
 					Networks: []bftinput.JobNetworkConfig{
 						{
 							Name:          "default",
@@ -49,6 +50,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
 					VmType:             "default",
+					Stemcell:           "default",
 					Networks: []bftinput.JobNetworkConfig{
 						{
 							Name:          "default",
@@ -284,7 +286,6 @@ update:
 jobs:
 - name: foo-job
   instances: 5
-  stemcell: default
   templates:
   - name: simple
     release: foo-release
@@ -381,7 +382,6 @@ jobs:
 - name: foo-job
   instances: 5
   persistent_disk_pool: fast-disks
-  stemcell: default
   templates:
   - name: simple
     release: foo-release
@@ -482,7 +482,6 @@ jobs:
 - name: foo-job
   instances: 5
   persistent_disk_type: fast-disks
-  stemcell: default
   templates:
   - name: simple
     release: foo-release

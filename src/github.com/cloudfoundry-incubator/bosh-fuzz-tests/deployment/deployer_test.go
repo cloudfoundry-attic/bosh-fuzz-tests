@@ -52,6 +52,7 @@ var _ = Describe("Deployer", func() {
 			MigratedFromCount:        []int{0},
 			VmTypeDefinition:         []string{"vm_type"},
 			StemcellDefinition:       []string{"name"},
+			StemcellVersions:         []string{"1"},
 		}
 
 		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}

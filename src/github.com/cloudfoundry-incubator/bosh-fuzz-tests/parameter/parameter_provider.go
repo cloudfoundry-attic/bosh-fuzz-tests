@@ -26,7 +26,7 @@ func NewParameterProvider(parameters bftconfig.Parameters, nameGenerator bftname
 func (p *parameterProvider) Get(name string) Parameter {
 	if name == "stemcell" {
 		stemcellDefinition := p.parameters.StemcellDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
-		return NewStemcell(stemcellDefinition)
+		return NewStemcell(stemcellDefinition, p.parameters.StemcellVersions)
 	} else if name == "persistent_disk" {
 		persistentDiskDefinition := p.parameters.PersistentDiskDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
 		return NewPersistentDisk(persistentDiskDefinition, p.parameters.PersistentDiskSize, p.nameGenerator)

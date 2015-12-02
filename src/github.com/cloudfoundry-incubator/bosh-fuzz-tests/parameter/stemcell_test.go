@@ -1,6 +1,8 @@
 package parameter_test
 
 import (
+	"math/rand"
+
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
@@ -16,7 +18,7 @@ var _ = Describe("Stemcell", func() {
 
 	Context("when definition is os", func() {
 		BeforeEach(func() {
-			stemcell = NewStemcell("os")
+			stemcell = NewStemcell("os", []string{"1"})
 		})
 
 		Context("when input has vm types", func() {
@@ -37,7 +39,7 @@ var _ = Describe("Stemcell", func() {
 						},
 					},
 					Stemcells: []bftinput.StemcellConfig{
-						{Alias: "default", OS: "toronto-os", Version: "1"},
+						{Alias: "stemcell-1", OS: "toronto-os", Version: "1"},
 					},
 				}))
 			})
@@ -72,7 +74,7 @@ var _ = Describe("Stemcell", func() {
 
 	Context("when definition is name", func() {
 		BeforeEach(func() {
-			stemcell = NewStemcell("name")
+			stemcell = NewStemcell("name", []string{"1"})
 		})
 
 		Context("when input has vm types", func() {
@@ -93,7 +95,7 @@ var _ = Describe("Stemcell", func() {
 						},
 					},
 					Stemcells: []bftinput.StemcellConfig{
-						{Alias: "default", Name: "ubuntu-stemcell", Version: "1"},
+						{Alias: "stemcell-1", Name: "ubuntu-stemcell", Version: "1"},
 					},
 				}))
 			})
@@ -123,6 +125,60 @@ var _ = Describe("Stemcell", func() {
 					},
 				}))
 			})
+		})
+	})
+
+	Context("with multiple vm types and jobs", func() {
+		BeforeEach(func() {
+			rand.Seed(32)
+			stemcell = NewStemcell("name", []string{"1", "2"})
+		})
+
+		It("generates stemcell version for each vm type and assigns stemcell to corresponding job", func() {
+			input := &bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:   "fake-job-1",
+						VmType: "fake-vm-type-1",
+					},
+					{
+						Name:   "fake-job-2",
+						VmType: "fake-vm-type-2",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
+						{Name: "fake-vm-type-1"},
+						{Name: "fake-vm-type-2"},
+					},
+				},
+			}
+
+			result := stemcell.Apply(input)
+			Expect(result).To(Equal(&bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:     "fake-job-1",
+						VmType:   "fake-vm-type-1",
+						Stemcell: "stemcell-1",
+					},
+					{
+						Name:     "fake-job-2",
+						VmType:   "fake-vm-type-2",
+						Stemcell: "stemcell-2",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
+						{Name: "fake-vm-type-1"},
+						{Name: "fake-vm-type-2"},
+					},
+				},
+				Stemcells: []bftinput.StemcellConfig{
+					{Alias: "stemcell-1", Name: "ubuntu-stemcell", Version: "1"},
+					{Alias: "stemcell-2", Name: "ubuntu-stemcell", Version: "2"},
+				},
+			}))
 		})
 	})
 })

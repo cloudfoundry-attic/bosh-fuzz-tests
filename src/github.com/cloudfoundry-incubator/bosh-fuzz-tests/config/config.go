@@ -24,6 +24,7 @@ type Parameters struct {
 	Networks                 [][]string `json:"networks"`
 	VmTypeDefinition         []string   `json:"vm_type_definition"`
 	StemcellDefinition       []string   `json:"stemcell_definition"`
+	StemcellVersions         []string   `json:"stemcell_versions"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

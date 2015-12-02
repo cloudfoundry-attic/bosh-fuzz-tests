@@ -18,6 +18,7 @@ type Job struct {
 	MigratedFrom       []MigratedFromConfig
 	VmType             string
 	ResourcePool       string
+	Stemcell           string
 }
 
 type CloudConfig struct {

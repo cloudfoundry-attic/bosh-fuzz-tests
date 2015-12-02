@@ -28,8 +28,8 @@ jobs:{{ range .Jobs }}
   resource_pool: {{ .ResourcePool }}{{ end }}{{ if .PersistentDiskPool }}
   persistent_disk_pool: {{ .PersistentDiskPool }}{{ else if .PersistentDiskType }}
   persistent_disk_type: {{ .PersistentDiskType }}{{ else if .PersistentDiskSize }}
-  persistent_disk: {{ .PersistentDiskSize }}{{ end }}
-  stemcell: default{{ if .MigratedFrom }}
+  persistent_disk: {{ .PersistentDiskSize }}{{ end }}{{ if .Stemcell }}
+  stemcell: {{ .Stemcell }}{{ end }}{{ if .MigratedFrom }}
   migrated_from:{{ range .MigratedFrom }}
   - name: {{ .Name }}{{ if .AvailabilityZone }}
     az: {{ .AvailabilityZone }}{{ end }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
