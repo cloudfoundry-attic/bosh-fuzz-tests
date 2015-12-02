@@ -16,9 +16,9 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("JobsRandomizer", func() {
+var _ = Describe("InputGenerator", func() {
 	var (
-		jobsRandomizer JobsRandomizer
+		inputGenerator InputGenerator
 	)
 
 	It("generates requested number of inputs", func() {
@@ -37,9 +37,9 @@ var _ = Describe("JobsRandomizer", func() {
 		rand.Seed(64)
 		nameGenerator := bftnamegen.NewNameGenerator()
 		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
-		jobsRandomizer = NewJobsRandomizer(parameters, fakeParameterProvider, 2, nameGenerator, logger)
+		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, logger)
 
-		inputs, err := jobsRandomizer.Generate()
+		inputs, err := inputGenerator.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(inputs).To(Equal([]bftinput.Input{
@@ -125,9 +125,9 @@ var _ = Describe("JobsRandomizer", func() {
 		rand.Seed(64)
 		nameGenerator := bftnamegen.NewNameGenerator()
 		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
-		jobsRandomizer = NewJobsRandomizer(parameters, fakeParameterProvider, 1, nameGenerator, logger)
+		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, logger)
 
-		inputs, err := jobsRandomizer.Generate()
+		inputs, err := inputGenerator.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
 		Expect(inputs).To(Equal([]bftinput.Input{

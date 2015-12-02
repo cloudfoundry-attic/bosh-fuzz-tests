@@ -13,6 +13,8 @@ import (
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftdeployment "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
+	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
@@ -108,14 +110,15 @@ func main() {
 	logger.Info("main", "Seeding with %d", seed)
 	rand.Seed(seed)
 
-	nameGenerator := bftdeployment.NewNameGenerator()
+	nameGenerator := bftnamegen.NewNameGenerator()
 	staticIpDecider := bftdeployment.NewRandomDecider()
 
 	ipPoolProvider := bftdeployment.NewIpPoolProvider()
-	jobsRandomizer := bftdeployment.NewJobsRandomizer(testConfig.Parameters, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
+	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator)
+	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
 	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, staticIpDecider)
 
-	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, envConfig.GenerateManifestOnly)
+	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, envConfig.GenerateManifestOnly)
 	err = deployer.RunDeploys()
 	if err != nil {
 		panic(err)

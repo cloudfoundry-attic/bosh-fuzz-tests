@@ -61,11 +61,11 @@ var _ = Describe("Deployer", func() {
 
 		nameGenerator := bftnamegen.NewNameGenerator()
 		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator)
-		jobsRandomizer := NewJobsRandomizer(parameters, parameterProvider, 2, nameGenerator, logger)
+		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
 		staticIpDecider := &fakebftdepl.FakeDecider{}
 		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, jobsRandomizer, networksAssigner, fs, false)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, false)
 	})
 
 	It("runs deploys with generated manifests", func() {

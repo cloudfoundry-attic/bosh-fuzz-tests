@@ -15,7 +15,7 @@ type deployer struct {
 	cliRunner            bltclirunner.Runner
 	directorInfo         bltaction.DirectorInfo
 	renderer             Renderer
-	jobsRandomizer       JobsRandomizer
+	inputGenerator       InputGenerator
 	networksAssigner     NetworksAssigner
 	fs                   boshsys.FileSystem
 	generateManifestOnly bool
@@ -25,7 +25,7 @@ func NewDeployer(
 	cliRunner bltclirunner.Runner,
 	directorInfo bltaction.DirectorInfo,
 	renderer Renderer,
-	jobsRandomizer JobsRandomizer,
+	inputGenerator InputGenerator,
 	networksAssigner NetworksAssigner,
 	fs boshsys.FileSystem,
 	generateManifestOnly bool,
@@ -34,7 +34,7 @@ func NewDeployer(
 		cliRunner:            cliRunner,
 		directorInfo:         directorInfo,
 		renderer:             renderer,
-		jobsRandomizer:       jobsRandomizer,
+		inputGenerator:       inputGenerator,
 		networksAssigner:     networksAssigner,
 		fs:                   fs,
 		generateManifestOnly: generateManifestOnly,
@@ -54,7 +54,7 @@ func (d *deployer) RunDeploys() error {
 	}
 	defer d.fs.RemoveAll(cloudConfigPath.Name())
 
-	inputs, err := d.jobsRandomizer.Generate()
+	inputs, err := d.inputGenerator.Generate()
 	if err != nil {
 		return err
 	}
