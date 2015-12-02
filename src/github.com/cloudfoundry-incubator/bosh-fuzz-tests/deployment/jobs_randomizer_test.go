@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
@@ -17,7 +18,7 @@ var _ = Describe("JobsRandomizer", func() {
 		jobsRandomizer JobsRandomizer
 	)
 
-	It("generates extra input for migrated jobs", func() {
+	It("generates requested number of inputs", func() {
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5},
 			Instances:                []int{2},
@@ -37,9 +38,9 @@ var _ = Describe("JobsRandomizer", func() {
 		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
-		Expect(inputs).To(Equal([]Input{
+		Expect(inputs).To(Equal([]bftinput.Input{
 			{
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:               "joNAw",
 						Instances:          2,
@@ -55,23 +56,23 @@ var _ = Describe("JobsRandomizer", func() {
 						VmType:             "mO5Qu91qDq",
 					},
 				},
-				CloudConfig: CloudConfig{
+				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					PersistentDiskPools: []DiskConfig{
+					PersistentDiskPools: []bftinput.DiskConfig{
 						{Name: "jO2GYdmz6a", Size: 100},
 						{Name: "b0xNg3RWDs", Size: 100},
 					},
-					VmTypes: []VmTypeConfig{
+					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "yRjDTBs3VX"},
 						{Name: "mO5Qu91qDq"},
 					},
 				},
-				Stemcells: []StemcellConfig{
+				Stemcells: []bftinput.StemcellConfig{
 					{OS: "toronto-os", Version: "1", Alias: "default"},
 				},
 			},
 			{
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:               "joNAw",
 						Instances:          2,
@@ -87,18 +88,18 @@ var _ = Describe("JobsRandomizer", func() {
 						VmType:             "sOgP3i7apW",
 					},
 				},
-				CloudConfig: CloudConfig{
+				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					PersistentDiskPools: []DiskConfig{
+					PersistentDiskPools: []bftinput.DiskConfig{
 						{Name: "aREws5gmsY", Size: 100},
 						{Name: "grcWVDVTZN", Size: 100},
 					},
-					VmTypes: []VmTypeConfig{
+					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "eE7YhmI4yV"},
 						{Name: "sOgP3i7apW"},
 					},
 				},
-				Stemcells: []StemcellConfig{
+				Stemcells: []bftinput.StemcellConfig{
 					{OS: "toronto-os", Version: "1", Alias: "default"},
 				},
 			},
@@ -125,21 +126,21 @@ var _ = Describe("JobsRandomizer", func() {
 		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
 
-		Expect(inputs).To(Equal([]Input{
+		Expect(inputs).To(Equal([]bftinput.Input{
 			{
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:      "vmz6agRjDT",
 						Instances: 2,
 						VmType:    "rYND0xNg3R",
 					},
 				},
-				CloudConfig: CloudConfig{
-					VmTypes: []VmTypeConfig{
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "rYND0xNg3R"},
 					},
 				},
-				Stemcells: []StemcellConfig{
+				Stemcells: []bftinput.StemcellConfig{
 					{
 						Name:    "ubuntu-stemcell",
 						Version: "1",
@@ -148,24 +149,24 @@ var _ = Describe("JobsRandomizer", func() {
 				},
 			},
 			{
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:              "joNAw",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
 						VmType:            "arKicN3O2G",
-						MigratedFrom: []MigratedFromConfig{
+						MigratedFrom: []bftinput.MigratedFromConfig{
 							{Name: "vmz6agRjDT", AvailabilityZone: "z1"},
 						},
 					},
 				},
-				CloudConfig: CloudConfig{
+				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					VmTypes: []VmTypeConfig{
+					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "arKicN3O2G"},
 					},
 				},
-				Stemcells: []StemcellConfig{
+				Stemcells: []bftinput.StemcellConfig{
 					{
 						Name:    "ubuntu-stemcell",
 						Version: "1",

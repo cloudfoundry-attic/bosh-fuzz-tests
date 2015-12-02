@@ -1,6 +1,7 @@
 package deployment_test
 
 import (
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	faksesys "github.com/cloudfoundry/bosh-utils/system/fakes"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
@@ -25,16 +26,16 @@ var _ = Describe("Manifest/Renderer", func() {
 	})
 
 	It("creates manifest based on input values", func() {
-		input := Input{
+		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []Job{
+			Jobs: []bftinput.Job{
 				{
 					Name:               "foo-job",
 					Instances:          5,
 					AvailabilityZones:  []string{"z1", "z2"},
 					PersistentDiskSize: 100,
 					VmType:             "default",
-					Networks: []JobNetworkConfig{
+					Networks: []bftinput.JobNetworkConfig{
 						{
 							Name:          "default",
 							StaticIps:     []string{"192.168.1.5"},
@@ -48,35 +49,35 @@ var _ = Describe("Manifest/Renderer", func() {
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
 					VmType:             "default",
-					Networks: []JobNetworkConfig{
+					Networks: []bftinput.JobNetworkConfig{
 						{
 							Name:          "default",
 							DefaultDNSnGW: true,
 						},
 					},
-					MigratedFrom: []MigratedFromConfig{
+					MigratedFrom: []bftinput.MigratedFromConfig{
 						{Name: "baz-job", AvailabilityZone: "z5"},
 					},
 				},
 			},
-			CloudConfig: CloudConfig{
+			CloudConfig: bftinput.CloudConfig{
 				AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
-				PersistentDiskPools: []DiskConfig{
+				PersistentDiskPools: []bftinput.DiskConfig{
 					{
 						Name: "fast-disks",
 						Size: 200,
 					},
 				},
-				VmTypes: []VmTypeConfig{
+				VmTypes: []bftinput.VmTypeConfig{
 					{Name: "default"},
 				},
-				Networks: []NetworkConfig{
+				Networks: []bftinput.NetworkConfig{
 					{
 						Name: "default",
 						Type: "manual",
-						Subnets: []SubnetConfig{
+						Subnets: []bftinput.SubnetConfig{
 							{
-								IpPool: &IpPool{
+								IpPool: &bftinput.IpPool{
 									IpRange: "192.168.1.0/24",
 									Gateway: "192.168.1.254",
 									Reserved: []string{
@@ -95,7 +96,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					{
 						Name: "no-az",
 						Type: "dynamic",
-						Subnets: []SubnetConfig{
+						Subnets: []bftinput.SubnetConfig{
 							{},
 						},
 					},
@@ -103,7 +104,7 @@ var _ = Describe("Manifest/Renderer", func() {
 				CompilationNetwork:          "default",
 				CompilationAvailabilityZone: "z1",
 			},
-			Stemcells: []StemcellConfig{
+			Stemcells: []bftinput.StemcellConfig{
 				{
 					Alias:   "default",
 					OS:      "toronto-os",
@@ -233,28 +234,28 @@ disk_pools:
 
 	Context("when AvailabilityZone is nil", func() {
 		It("does not specify az key in manifest", func() {
-			input := Input{
+			input := bftinput.Input{
 				DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:      "foo-job",
 						Instances: 5,
-						Networks:  []JobNetworkConfig{{Name: "default"}},
+						Networks:  []bftinput.JobNetworkConfig{{Name: "default"}},
 					},
 				},
-				CloudConfig: CloudConfig{
-					Networks: []NetworkConfig{
+				CloudConfig: bftinput.CloudConfig{
+					Networks: []bftinput.NetworkConfig{
 						{
 							Name: "default",
 							Type: "manual",
-							Subnets: []SubnetConfig{
+							Subnets: []bftinput.SubnetConfig{
 								{},
 							},
 						},
 						{
 							Name: "no-az",
 							Type: "dynamic",
-							Subnets: []SubnetConfig{
+							Subnets: []bftinput.SubnetConfig{
 								{},
 							},
 						},
@@ -322,35 +323,35 @@ compilation:
 	})
 
 	It("uses the disk pool specified for job", func() {
-		input := Input{
+		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []Job{
+			Jobs: []bftinput.Job{
 				{
 					Name:               "foo-job",
 					Instances:          5,
 					PersistentDiskPool: "fast-disks",
-					Networks:           []JobNetworkConfig{{Name: "default"}},
+					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
 				},
 			},
-			CloudConfig: CloudConfig{
-				PersistentDiskPools: []DiskConfig{
+			CloudConfig: bftinput.CloudConfig{
+				PersistentDiskPools: []bftinput.DiskConfig{
 					{
 						Name: "fast-disks",
 						Size: 100,
 					},
 				},
-				Networks: []NetworkConfig{
+				Networks: []bftinput.NetworkConfig{
 					{
 						Name: "default",
 						Type: "manual",
-						Subnets: []SubnetConfig{
+						Subnets: []bftinput.SubnetConfig{
 							{},
 						},
 					},
 					{
 						Name: "no-az",
 						Type: "dynamic",
-						Subnets: []SubnetConfig{
+						Subnets: []bftinput.SubnetConfig{
 							{},
 						},
 					},
@@ -423,35 +424,35 @@ disk_pools:
 	})
 
 	It("uses the disk type", func() {
-		input := Input{
+		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []Job{
+			Jobs: []bftinput.Job{
 				{
 					Name:               "foo-job",
 					Instances:          5,
 					PersistentDiskType: "fast-disks",
-					Networks:           []JobNetworkConfig{{Name: "default"}},
+					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
 				},
 			},
-			CloudConfig: CloudConfig{
-				PersistentDiskTypes: []DiskConfig{
+			CloudConfig: bftinput.CloudConfig{
+				PersistentDiskTypes: []bftinput.DiskConfig{
 					{
 						Name: "fast-disks",
 						Size: 100,
 					},
 				},
-				Networks: []NetworkConfig{
+				Networks: []bftinput.NetworkConfig{
 					{
 						Name: "default",
 						Type: "manual",
-						Subnets: []SubnetConfig{
+						Subnets: []bftinput.SubnetConfig{
 							{},
 						},
 					},
 					{
 						Name: "no-az",
 						Type: "dynamic",
-						Subnets: []SubnetConfig{
+						Subnets: []bftinput.SubnetConfig{
 							{},
 						},
 					},

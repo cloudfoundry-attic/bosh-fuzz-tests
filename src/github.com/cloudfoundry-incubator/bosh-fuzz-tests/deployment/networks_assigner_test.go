@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
@@ -15,7 +16,7 @@ var _ = Describe("NetworksAssigner", func() {
 	var (
 		networksAssigner NetworksAssigner
 		networks         [][]string
-		expectedIpPool   *IpPool
+		expectedIpPool   *bftinput.IpPool
 	)
 
 	BeforeEach(func() {
@@ -25,7 +26,7 @@ var _ = Describe("NetworksAssigner", func() {
 		nameGenerator := &fakebftdepl.FakeNameGenerator{}
 		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net", "qux-net"}
 		ipPoolProvider := &fakebftdepl.FakeIpPoolProvider{}
-		vipPool := &IpPool{
+		vipPool := &bftinput.IpPool{
 			AvailableIps: []string{
 				"10.10.0.6",
 				"10.10.0.32",
@@ -33,7 +34,7 @@ var _ = Describe("NetworksAssigner", func() {
 		}
 		ipPoolProvider.RegisterIpPool(vipPool)
 
-		ipPool := &IpPool{
+		ipPool := &bftinput.IpPool{
 			IpRange: "192.168.0.0/24",
 			Gateway: "192.168.0.1",
 			Reserved: []string{
@@ -48,7 +49,7 @@ var _ = Describe("NetworksAssigner", func() {
 		ipPoolProvider.RegisterIpPool(ipPool)
 		ipPoolProvider.RegisterIpPool(ipPool)
 
-		expectedIpPool = &IpPool{
+		expectedIpPool = &bftinput.IpPool{
 			IpRange: "192.168.0.0/24",
 			Gateway: "192.168.0.1",
 			Reserved: []string{
@@ -67,16 +68,16 @@ var _ = Describe("NetworksAssigner", func() {
 	})
 
 	It("assigns network of the given type to job and cloud config", func() {
-		inputs := []Input{
+		inputs := []bftinput.Input{
 			{
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:              "foo",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
 					},
 				},
-				CloudConfig: CloudConfig{
+				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
 				},
 			},
@@ -84,14 +85,14 @@ var _ = Describe("NetworksAssigner", func() {
 
 		networksAssigner.Assign(inputs)
 
-		Expect(inputs).To(BeEquivalentTo([]Input{
+		Expect(inputs).To(BeEquivalentTo([]bftinput.Input{
 			{
-				Jobs: []Job{
+				Jobs: []bftinput.Job{
 					{
 						Name:              "foo",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
-						Networks: []JobNetworkConfig{
+						Networks: []bftinput.JobNetworkConfig{
 							{
 								Name:      "bar-net",
 								StaticIps: []string{"10.10.0.6", "10.10.0.32"},
@@ -104,13 +105,13 @@ var _ = Describe("NetworksAssigner", func() {
 						},
 					},
 				},
-				CloudConfig: CloudConfig{
+				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					Networks: []NetworkConfig{
+					Networks: []bftinput.NetworkConfig{
 						{
 							Name: "foo-net",
 							Type: "manual",
-							Subnets: []SubnetConfig{
+							Subnets: []bftinput.SubnetConfig{
 								{
 									IpPool:            expectedIpPool,
 									AvailabilityZones: []string{"z1"},
@@ -124,7 +125,7 @@ var _ = Describe("NetworksAssigner", func() {
 						{
 							Name: "baz-net",
 							Type: "manual",
-							Subnets: []SubnetConfig{
+							Subnets: []bftinput.SubnetConfig{
 								{
 									IpPool: expectedIpPool,
 								},

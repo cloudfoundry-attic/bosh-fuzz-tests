@@ -5,29 +5,11 @@ import (
 	"math/rand"
 	"sort"
 
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )
 
-type IpPool struct {
-	IpRange      string
-	Gateway      string
-	Reserved     []string
-	Static       []string
-	AvailableIps []string
-}
-
-func (i *IpPool) NextStaticIp() (string, error) {
-	var ip string
-	if len(i.AvailableIps) == 0 {
-		return "", bosherr.Error("No more available")
-	}
-	ip, i.AvailableIps = i.AvailableIps[0], i.AvailableIps[1:]
-	i.Static = append(i.Static, ip)
-	return ip, nil
-}
-
 type IpPoolProvider interface {
-	NewIpPool(numOfNeededIPs int) *IpPool
+	NewIpPool(numOfNeededIPs int) *bftinput.IpPool
 	Reset()
 }
 
@@ -40,7 +22,7 @@ func NewIpPoolProvider() IpPoolProvider {
 	return &ipPoolProvider{}
 }
 
-func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *IpPool {
+func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *bftinput.IpPool {
 	if numOfNeededIPs == 0 {
 		numOfNeededIPs = rand.Intn(10)
 	}
@@ -87,7 +69,7 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *IpPool {
 		availableIps = append(availableIps, fmt.Sprintf("%s.%d", prefix, usedIps[ipIndex]))
 	}
 
-	return &IpPool{
+	return &bftinput.IpPool{
 		IpRange:      ipRange,
 		Gateway:      gateway,
 		Reserved:     reservedRanges,

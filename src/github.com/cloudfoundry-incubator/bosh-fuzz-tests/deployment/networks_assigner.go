@@ -2,10 +2,12 @@ package deployment
 
 import (
 	"math/rand"
+
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )
 
 type NetworksAssigner interface {
-	Assign(inputs []Input)
+	Assign(inputs []bftinput.Input)
 }
 
 type networksAssigner struct {
@@ -24,7 +26,7 @@ func NewNetworksAssigner(networks [][]string, nameGenerator NameGenerator, ipPoo
 	}
 }
 
-func (n *networksAssigner) Assign(inputs []Input) {
+func (n *networksAssigner) Assign(inputs []bftinput.Input) {
 	// 1. Generate Networks with/without AZs (network with types)
 	// 2. Assign networks to each job (network with AZs) (job with network name)
 	// 3. Generate IP specs for each network (network with IP specs)
@@ -33,14 +35,14 @@ func (n *networksAssigner) Assign(inputs []Input) {
 	for i, _ := range inputs {
 		n.ipPoolProvider.Reset()
 
-		networkPoolWithAzs := []NetworkConfig{}
+		networkPoolWithAzs := []bftinput.NetworkConfig{}
 		var networkTypes []string
 
 		if len(inputs[i].CloudConfig.AvailabilityZones) > 0 {
 			networkTypes = n.networks[rand.Intn(len(n.networks))]
 
 			for _, networkType := range networkTypes {
-				network := NetworkConfig{
+				network := bftinput.NetworkConfig{
 					Name: n.nameGenerator.Generate(7),
 					Type: networkType,
 				}
@@ -54,10 +56,10 @@ func (n *networksAssigner) Assign(inputs []Input) {
 			}
 		}
 
-		networkPoolWithoutAzs := []NetworkConfig{}
+		networkPoolWithoutAzs := []bftinput.NetworkConfig{}
 		networkTypes = n.networks[rand.Intn(len(n.networks))]
 		for _, networkType := range networkTypes {
-			network := NetworkConfig{
+			network := bftinput.NetworkConfig{
 				Name: n.nameGenerator.Generate(7),
 				Type: networkType,
 			}
@@ -81,7 +83,7 @@ func (n *networksAssigner) Assign(inputs []Input) {
 		allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
 		n.assignStaticIps(allNetworks, inputs[i].Jobs)
 
-		nonVipNetworks := []NetworkConfig{}
+		nonVipNetworks := []bftinput.NetworkConfig{}
 
 		for _, network := range allNetworks {
 			inputs[i].CloudConfig.Networks = append(inputs[i].CloudConfig.Networks, network)
@@ -103,14 +105,14 @@ func (n *networksAssigner) Assign(inputs []Input) {
 	}
 }
 
-func (n *networksAssigner) generateJobNetworks(networkPool []NetworkConfig, azs []string) []JobNetworkConfig {
-	jobNetworks := []JobNetworkConfig{}
+func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkConfig, azs []string) []bftinput.JobNetworkConfig {
+	jobNetworks := []bftinput.JobNetworkConfig{}
 
 	totalNumberOfJobNetworks := rand.Intn(len(networkPool)) + 1
 	networksToPick := rand.Perm(len(networkPool))[:totalNumberOfJobNetworks]
 	for _, k := range networksToPick {
 		network := networkPool[k]
-		jobNetworks = append(jobNetworks, JobNetworkConfig{Name: network.Name})
+		jobNetworks = append(jobNetworks, bftinput.JobNetworkConfig{Name: network.Name})
 	}
 
 	jobNetworks[rand.Intn(totalNumberOfJobNetworks)].DefaultDNSnGW = true
@@ -118,36 +120,36 @@ func (n *networksAssigner) generateJobNetworks(networkPool []NetworkConfig, azs 
 	return jobNetworks
 }
 
-func (n *networksAssigner) generateSubnets(azs []string) []SubnetConfig {
-	subnets := []SubnetConfig{}
+func (n *networksAssigner) generateSubnets(azs []string) []bftinput.SubnetConfig {
+	subnets := []bftinput.SubnetConfig{}
 
 	placedAzs := NewPlacedAZs()
 	for !placedAzs.AllPlaced(azs) {
 		newAzs := n.randomCombination(azs)
 		placedAzs.Place(newAzs)
-		subnets = append(subnets, SubnetConfig{AvailabilityZones: newAzs})
+		subnets = append(subnets, bftinput.SubnetConfig{AvailabilityZones: newAzs})
 	}
 
 	return subnets
 }
 
-func (n *networksAssigner) generateSubnetsWithoutAzs() []SubnetConfig {
-	subnets := []SubnetConfig{}
+func (n *networksAssigner) generateSubnetsWithoutAzs() []bftinput.SubnetConfig {
+	subnets := []bftinput.SubnetConfig{}
 	numberOfSubnets := rand.Intn(3) + 1 // up to 3
 
 	for i := 0; i < numberOfSubnets; i++ {
-		subnets = append(subnets, SubnetConfig{})
+		subnets = append(subnets, bftinput.SubnetConfig{})
 	}
 
 	return subnets
 }
 
 type JobsOnNetwork struct {
-	Jobs           []Job
+	Jobs           []bftinput.Job
 	TotalInstances int
 }
 
-func (n *networksAssigner) aggregateNetworkJobs(jobs []Job) map[string]JobsOnNetwork {
+func (n *networksAssigner) aggregateNetworkJobs(jobs []bftinput.Job) map[string]JobsOnNetwork {
 	jobsOnNetworks := map[string]JobsOnNetwork{}
 
 	for _, job := range jobs {
@@ -173,7 +175,7 @@ func (n *networksAssigner) randomCombination(items []string) []string {
 	return combination
 }
 
-func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job) {
+func (n *networksAssigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bftinput.Job) {
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
 	vipIpPool := n.ipPoolProvider.NewIpPool(254)
 
@@ -221,9 +223,9 @@ func (n *networksAssigner) assignStaticIps(networks []NetworkConfig, jobs []Job)
 	}
 }
 
-func (n *networksAssigner) findIpPoolWithJobAZ(subnets []SubnetConfig, azs []string) (*IpPool, bool) {
+func (n *networksAssigner) findIpPoolWithJobAZ(subnets []bftinput.SubnetConfig, azs []string) (*bftinput.IpPool, bool) {
 	shuffledSubnetIdxs := rand.Perm(len(subnets))
-	shuffledSubnets := []SubnetConfig{}
+	shuffledSubnets := []bftinput.SubnetConfig{}
 	for _, i := range shuffledSubnetIdxs {
 		shuffledSubnets = append(shuffledSubnets, subnets[i])
 	}
@@ -238,5 +240,5 @@ func (n *networksAssigner) findIpPoolWithJobAZ(subnets []SubnetConfig, azs []str
 		}
 	}
 
-	return &IpPool{}, false
+	return &bftinput.IpPool{}, false
 }

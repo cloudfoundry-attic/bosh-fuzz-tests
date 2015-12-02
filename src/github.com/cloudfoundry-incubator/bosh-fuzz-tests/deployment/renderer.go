@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"text/template"
 
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 )
 
 type Renderer interface {
-	Render(input Input, manifestPath string, cloudConfigPath string) error
+	Render(input bftinput.Input, manifestPath string, cloudConfigPath string) error
 }
 
 type renderer struct {
@@ -22,7 +23,7 @@ func NewRenderer(fs boshsys.FileSystem) Renderer {
 	}
 }
 
-func (g *renderer) Render(input Input, manifestPath string, cloudConfigPath string) error {
+func (g *renderer) Render(input bftinput.Input, manifestPath string, cloudConfigPath string) error {
 	deploymentTemplate := template.Must(template.New("deployment").Parse(DeploymentTemplate))
 
 	buffer := bytes.NewBuffer([]byte{})

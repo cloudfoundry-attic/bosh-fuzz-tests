@@ -1,4 +1,4 @@
-package deployment
+package input
 
 type Input struct {
 	DirectorUUID string
