@@ -35,14 +35,17 @@ func (p *preparer) Prepare() error {
 		return err
 	}
 
-	stemcellPath, err := p.assetsProvider.FullPath("stemcell.tgz")
-	if err != nil {
-		return err
-	}
+	stemcellsToUpload := []string{"stemcell.tgz", "stemcell_2.tgz"}
+	for _, stemcellToUpload := range stemcellsToUpload {
+		stemcellPath, err := p.assetsProvider.FullPath(stemcellToUpload)
+		if err != nil {
+			return err
+		}
 
-	err = p.cliRunner.RunWithArgs("upload", "stemcell", stemcellPath)
-	if err != nil {
-		return err
+		err = p.cliRunner.RunWithArgs("upload", "stemcell", stemcellPath)
+		if err != nil {
+			return err
+		}
 	}
 
 	releaseDir, err := p.fs.TempDir("release-test")
