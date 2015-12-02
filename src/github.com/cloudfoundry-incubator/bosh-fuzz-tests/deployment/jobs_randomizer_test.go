@@ -28,7 +28,7 @@ var _ = Describe("JobsRandomizer", func() {
 			NumberOfJobs:             []int{2},
 			MigratedFromCount:        []int{0},
 			VmTypeDefinition:         []string{"vm_type"},
-			StemcellDefinition:       []string{"os_version"},
+			StemcellDefinition:       []string{"os"},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)

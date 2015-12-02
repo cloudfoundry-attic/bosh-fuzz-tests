@@ -5,6 +5,7 @@ import (
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
@@ -65,6 +66,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 	persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
 	vmTypeDefinition := ir.parameters.VmTypeDefinition[rand.Intn(len(ir.parameters.VmTypeDefinition))]
 	stemcellDefinition := ir.parameters.StemcellDefinition[rand.Intn(len(ir.parameters.StemcellDefinition))]
+	stemcell := bftparam.NewStemcell(stemcellDefinition)
 
 	for _, jobName := range jobNames {
 		job := &bftinput.Job{
@@ -75,6 +77,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 
 		ir.assignPersistentDisk(persistentDiskDefinition, job, input)
 		ir.assignVmType(vmTypeDefinition, stemcellDefinition, job, input)
+		input = stemcell.Apply(input)
 
 		for _, az := range job.AvailabilityZones {
 			if azs[az] != true {
@@ -157,34 +160,18 @@ func (ir *jobsRandomizer) assignPersistentDisk(persistentDiskDefinition string, 
 }
 
 func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, stemcellDefinition string, job *bftinput.Job, input *bftinput.Input) {
-	var stemcellConfig bftinput.StemcellConfig
-	if stemcellDefinition == "os_version" {
-		stemcellConfig = bftinput.StemcellConfig{
-			OS:      "toronto-os",
-			Version: "1",
-		}
-	} else {
-		stemcellConfig = bftinput.StemcellConfig{
-			Name:    "ubuntu-stemcell",
-			Version: "1",
-		}
-	}
-
 	if vmTypeDefinition == "vm_type" {
 		job.VmType = ir.nameGenerator.Generate(10)
 		input.CloudConfig.VmTypes = append(
 			input.CloudConfig.VmTypes,
 			bftinput.VmTypeConfig{Name: job.VmType},
 		)
-		stemcellConfig.Alias = "default"
-		input.Stemcells = []bftinput.StemcellConfig{stemcellConfig}
 	} else if vmTypeDefinition == "resource_pool" {
 		job.ResourcePool = ir.nameGenerator.Generate(10)
 		input.CloudConfig.ResourcePools = append(
 			input.CloudConfig.ResourcePools,
 			bftinput.ResourcePoolConfig{
-				Name:     job.ResourcePool,
-				Stemcell: stemcellConfig,
+				Name: job.ResourcePool,
 			},
 		)
 	}
