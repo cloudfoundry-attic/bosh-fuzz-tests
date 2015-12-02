@@ -56,38 +56,23 @@ func (ir *jobsRandomizer) Generate() ([]Input, error) {
 }
 
 func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment bool) Input {
-	input := Input{
+	input := &Input{
 		Jobs: []Job{},
 	}
 
 	azs := map[string]bool{}
 	persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
+	vmTypeDefinition := ir.parameters.VmTypeDefinition[rand.Intn(len(ir.parameters.VmTypeDefinition))]
 
 	for _, jobName := range jobNames {
-		job := Job{
+		job := &Job{
 			Name:              jobName,
 			Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
 			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
 		}
 
-		persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
-		if persistentDiskSize != 0 {
-			if persistentDiskDefinition == "disk_pool" {
-				job.PersistentDiskPool = ir.nameGenerator.Generate(10)
-				input.CloudConfig.PersistentDiskPools = append(
-					input.CloudConfig.PersistentDiskPools,
-					DiskConfig{Name: job.PersistentDiskPool, Size: persistentDiskSize},
-				)
-			} else if persistentDiskDefinition == "disk_type" {
-				job.PersistentDiskType = ir.nameGenerator.Generate(10)
-				input.CloudConfig.PersistentDiskTypes = append(
-					input.CloudConfig.PersistentDiskTypes,
-					DiskConfig{Name: job.PersistentDiskType, Size: persistentDiskSize},
-				)
-			} else {
-				job.PersistentDiskSize = persistentDiskSize
-			}
-		}
+		ir.assignPersistentDisk(persistentDiskDefinition, job, input)
+		ir.assignVmType(vmTypeDefinition, job, input)
 
 		for _, az := range job.AvailabilityZones {
 			if azs[az] != true {
@@ -104,10 +89,10 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 			}
 		}
 
-		input.Jobs = append(input.Jobs, job)
+		input.Jobs = append(input.Jobs, *job)
 	}
 
-	return input
+	return *input
 }
 
 func (ir *jobsRandomizer) generateJobNames(i int, inputs []Input) []string {
@@ -145,5 +130,42 @@ func (ir *jobsRandomizer) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput In
 				}
 			}
 		}
+	}
+}
+
+func (ir *jobsRandomizer) assignPersistentDisk(persistentDiskDefinition string, job *Job, input *Input) {
+	persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
+	if persistentDiskSize != 0 {
+		if persistentDiskDefinition == "disk_pool" {
+			job.PersistentDiskPool = ir.nameGenerator.Generate(10)
+			input.CloudConfig.PersistentDiskPools = append(
+				input.CloudConfig.PersistentDiskPools,
+				DiskConfig{Name: job.PersistentDiskPool, Size: persistentDiskSize},
+			)
+		} else if persistentDiskDefinition == "disk_type" {
+			job.PersistentDiskType = ir.nameGenerator.Generate(10)
+			input.CloudConfig.PersistentDiskTypes = append(
+				input.CloudConfig.PersistentDiskTypes,
+				DiskConfig{Name: job.PersistentDiskType, Size: persistentDiskSize},
+			)
+		} else {
+			job.PersistentDiskSize = persistentDiskSize
+		}
+	}
+}
+
+func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, job *Job, input *Input) {
+	if vmTypeDefinition == "vm_type" {
+		job.VmType = ir.nameGenerator.Generate(10)
+		input.CloudConfig.VmTypes = append(
+			input.CloudConfig.VmTypes,
+			VmTypeConfig{Name: job.VmType},
+		)
+	} else if vmTypeDefinition == "resource_pool" {
+		job.ResourcePool = ir.nameGenerator.Generate(10)
+		input.CloudConfig.ResourcePools = append(
+			input.CloudConfig.ResourcePools,
+			VmTypeConfig{Name: job.ResourcePool},
+		)
 	}
 }

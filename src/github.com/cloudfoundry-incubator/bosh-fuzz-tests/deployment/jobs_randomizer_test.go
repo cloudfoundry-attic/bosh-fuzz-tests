@@ -26,6 +26,7 @@ var _ = Describe("JobsRandomizer", func() {
 			PersistentDiskSize:       []int{0, 100, 200},
 			NumberOfJobs:             []int{1, 2},
 			MigratedFromCount:        []int{0, 2},
+			VmTypeDefinition:         []string{"vm_type", "resource_pool"},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
@@ -40,59 +41,42 @@ var _ = Describe("JobsRandomizer", func() {
 				Jobs: []Job{
 					{
 						Name:              "joNAw",
-						Instances:         4,
+						Instances:         2,
 						AvailabilityZones: []string{"z1"},
+						ResourcePool:      "h3O2GYdmz6",
 					},
 					{
-						Name:              "gQ8el",
-						Instances:         4,
-						AvailabilityZones: []string{"z1", "z2"},
+						Name:               "gQ8el",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1", "z2"},
+						PersistentDiskPool: "pTBs3VXU3Y",
+						ResourcePool:       "xD0xNg3RWD",
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1", "z2"},
-				},
-			},
-			{
-				Jobs: []Job{
-					{
-						Name:               "rU3YND0xNg",
-						Instances:          4,
-						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "gBUnQKBYoE",
-					},
-					{
-						Name:               "pRWDsiO5Qu",
-						Instances:          4,
-						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "a5gmsYqE7Y",
-					},
-				},
-				CloudConfig: CloudConfig{
-					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []DiskConfig{
-						{Name: "gBUnQKBYoE", Size: 100},
-						{Name: "a5gmsYqE7Y", Size: 100},
+						{Name: "pTBs3VXU3Y", Size: 100},
+					},
+					ResourcePools: []VmTypeConfig{
+						{Name: "h3O2GYdmz6"},
+						{Name: "xD0xNg3RWD"},
 					},
 				},
 			},
 			{
 				Jobs: []Job{
 					{
-						Name:               "joNAw",
-						Instances:          4,
-						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "eagRjDTBs3",
-						MigratedFrom: []MigratedFromConfig{
-							{Name: "rU3YND0xNg"},
-							{Name: "pRWDsiO5Qu"},
-						},
+						Name:              "joNAw",
+						Instances:         2,
+						AvailabilityZones: []string{"z1"},
+						ResourcePool:      "fqDqBUnQKB",
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					PersistentDiskPools: []DiskConfig{
-						{Name: "eagRjDTBs3", Size: 100},
+					ResourcePools: []VmTypeConfig{
+						{Name: "fqDqBUnQKB"},
 					},
 				},
 			},
@@ -108,6 +92,7 @@ var _ = Describe("JobsRandomizer", func() {
 			PersistentDiskSize:       []int{0},
 			NumberOfJobs:             []int{1},
 			MigratedFromCount:        []int{1},
+			VmTypeDefinition:         []string{"vm_type"},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
@@ -121,8 +106,14 @@ var _ = Describe("JobsRandomizer", func() {
 			{
 				Jobs: []Job{
 					{
-						Name:      "vgrKicN3O2",
+						Name:      "qdmz6agRjD",
 						Instances: 2,
+						VmType:    "rU3YND0xNg",
+					},
+				},
+				CloudConfig: CloudConfig{
+					VmTypes: []VmTypeConfig{
+						{Name: "rU3YND0xNg"},
 					},
 				},
 			},
@@ -132,13 +123,17 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:              "joNAw",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
+						VmType:            "vgrKicN3O2",
 						MigratedFrom: []MigratedFromConfig{
-							{Name: "vgrKicN3O2", AvailabilityZone: "z1"},
+							{Name: "qdmz6agRjD", AvailabilityZone: "z1"},
 						},
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
+					VmTypes: []VmTypeConfig{
+						{Name: "vgrKicN3O2"},
+					},
 				},
 			},
 		}))

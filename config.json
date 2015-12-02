@@ -17,7 +17,11 @@
     "persistent_disk_definition": ["disk_pool", "disk_type", "persistent_disk"],
     "number_of_jobs": [1, 2, 3],
     "migrated_from_count": [0, 1, 2],
-    "networks": [["dynamic", "vip"], ["dynamic", "manual"], ["dynamic", "vip", "dynamic"], ["manual"], ["vip", "manual", "manual"], ["manual", "dynamic", "vip"]]
+    "networks": [["dynamic", "vip"], ["dynamic", "manual"], ["dynamic", "vip", "dynamic"], ["manual"], ["vip", "manual", "manual"], ["manual", "dynamic", "vip"]],
+    "vm_type_definition": ["vm_type", "resource_pool"],
+    "stemcell_definition": ["os_version", "name"],
+    "vm_types": [1, 2, 3],
+    "stemcell_version": ["1", "2"]
   },
   "number_of_consequent_deploys": 10,
   "generate_manifest_only": false

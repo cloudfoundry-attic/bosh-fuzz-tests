@@ -33,6 +33,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					Instances:          5,
 					AvailabilityZones:  []string{"z1", "z2"},
 					PersistentDiskSize: 100,
+					VmType:             "default",
 					Networks: []JobNetworkConfig{
 						{
 							Name:          "default",
@@ -46,6 +47,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					Instances:          2,
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
+					VmType:             "default",
 					Networks: []JobNetworkConfig{
 						{
 							Name:          "default",
@@ -64,6 +66,9 @@ var _ = Describe("Manifest/Renderer", func() {
 						Name: "fast-disks",
 						Size: 200,
 					},
+				},
+				VmTypes: []VmTypeConfig{
+					{Name: "default"},
 				},
 				Networks: []NetworkConfig{
 					{
@@ -258,11 +263,6 @@ name: foo-deployment
 
 director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
 
-stemcells:
-- alias: default
-  os: toronto-os
-  version: 1
-
 releases:
 - name: foo-release
   version: latest
@@ -276,7 +276,6 @@ update:
 jobs:
 - name: foo-job
   instances: 5
-  vm_type: default
   stemcell: default
   templates:
   - name: simple
@@ -306,10 +305,6 @@ networks:
 compilation:
   workers: 1
   network: default
-  cloud_properties: {}
-
-vm_types:
-- name: default
   cloud_properties: {}
 `
 
@@ -364,11 +359,6 @@ name: foo-deployment
 
 director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
 
-stemcells:
-- alias: default
-  os: toronto-os
-  version: 1
-
 releases:
 - name: foo-release
   version: latest
@@ -382,7 +372,6 @@ update:
 jobs:
 - name: foo-job
   instances: 5
-  vm_type: default
   persistent_disk_pool: fast-disks
   stemcell: default
   templates:
@@ -413,10 +402,6 @@ networks:
 compilation:
   workers: 1
   network: default
-  cloud_properties: {}
-
-vm_types:
-- name: default
   cloud_properties: {}
 
 disk_pools:
@@ -475,11 +460,6 @@ name: foo-deployment
 
 director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
 
-stemcells:
-- alias: default
-  os: toronto-os
-  version: 1
-
 releases:
 - name: foo-release
   version: latest
@@ -493,7 +473,6 @@ update:
 jobs:
 - name: foo-job
   instances: 5
-  vm_type: default
   persistent_disk_type: fast-disks
   stemcell: default
   templates:
@@ -524,10 +503,6 @@ networks:
 compilation:
   workers: 1
   network: default
-  cloud_properties: {}
-
-vm_types:
-- name: default
   cloud_properties: {}
 
 disk_types:

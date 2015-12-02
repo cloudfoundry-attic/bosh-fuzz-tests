@@ -15,6 +15,8 @@ type Job struct {
 	PersistentDiskType string
 	Networks           []JobNetworkConfig
 	MigratedFrom       []MigratedFromConfig
+	VmType             string
+	ResourcePool       string
 }
 
 type CloudConfig struct {
@@ -24,11 +26,17 @@ type CloudConfig struct {
 	Networks                    []NetworkConfig
 	CompilationNetwork          string
 	CompilationAvailabilityZone string
+	VmTypes                     []VmTypeConfig
+	ResourcePools               []VmTypeConfig
 }
 
 type DiskConfig struct {
 	Name string
 	Size int
+}
+
+type VmTypeConfig struct {
+	Name string
 }
 
 type MigratedFromConfig struct {

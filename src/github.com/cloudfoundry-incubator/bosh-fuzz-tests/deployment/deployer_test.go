@@ -47,6 +47,7 @@ var _ = Describe("Deployer", func() {
 			PersistentDiskSize:       []int{0, 100},
 			NumberOfJobs:             []int{1, 2},
 			MigratedFromCount:        []int{0},
+			VmTypeDefinition:         []string{"vm_type"},
 		}
 
 		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}

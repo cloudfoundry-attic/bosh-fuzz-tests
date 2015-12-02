@@ -24,11 +24,19 @@ compilation:
   workers: 1
   network: {{ .CloudConfig.CompilationNetwork }}
   cloud_properties: {}{{ if .CloudConfig.CompilationAvailabilityZone }}
-  az: {{ .CloudConfig.CompilationAvailabilityZone }}{{ end }}
+  az: {{ .CloudConfig.CompilationAvailabilityZone }}{{ end }}{{ if .CloudConfig.VmTypes }}
 
-vm_types:
-- name: default
-  cloud_properties: {}{{ if .CloudConfig.PersistentDiskPools }}
+vm_types:{{ range .CloudConfig.VmTypes }}
+- name: {{ .Name }}
+  cloud_properties: {}{{ end }}{{ end }}{{ if .CloudConfig.ResourcePools }}
+
+resource_pools:{{ range .CloudConfig.ResourcePools }}
+- name: {{ .Name }}
+  stemcell:
+    alias: default
+    os: toronto-os
+    version: 1
+  cloud_properties: {}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskPools }}
 
 disk_pools:{{ range .CloudConfig.PersistentDiskPools }}
 - name: {{ .Name }}

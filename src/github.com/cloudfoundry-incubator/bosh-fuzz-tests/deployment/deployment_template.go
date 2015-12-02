@@ -3,12 +3,12 @@ package deployment
 var DeploymentTemplate = `---
 name: foo-deployment
 
-director_uuid: {{ .DirectorUUID }}
+director_uuid: {{ .DirectorUUID }}{{ if .CloudConfig.VmTypes }}
 
 stemcells:
 - alias: default
   os: toronto-os
-  version: 1
+  version: 1{{ end }}
 
 releases:
 - name: foo-release
@@ -22,8 +22,9 @@ update:
 
 jobs:{{ range .Jobs }}
 - name: {{ .Name }}
-  instances: {{ .Instances }}
-  vm_type: default{{ if .PersistentDiskPool }}
+  instances: {{ .Instances }}{{ if .VmType }}
+  vm_type: {{ .VmType }}{{ end }}{{ if .ResourcePool }}
+  resource_pool: {{ .ResourcePool }}{{ end }}{{ if .PersistentDiskPool }}
   persistent_disk_pool: {{ .PersistentDiskPool }}{{ else if .PersistentDiskType }}
   persistent_disk_type: {{ .PersistentDiskType }}{{ else if .PersistentDiskSize }}
   persistent_disk: {{ .PersistentDiskSize }}{{ end }}

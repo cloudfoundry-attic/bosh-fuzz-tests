@@ -22,6 +22,7 @@ type Parameters struct {
 	NumberOfJobs             []int      `json:"number_of_jobs"`
 	MigratedFromCount        []int      `json:"migrated_from_count"`
 	Networks                 [][]string `json:"networks"`
+	VmTypeDefinition         []string   `json:"vm_type_definition"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {
