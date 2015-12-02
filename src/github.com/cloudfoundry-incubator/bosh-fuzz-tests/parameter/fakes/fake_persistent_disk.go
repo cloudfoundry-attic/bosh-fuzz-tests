@@ -12,7 +12,7 @@ func NewFakePersistentDisk() *FakePersistentDisk {
 }
 
 func (s *FakePersistentDisk) Apply(input *bftinput.Input) *bftinput.Input {
-	persistentDiskPool := bftinput.DiskConfig{Name: "fake-persistent_disk", Size: 1}
+	persistentDiskPool := bftinput.DiskConfig{Name: "fake-persistent-disk", Size: 1}
 
 	input.CloudConfig.PersistentDiskPools = []bftinput.DiskConfig{
 		persistentDiskPool,

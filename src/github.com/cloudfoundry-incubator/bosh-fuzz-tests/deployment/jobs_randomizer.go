@@ -72,9 +72,9 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 	}
 
 	azs := map[string]bool{}
-	vmTypeDefinition := ir.parameters.VmTypeDefinition[rand.Intn(len(ir.parameters.VmTypeDefinition))]
 	stemcell := ir.parameterProvider.Get("stemcell")
 	persistentDisk := ir.parameterProvider.Get("persistent_disk")
+	vmType := ir.parameterProvider.Get("vm_type")
 
 	for _, jobName := range jobNames {
 		job := &bftinput.Job{
@@ -82,8 +82,6 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 			Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
 			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
 		}
-
-		ir.assignVmType(vmTypeDefinition, job, input)
 
 		for _, az := range job.AvailabilityZones {
 			if azs[az] != true {
@@ -105,6 +103,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 
 	input = stemcell.Apply(input)
 	input = persistentDisk.Apply(input)
+	input = vmType.Apply(input)
 
 	return *input
 }
@@ -144,23 +143,5 @@ func (ir *jobsRandomizer) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput bf
 				}
 			}
 		}
-	}
-}
-
-func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, job *bftinput.Job, input *bftinput.Input) {
-	if vmTypeDefinition == "vm_type" {
-		job.VmType = ir.nameGenerator.Generate(10)
-		input.CloudConfig.VmTypes = append(
-			input.CloudConfig.VmTypes,
-			bftinput.VmTypeConfig{Name: job.VmType},
-		)
-	} else if vmTypeDefinition == "resource_pool" {
-		job.ResourcePool = ir.nameGenerator.Generate(10)
-		input.CloudConfig.ResourcePools = append(
-			input.CloudConfig.ResourcePools,
-			bftinput.ResourcePoolConfig{
-				Name: job.ResourcePool,
-			},
-		)
 	}
 }

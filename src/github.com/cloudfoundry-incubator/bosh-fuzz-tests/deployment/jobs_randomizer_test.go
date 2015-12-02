@@ -49,28 +49,27 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:               "joNAw",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "fake-persistent_disk",
-						VmType:             "yRjDTBs3VX",
+						PersistentDiskPool: "fake-persistent-disk",
+						VmType:             "fake-vm-type",
 					},
 					{
 						Name:               "gQ8el",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "fake-persistent_disk",
-						VmType:             "mO5Qu91qDq",
+						PersistentDiskPool: "fake-persistent-disk",
+						VmType:             "fake-vm-type",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{
-							Name: "fake-persistent_disk",
+							Name: "fake-persistent-disk",
 							Size: 1,
 						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "yRjDTBs3VX"},
-						{Name: "mO5Qu91qDq"},
+						{Name: "fake-vm-type"},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -83,25 +82,24 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:               "joNAw",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "fake-persistent_disk",
-						VmType:             "eE7YhmI4yV",
+						PersistentDiskPool: "fake-persistent-disk",
+						VmType:             "fake-vm-type",
 					},
 					{
 						Name:               "gQ8el",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "fake-persistent_disk",
-						VmType:             "sOgP3i7apW",
+						PersistentDiskPool: "fake-persistent-disk",
+						VmType:             "fake-vm-type",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []bftinput.DiskConfig{
-						{Name: "fake-persistent_disk", Size: 1},
+						{Name: "fake-persistent-disk", Size: 1},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "eE7YhmI4yV"},
-						{Name: "sOgP3i7apW"},
+						{Name: "fake-vm-type"},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -138,12 +136,12 @@ var _ = Describe("JobsRandomizer", func() {
 					{
 						Name:      "vmz6agRjDT",
 						Instances: 2,
-						VmType:    "rYND0xNg3R",
+						VmType:    "fake-vm-type",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "rYND0xNg3R"},
+						{Name: "fake-vm-type"},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -156,7 +154,7 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:              "joNAw",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
-						VmType:            "arKicN3O2G",
+						VmType:            "fake-vm-type",
 						MigratedFrom: []bftinput.MigratedFromConfig{
 							{Name: "vmz6agRjDT", AvailabilityZone: "z1"},
 						},
@@ -165,7 +163,7 @@ var _ = Describe("JobsRandomizer", func() {
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "arKicN3O2G"},
+						{Name: "fake-vm-type"},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{

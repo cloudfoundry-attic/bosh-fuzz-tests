@@ -30,6 +30,9 @@ func (p *parameterProvider) Get(name string) Parameter {
 	} else if name == "persistent_disk" {
 		persistentDiskDefinition := p.parameters.PersistentDiskDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
 		return NewPersistentDisk(persistentDiskDefinition, p.parameters.PersistentDiskSize, p.nameGenerator)
+	} else if name == "vm_type" {
+		vmTypeDefinition := p.parameters.VmTypeDefinition[rand.Intn(len(p.parameters.VmTypeDefinition))]
+		return NewVmType(vmTypeDefinition, p.nameGenerator)
 	}
 
 	return nil
