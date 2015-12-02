@@ -58,7 +58,7 @@ var _ = Describe("JobsRandomizer", func() {
 					PersistentDiskPools: []DiskConfig{
 						{Name: "pTBs3VXU3Y", Size: 100},
 					},
-					ResourcePools: []VmTypeConfig{
+					ResourcePools: []ResourcePoolConfig{
 						{Name: "h3O2GYdmz6"},
 						{Name: "xD0xNg3RWD"},
 					},
@@ -75,7 +75,7 @@ var _ = Describe("JobsRandomizer", func() {
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					ResourcePools: []VmTypeConfig{
+					ResourcePools: []ResourcePoolConfig{
 						{Name: "fqDqBUnQKB"},
 					},
 				},

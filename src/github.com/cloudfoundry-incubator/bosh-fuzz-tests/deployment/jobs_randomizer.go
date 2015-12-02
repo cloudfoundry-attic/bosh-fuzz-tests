@@ -165,7 +165,7 @@ func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, job *Job, input 
 		job.ResourcePool = ir.nameGenerator.Generate(10)
 		input.CloudConfig.ResourcePools = append(
 			input.CloudConfig.ResourcePools,
-			VmTypeConfig{Name: job.ResourcePool},
+			ResourcePoolConfig{Name: job.ResourcePool},
 		)
 	}
 }

@@ -27,7 +27,7 @@ type CloudConfig struct {
 	CompilationNetwork          string
 	CompilationAvailabilityZone string
 	VmTypes                     []VmTypeConfig
-	ResourcePools               []VmTypeConfig
+	ResourcePools               []ResourcePoolConfig
 }
 
 type DiskConfig struct {
@@ -37,6 +37,18 @@ type DiskConfig struct {
 
 type VmTypeConfig struct {
 	Name string
+}
+
+type ResourcePoolConfig struct {
+	Name     string
+	Stemcell StemcellConfig
+}
+
+type StemcellConfig struct {
+	Name    string
+	OS      string
+	Version string
+	Alias   string
 }
 
 type MigratedFromConfig struct {
