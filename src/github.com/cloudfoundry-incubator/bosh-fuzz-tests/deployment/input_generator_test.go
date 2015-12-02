@@ -134,7 +134,7 @@ var _ = Describe("InputGenerator", func() {
 			{
 				Jobs: []bftinput.Job{
 					{
-						Name:               "g8elgrKicN",
+						Name:               "oelgrKicN3",
 						Instances:          2,
 						VmType:             "fake-vm-type",
 						AvailabilityZones:  []string{"z1"},
@@ -166,7 +166,7 @@ var _ = Describe("InputGenerator", func() {
 						VmType:             "fake-vm-type",
 						PersistentDiskPool: "fake-persistent-disk",
 						MigratedFrom: []bftinput.MigratedFromConfig{
-							{Name: "g8elgrKicN"},
+							{Name: "oelgrKicN3"},
 						},
 					},
 				},

@@ -23,7 +23,7 @@ var _ = Describe("PersistentDisk", func() {
 		})
 
 		It("adds disk_pools to the input", func() {
-			input := &bftinput.Input{
+			input := bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name: "fake-job",
@@ -33,7 +33,7 @@ var _ = Describe("PersistentDisk", func() {
 
 			result := persistentDisk.Apply(input)
 
-			Expect(result).To(Equal(&bftinput.Input{
+			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name:               "fake-job",

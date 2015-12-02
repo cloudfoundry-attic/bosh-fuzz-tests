@@ -41,19 +41,22 @@ func NewInputGenerator(
 func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 	inputs := []bftinput.Input{}
 
-	for i := 0; i < g.numberOfConsequentDeploys; i++ {
-		jobNames := g.generateJobNames(i, inputs)
-		input := g.generateInput(jobNames, false)
+	jobNames := g.generateJobNames()
+	previousInput := g.generateInputWithJobNames(jobNames)
 
-		migratingJobs := []string{}
+	for i := 0; i < g.numberOfConsequentDeploys; i++ {
+		input := g.fuzzInput(previousInput, false)
+
+		migratingJobNames := []string{}
 		for _, j := range input.Jobs {
 			for _, m := range j.MigratedFrom {
-				migratingJobs = append(migratingJobs, m.Name)
+				migratingJobNames = append(migratingJobNames, m.Name)
 			}
 		}
 
-		if len(migratingJobs) > 0 {
-			migratingInput := g.generateInput(migratingJobs, true)
+		if len(migratingJobNames) > 0 {
+			migratingInput := g.generateInputWithJobNames(migratingJobNames)
+			migratingInput = g.fuzzInput(migratingInput, true)
 
 			g.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
 
@@ -61,31 +64,26 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 		}
 
 		inputs = append(inputs, input)
+
+		previousInput = input
 	}
 
 	return inputs, nil
 }
 
-func (g *inputGenerator) generateInput(jobNames []string, migratingDeployment bool) bftinput.Input {
-	input := &bftinput.Input{
-		Jobs: []bftinput.Job{},
-	}
+func (g *inputGenerator) fuzzInput(input bftinput.Input, migratingDeployment bool) bftinput.Input {
+	input.Jobs = g.randomizeJobs(input.Jobs)
 
-	for _, jobName := range jobNames {
-		job := &bftinput.Job{
-			Name:      jobName,
-			Instances: g.parameters.Instances[rand.Intn(len(g.parameters.Instances))],
-		}
+	for j, job := range input.Jobs {
+		input.Jobs[j].Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
 
 		if !migratingDeployment {
 			migratedFromCount := g.parameters.MigratedFromCount[rand.Intn(len(g.parameters.MigratedFromCount))]
 			for i := 0; i < migratedFromCount; i++ {
 				migratedFromName := g.nameGenerator.Generate(10)
-				job.MigratedFrom = append(job.MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
+				input.Jobs[j].MigratedFrom = append(job.MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
 			}
 		}
-
-		input.Jobs = append(input.Jobs, *job)
 	}
 
 	input = g.parameterProvider.Get("availability_zone").Apply(input)
@@ -93,23 +91,47 @@ func (g *inputGenerator) generateInput(jobNames []string, migratingDeployment bo
 	input = g.parameterProvider.Get("stemcell").Apply(input)
 	input = g.parameterProvider.Get("persistent_disk").Apply(input)
 
-	return *input
+	return input
 }
 
-func (g *inputGenerator) generateJobNames(i int, inputs []bftinput.Input) []string {
+func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
+	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
+	if numberOfJobs > len(jobs) {
+		for i := 0; i < numberOfJobs-len(jobs); i++ {
+			jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
+			jobs = append(jobs, bftinput.Job{
+				Name: jobName,
+			})
+		}
+	} else if numberOfJobs < len(jobs) {
+		for i := 0; i < len(jobs)-numberOfJobs; i++ {
+			jobIdxToRemove := rand.Intn(len(jobs))
+			jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
+		}
+	}
+
+	return jobs
+}
+
+func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.Input {
+	input := bftinput.Input{
+		Jobs: []bftinput.Job{},
+	}
+	for _, jobName := range jobNames {
+		input.Jobs = append(input.Jobs, bftinput.Job{
+			Name: jobName,
+		})
+	}
+
+	return input
+}
+
+func (g *inputGenerator) generateJobNames() []string {
 	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
 	jobNames := []string{}
 
 	for j := 0; j < numberOfJobs; j++ {
-		var jobName string
-		if i > 0 && len(inputs[i-1].Jobs) > j {
-			jobName = inputs[i-1].Jobs[j].Name
-		}
-
-		if jobName == "" {
-			jobName = g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
-		}
-
+		jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
 		jobNames = append(jobNames, jobName)
 	}
 

@@ -11,7 +11,7 @@ func NewFakeVmType() *FakeVmType {
 	return &FakeVmType{}
 }
 
-func (s *FakeVmType) Apply(input *bftinput.Input) *bftinput.Input {
+func (s *FakeVmType) Apply(input bftinput.Input) bftinput.Input {
 	vmType := bftinput.VmTypeConfig{Name: "fake-vm-type"}
 
 	input.CloudConfig.VmTypes = []bftinput.VmTypeConfig{

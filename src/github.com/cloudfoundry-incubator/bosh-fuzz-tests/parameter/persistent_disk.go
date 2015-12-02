@@ -21,10 +21,17 @@ func NewPersistentDisk(definition string, diskSizes []int, nameGenerator bftname
 	}
 }
 
-func (s *persistentDisk) Apply(input *bftinput.Input) *bftinput.Input {
+func (s *persistentDisk) Apply(input bftinput.Input) bftinput.Input {
 	persistentDiskSize := s.diskSizes[rand.Intn(len(s.diskSizes))]
 
+	input.CloudConfig.PersistentDiskPools = nil
+	input.CloudConfig.PersistentDiskTypes = nil
+
 	for j, _ := range input.Jobs {
+		input.Jobs[j].PersistentDiskSize = 0
+		input.Jobs[j].PersistentDiskPool = ""
+		input.Jobs[j].PersistentDiskType = ""
+
 		if persistentDiskSize != 0 {
 			if s.definition == "disk_pool" {
 				input.Jobs[j].PersistentDiskPool = s.nameGenerator.Generate(10)

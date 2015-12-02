@@ -16,8 +16,9 @@ func NewAvailabilityZone(azs [][]string) Parameter {
 	}
 }
 
-func (a *availabilityZone) Apply(input *bftinput.Input) *bftinput.Input {
+func (a *availabilityZone) Apply(input bftinput.Input) bftinput.Input {
 	azs := map[string]bool{}
+	input.CloudConfig.AvailabilityZones = nil
 
 	for j := range input.Jobs {
 		input.Jobs[j].AvailabilityZones = a.azs[rand.Intn(len(a.azs))]

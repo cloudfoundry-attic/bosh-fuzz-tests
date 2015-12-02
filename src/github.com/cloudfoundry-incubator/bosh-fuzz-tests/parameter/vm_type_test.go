@@ -24,7 +24,7 @@ var _ = Describe("VmType", func() {
 		})
 
 		It("adds vm_types to the input", func() {
-			input := &bftinput.Input{
+			input := bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name: "fake-job",
@@ -34,7 +34,7 @@ var _ = Describe("VmType", func() {
 
 			result := vmType.Apply(input)
 
-			Expect(result).To(Equal(&bftinput.Input{
+			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name:   "fake-job",
@@ -50,5 +50,9 @@ var _ = Describe("VmType", func() {
 				},
 			}))
 		})
+	})
+
+	Context("when it is decided to keep previous input", func() {
+		It("uses previous input", func() {})
 	})
 })

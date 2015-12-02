@@ -24,7 +24,7 @@ var _ = Describe("AvailabilityZone", func() {
 		})
 
 		It("adds azs to the input", func() {
-			input := &bftinput.Input{
+			input := bftinput.Input{
 				Jobs: []bftinput.Job{
 					{Name: "fake-job-1"},
 					{Name: "fake-job-2"},
@@ -32,7 +32,7 @@ var _ = Describe("AvailabilityZone", func() {
 			}
 
 			result := az.Apply(input)
-			Expect(result).To(Equal(&bftinput.Input{
+			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name:              "fake-job-1",

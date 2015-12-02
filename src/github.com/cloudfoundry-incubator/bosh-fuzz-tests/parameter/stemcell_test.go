@@ -23,7 +23,7 @@ var _ = Describe("Stemcell", func() {
 
 		Context("when input has vm types", func() {
 			It("adds stemcells to the input", func() {
-				input := &bftinput.Input{
+				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						VmTypes: []bftinput.VmTypeConfig{
 							{Name: "fake-vm-type-1"},
@@ -32,7 +32,7 @@ var _ = Describe("Stemcell", func() {
 				}
 
 				result := stemcell.Apply(input)
-				Expect(result).To(Equal(&bftinput.Input{
+				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						VmTypes: []bftinput.VmTypeConfig{
 							{Name: "fake-vm-type-1"},
@@ -47,7 +47,7 @@ var _ = Describe("Stemcell", func() {
 
 		Context("when input has resource pools", func() {
 			It("adds stemcell each resource pool", func() {
-				input := &bftinput.Input{
+				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						ResourcePools: []bftinput.ResourcePoolConfig{
 							{Name: "fake-vm-type-1"},
@@ -56,7 +56,7 @@ var _ = Describe("Stemcell", func() {
 				}
 
 				result := stemcell.Apply(input)
-				Expect(result).To(Equal(&bftinput.Input{
+				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						ResourcePools: []bftinput.ResourcePoolConfig{
 							{
@@ -79,7 +79,7 @@ var _ = Describe("Stemcell", func() {
 
 		Context("when input has vm types", func() {
 			It("adds stemcells to the input", func() {
-				input := &bftinput.Input{
+				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						VmTypes: []bftinput.VmTypeConfig{
 							{Name: "fake-vm-type-1"},
@@ -88,7 +88,7 @@ var _ = Describe("Stemcell", func() {
 				}
 
 				result := stemcell.Apply(input)
-				Expect(result).To(Equal(&bftinput.Input{
+				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						VmTypes: []bftinput.VmTypeConfig{
 							{Name: "fake-vm-type-1"},
@@ -103,7 +103,7 @@ var _ = Describe("Stemcell", func() {
 
 		Context("when input has resource pools", func() {
 			It("adds stemcell each resource pool", func() {
-				input := &bftinput.Input{
+				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						ResourcePools: []bftinput.ResourcePoolConfig{
 							{Name: "fake-vm-type-1"},
@@ -112,7 +112,7 @@ var _ = Describe("Stemcell", func() {
 				}
 
 				result := stemcell.Apply(input)
-				Expect(result).To(Equal(&bftinput.Input{
+				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						ResourcePools: []bftinput.ResourcePoolConfig{
 							{
@@ -135,7 +135,7 @@ var _ = Describe("Stemcell", func() {
 		})
 
 		It("generates stemcell version for each vm type and assigns stemcell to corresponding job", func() {
-			input := &bftinput.Input{
+			input := bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name:   "fake-job-1",
@@ -155,7 +155,7 @@ var _ = Describe("Stemcell", func() {
 			}
 
 			result := stemcell.Apply(input)
-			Expect(result).To(Equal(&bftinput.Input{
+			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
 						Name:     "fake-job-1",

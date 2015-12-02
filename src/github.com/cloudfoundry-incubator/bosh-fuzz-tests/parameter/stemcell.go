@@ -19,7 +19,9 @@ func NewStemcell(definition string, stemcellVersions []string) Parameter {
 	}
 }
 
-func (s *stemcell) Apply(input *bftinput.Input) *bftinput.Input {
+func (s *stemcell) Apply(input bftinput.Input) bftinput.Input {
+	input.Stemcells = nil
+
 	var stemcellConfig bftinput.StemcellConfig
 
 	if s.definition == "os" {

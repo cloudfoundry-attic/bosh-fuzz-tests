@@ -17,8 +17,14 @@ func NewVmType(definition string, nameGenerator bftnamegen.NameGenerator) Parame
 	}
 }
 
-func (s *vmType) Apply(input *bftinput.Input) *bftinput.Input {
+func (s *vmType) Apply(input bftinput.Input) bftinput.Input {
+	input.CloudConfig.VmTypes = nil
+	input.CloudConfig.ResourcePools = nil
+
 	for j, _ := range input.Jobs {
+		input.Jobs[j].VmType = ""
+		input.Jobs[j].ResourcePool = ""
+
 		if s.definition == "vm_type" {
 			input.Jobs[j].VmType = s.nameGenerator.Generate(10)
 			input.CloudConfig.VmTypes = append(
