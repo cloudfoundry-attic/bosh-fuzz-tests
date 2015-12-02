@@ -89,9 +89,9 @@ func (g *inputGenerator) generateInput(jobNames []string, migratingDeployment bo
 	}
 
 	input = g.parameterProvider.Get("availability_zone").Apply(input)
+	input = g.parameterProvider.Get("vm_type").Apply(input)
 	input = g.parameterProvider.Get("stemcell").Apply(input)
 	input = g.parameterProvider.Get("persistent_disk").Apply(input)
-	input = g.parameterProvider.Get("vm_type").Apply(input)
 
 	return *input
 }
