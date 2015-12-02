@@ -33,9 +33,10 @@ vm_types:{{ range .CloudConfig.VmTypes }}
 resource_pools:{{ range .CloudConfig.ResourcePools }}
 - name: {{ .Name }}
   stemcell:
-    alias: default
-    os: toronto-os
-    version: 1
+    version: {{ .Stemcell.Version }}{{ if .Stemcell.Name }}
+    name: {{ .Stemcell.Name }}{{ end }}{{ if .Stemcell.Alias }}
+    alias: {{ .Stemcell.Alias }}{{ end }}{{ if .Stemcell.OS }}
+    os: {{ .Stemcell.OS }}{{ end }}
   cloud_properties: {}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskPools }}
 
 disk_pools:{{ range .CloudConfig.PersistentDiskPools }}

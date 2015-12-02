@@ -63,6 +63,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 	azs := map[string]bool{}
 	persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
 	vmTypeDefinition := ir.parameters.VmTypeDefinition[rand.Intn(len(ir.parameters.VmTypeDefinition))]
+	stemcellDefinition := ir.parameters.StemcellDefinition[rand.Intn(len(ir.parameters.StemcellDefinition))]
 
 	for _, jobName := range jobNames {
 		job := &Job{
@@ -72,7 +73,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 		}
 
 		ir.assignPersistentDisk(persistentDiskDefinition, job, input)
-		ir.assignVmType(vmTypeDefinition, job, input)
+		ir.assignVmType(vmTypeDefinition, stemcellDefinition, job, input)
 
 		for _, az := range job.AvailabilityZones {
 			if azs[az] != true {
@@ -154,18 +155,36 @@ func (ir *jobsRandomizer) assignPersistentDisk(persistentDiskDefinition string, 
 	}
 }
 
-func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, job *Job, input *Input) {
+func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, stemcellDefinition string, job *Job, input *Input) {
+	var stemcellConfig StemcellConfig
+	if stemcellDefinition == "os_version" {
+		stemcellConfig = StemcellConfig{
+			OS:      "toronto-os",
+			Version: "1",
+		}
+	} else {
+		stemcellConfig = StemcellConfig{
+			Name:    "ubuntu-stemcell",
+			Version: "1",
+		}
+	}
+
 	if vmTypeDefinition == "vm_type" {
 		job.VmType = ir.nameGenerator.Generate(10)
 		input.CloudConfig.VmTypes = append(
 			input.CloudConfig.VmTypes,
 			VmTypeConfig{Name: job.VmType},
 		)
+		stemcellConfig.Alias = "default"
+		input.Stemcells = []StemcellConfig{stemcellConfig}
 	} else if vmTypeDefinition == "resource_pool" {
 		job.ResourcePool = ir.nameGenerator.Generate(10)
 		input.CloudConfig.ResourcePools = append(
 			input.CloudConfig.ResourcePools,
-			ResourcePoolConfig{Name: job.ResourcePool},
+			ResourcePoolConfig{
+				Name:     job.ResourcePool,
+				Stemcell: stemcellConfig,
+			},
 		)
 	}
 }

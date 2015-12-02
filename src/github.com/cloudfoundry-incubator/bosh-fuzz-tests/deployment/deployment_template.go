@@ -3,12 +3,13 @@ package deployment
 var DeploymentTemplate = `---
 name: foo-deployment
 
-director_uuid: {{ .DirectorUUID }}{{ if .CloudConfig.VmTypes }}
+director_uuid: {{ .DirectorUUID }}{{ if .Stemcells }}
 
-stemcells:
-- alias: default
-  os: toronto-os
-  version: 1{{ end }}
+stemcells:{{ range .Stemcells }}
+- version: {{ .Version }}{{ if .Name }}
+  name: {{ .Name }}{{ end }}{{ if .Alias }}
+  alias: {{ .Alias }}{{ end }}{{ if .OS }}
+  os: {{ .OS }}{{ end }}{{ end }}{{ end }}
 
 releases:
 - name: foo-release

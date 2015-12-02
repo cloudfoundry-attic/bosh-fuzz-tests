@@ -4,6 +4,7 @@ type Input struct {
 	DirectorUUID string
 	Jobs         []Job
 	CloudConfig  CloudConfig
+	Stemcells    []StemcellConfig
 }
 
 type Job struct {

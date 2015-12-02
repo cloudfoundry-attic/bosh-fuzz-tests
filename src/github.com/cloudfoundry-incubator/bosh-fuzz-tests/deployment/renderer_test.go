@@ -103,6 +103,13 @@ var _ = Describe("Manifest/Renderer", func() {
 				CompilationNetwork:          "default",
 				CompilationAvailabilityZone: "z1",
 			},
+			Stemcells: []StemcellConfig{
+				{
+					Alias:   "default",
+					OS:      "toronto-os",
+					Version: "1",
+				},
+			},
 		}
 
 		err := renderer.Render(input, manifestPath, cloudConfigPath)
@@ -113,9 +120,9 @@ name: foo-deployment
 director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
 
 stemcells:
-- alias: default
+- version: 1
+  alias: default
   os: toronto-os
-  version: 1
 
 releases:
 - name: foo-release

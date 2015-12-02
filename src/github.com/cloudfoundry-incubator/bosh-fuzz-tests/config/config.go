@@ -23,6 +23,7 @@ type Parameters struct {
 	MigratedFromCount        []int      `json:"migrated_from_count"`
 	Networks                 [][]string `json:"networks"`
 	VmTypeDefinition         []string   `json:"vm_type_definition"`
+	StemcellDefinition       []string   `json:"stemcell_definition"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

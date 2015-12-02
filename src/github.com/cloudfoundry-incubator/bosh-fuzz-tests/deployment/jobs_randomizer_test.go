@@ -19,14 +19,15 @@ var _ = Describe("JobsRandomizer", func() {
 
 	It("generates extra input for migrated jobs", func() {
 		parameters := bftconfig.Parameters{
-			NameLength:               []int{5, 10},
-			Instances:                []int{2, 4},
+			NameLength:               []int{5},
+			Instances:                []int{2},
 			AvailabilityZones:        [][]string{[]string{"z1"}, []string{"z1", "z2"}},
-			PersistentDiskDefinition: []string{"disk_pool", "disk_type", "persistent_disk_size"},
-			PersistentDiskSize:       []int{0, 100, 200},
-			NumberOfJobs:             []int{1, 2},
-			MigratedFromCount:        []int{0, 2},
-			VmTypeDefinition:         []string{"vm_type", "resource_pool"},
+			PersistentDiskDefinition: []string{"disk_pool"},
+			PersistentDiskSize:       []int{100},
+			NumberOfJobs:             []int{2},
+			MigratedFromCount:        []int{0},
+			VmTypeDefinition:         []string{"vm_type"},
+			StemcellDefinition:       []string{"os_version"},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
@@ -40,44 +41,65 @@ var _ = Describe("JobsRandomizer", func() {
 			{
 				Jobs: []Job{
 					{
-						Name:              "joNAw",
-						Instances:         2,
-						AvailabilityZones: []string{"z1"},
-						ResourcePool:      "h3O2GYdmz6",
+						Name:               "joNAw",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "jO2GYdmz6a",
+						VmType:             "yRjDTBs3VX",
 					},
 					{
 						Name:               "gQ8el",
 						Instances:          2,
-						AvailabilityZones:  []string{"z1", "z2"},
-						PersistentDiskPool: "pTBs3VXU3Y",
-						ResourcePool:       "xD0xNg3RWD",
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "b0xNg3RWDs",
+						VmType:             "mO5Qu91qDq",
 					},
 				},
 				CloudConfig: CloudConfig{
-					AvailabilityZones: []string{"z1", "z2"},
+					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []DiskConfig{
-						{Name: "pTBs3VXU3Y", Size: 100},
+						{Name: "jO2GYdmz6a", Size: 100},
+						{Name: "b0xNg3RWDs", Size: 100},
 					},
-					ResourcePools: []ResourcePoolConfig{
-						{Name: "h3O2GYdmz6"},
-						{Name: "xD0xNg3RWD"},
+					VmTypes: []VmTypeConfig{
+						{Name: "yRjDTBs3VX"},
+						{Name: "mO5Qu91qDq"},
 					},
+				},
+				Stemcells: []StemcellConfig{
+					{OS: "toronto-os", Version: "1", Alias: "default"},
 				},
 			},
 			{
 				Jobs: []Job{
 					{
-						Name:              "joNAw",
-						Instances:         2,
-						AvailabilityZones: []string{"z1"},
-						ResourcePool:      "fqDqBUnQKB",
+						Name:               "joNAw",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "aREws5gmsY",
+						VmType:             "eE7YhmI4yV",
+					},
+					{
+						Name:               "gQ8el",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "grcWVDVTZN",
+						VmType:             "sOgP3i7apW",
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
-					ResourcePools: []ResourcePoolConfig{
-						{Name: "fqDqBUnQKB"},
+					PersistentDiskPools: []DiskConfig{
+						{Name: "aREws5gmsY", Size: 100},
+						{Name: "grcWVDVTZN", Size: 100},
 					},
+					VmTypes: []VmTypeConfig{
+						{Name: "eE7YhmI4yV"},
+						{Name: "sOgP3i7apW"},
+					},
+				},
+				Stemcells: []StemcellConfig{
+					{OS: "toronto-os", Version: "1", Alias: "default"},
 				},
 			},
 		}))
@@ -93,6 +115,7 @@ var _ = Describe("JobsRandomizer", func() {
 			NumberOfJobs:             []int{1},
 			MigratedFromCount:        []int{1},
 			VmTypeDefinition:         []string{"vm_type"},
+			StemcellDefinition:       []string{"name"},
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
@@ -106,14 +129,21 @@ var _ = Describe("JobsRandomizer", func() {
 			{
 				Jobs: []Job{
 					{
-						Name:      "qdmz6agRjD",
+						Name:      "vmz6agRjDT",
 						Instances: 2,
-						VmType:    "rU3YND0xNg",
+						VmType:    "rYND0xNg3R",
 					},
 				},
 				CloudConfig: CloudConfig{
 					VmTypes: []VmTypeConfig{
-						{Name: "rU3YND0xNg"},
+						{Name: "rYND0xNg3R"},
+					},
+				},
+				Stemcells: []StemcellConfig{
+					{
+						Name:    "ubuntu-stemcell",
+						Version: "1",
+						Alias:   "default",
 					},
 				},
 			},
@@ -123,16 +153,23 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:              "joNAw",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
-						VmType:            "vgrKicN3O2",
+						VmType:            "arKicN3O2G",
 						MigratedFrom: []MigratedFromConfig{
-							{Name: "qdmz6agRjD", AvailabilityZone: "z1"},
+							{Name: "vmz6agRjDT", AvailabilityZone: "z1"},
 						},
 					},
 				},
 				CloudConfig: CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					VmTypes: []VmTypeConfig{
-						{Name: "vgrKicN3O2"},
+						{Name: "arKicN3O2G"},
+					},
+				},
+				Stemcells: []StemcellConfig{
+					{
+						Name:    "ubuntu-stemcell",
+						Version: "1",
+						Alias:   "default",
 					},
 				},
 			},
