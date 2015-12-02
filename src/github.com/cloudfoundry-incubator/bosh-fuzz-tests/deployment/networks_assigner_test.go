@@ -5,6 +5,7 @@ import (
 
 	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	fakebftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator/fakes"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
@@ -23,7 +24,7 @@ var _ = Describe("NetworksAssigner", func() {
 		rand.Seed(32)
 
 		networks = [][]string{[]string{"manual", "vip"}}
-		nameGenerator := &fakebftdepl.FakeNameGenerator{}
+		nameGenerator := &fakebftnamegen.FakeNameGenerator{}
 		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net", "qux-net"}
 		ipPoolProvider := &fakebftdepl.FakeIpPoolProvider{}
 		vipPool := &bftinput.IpPool{

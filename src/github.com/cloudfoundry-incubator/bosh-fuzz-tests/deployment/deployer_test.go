@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
 	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
@@ -58,8 +59,8 @@ var _ = Describe("Deployer", func() {
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
 
-		nameGenerator := NewNameGenerator()
-		parameterProvider := bftparam.NewParameterProvider(parameters)
+		nameGenerator := bftnamegen.NewNameGenerator()
+		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator)
 		jobsRandomizer := NewJobsRandomizer(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
 		staticIpDecider := &fakebftdepl.FakeDecider{}

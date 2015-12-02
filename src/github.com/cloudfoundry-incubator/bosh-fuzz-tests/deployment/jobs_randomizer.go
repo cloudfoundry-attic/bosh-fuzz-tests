@@ -5,6 +5,7 @@ import (
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
@@ -17,7 +18,7 @@ type jobsRandomizer struct {
 	parameters                bftconfig.Parameters
 	parameterProvider         bftparam.ParameterProvider
 	numberOfConsequentDeploys int
-	nameGenerator             NameGenerator
+	nameGenerator             bftnamegen.NameGenerator
 	logger                    boshlog.Logger
 }
 
@@ -25,7 +26,7 @@ func NewJobsRandomizer(
 	parameters bftconfig.Parameters,
 	parameterProvider bftparam.ParameterProvider,
 	numberOfConsequentDeploys int,
-	nameGenerator NameGenerator,
+	nameGenerator bftnamegen.NameGenerator,
 	logger boshlog.Logger,
 ) JobsRandomizer {
 	return &jobsRandomizer{
@@ -71,9 +72,9 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 	}
 
 	azs := map[string]bool{}
-	persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
 	vmTypeDefinition := ir.parameters.VmTypeDefinition[rand.Intn(len(ir.parameters.VmTypeDefinition))]
 	stemcell := ir.parameterProvider.Get("stemcell")
+	persistentDisk := ir.parameterProvider.Get("persistent_disk")
 
 	for _, jobName := range jobNames {
 		job := &bftinput.Job{
@@ -82,9 +83,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
 		}
 
-		ir.assignPersistentDisk(persistentDiskDefinition, job, input)
 		ir.assignVmType(vmTypeDefinition, job, input)
-		input = stemcell.Apply(input)
 
 		for _, az := range job.AvailabilityZones {
 			if azs[az] != true {
@@ -103,6 +102,9 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 
 		input.Jobs = append(input.Jobs, *job)
 	}
+
+	input = stemcell.Apply(input)
+	input = persistentDisk.Apply(input)
 
 	return *input
 }
@@ -141,27 +143,6 @@ func (ir *jobsRandomizer) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput bf
 					}
 				}
 			}
-		}
-	}
-}
-
-func (ir *jobsRandomizer) assignPersistentDisk(persistentDiskDefinition string, job *bftinput.Job, input *bftinput.Input) {
-	persistentDiskSize := ir.parameters.PersistentDiskSize[rand.Intn(len(ir.parameters.PersistentDiskSize))]
-	if persistentDiskSize != 0 {
-		if persistentDiskDefinition == "disk_pool" {
-			job.PersistentDiskPool = ir.nameGenerator.Generate(10)
-			input.CloudConfig.PersistentDiskPools = append(
-				input.CloudConfig.PersistentDiskPools,
-				bftinput.DiskConfig{Name: job.PersistentDiskPool, Size: persistentDiskSize},
-			)
-		} else if persistentDiskDefinition == "disk_type" {
-			job.PersistentDiskType = ir.nameGenerator.Generate(10)
-			input.CloudConfig.PersistentDiskTypes = append(
-				input.CloudConfig.PersistentDiskTypes,
-				bftinput.DiskConfig{Name: job.PersistentDiskType, Size: persistentDiskSize},
-			)
-		} else {
-			job.PersistentDiskSize = persistentDiskSize
 		}
 	}
 }

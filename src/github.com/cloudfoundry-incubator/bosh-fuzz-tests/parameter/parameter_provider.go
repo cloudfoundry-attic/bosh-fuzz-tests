@@ -4,6 +4,7 @@ import (
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 )
 
 type ParameterProvider interface {
@@ -11,12 +12,14 @@ type ParameterProvider interface {
 }
 
 type parameterProvider struct {
-	parameters bftconfig.Parameters
+	parameters    bftconfig.Parameters
+	nameGenerator bftnamegen.NameGenerator
 }
 
-func NewParameterProvider(parameters bftconfig.Parameters) ParameterProvider {
+func NewParameterProvider(parameters bftconfig.Parameters, nameGenerator bftnamegen.NameGenerator) ParameterProvider {
 	return &parameterProvider{
-		parameters: parameters,
+		parameters:    parameters,
+		nameGenerator: nameGenerator,
 	}
 }
 
@@ -24,6 +27,9 @@ func (p *parameterProvider) Get(name string) Parameter {
 	if name == "stemcell" {
 		stemcellDefinition := p.parameters.StemcellDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
 		return NewStemcell(stemcellDefinition)
+	} else if name == "persistent_disk" {
+		persistentDiskDefinition := p.parameters.PersistentDiskDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
+		return NewPersistentDisk(persistentDiskDefinition, p.parameters.PersistentDiskSize, p.nameGenerator)
 	}
 
 	return nil

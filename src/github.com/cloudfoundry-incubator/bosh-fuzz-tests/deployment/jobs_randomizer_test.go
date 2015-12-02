@@ -7,6 +7,7 @@ import (
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
@@ -34,7 +35,7 @@ var _ = Describe("JobsRandomizer", func() {
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
-		nameGenerator := NewNameGenerator()
+		nameGenerator := bftnamegen.NewNameGenerator()
 		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
 		jobsRandomizer = NewJobsRandomizer(parameters, fakeParameterProvider, 2, nameGenerator, logger)
 
@@ -48,22 +49,24 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:               "joNAw",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "jO2GYdmz6a",
+						PersistentDiskPool: "fake-persistent_disk",
 						VmType:             "yRjDTBs3VX",
 					},
 					{
 						Name:               "gQ8el",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "b0xNg3RWDs",
+						PersistentDiskPool: "fake-persistent_disk",
 						VmType:             "mO5Qu91qDq",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []bftinput.DiskConfig{
-						{Name: "jO2GYdmz6a", Size: 100},
-						{Name: "b0xNg3RWDs", Size: 100},
+						{
+							Name: "fake-persistent_disk",
+							Size: 1,
+						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "yRjDTBs3VX"},
@@ -80,22 +83,21 @@ var _ = Describe("JobsRandomizer", func() {
 						Name:               "joNAw",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "aREws5gmsY",
+						PersistentDiskPool: "fake-persistent_disk",
 						VmType:             "eE7YhmI4yV",
 					},
 					{
 						Name:               "gQ8el",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
-						PersistentDiskPool: "grcWVDVTZN",
+						PersistentDiskPool: "fake-persistent_disk",
 						VmType:             "sOgP3i7apW",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
 					PersistentDiskPools: []bftinput.DiskConfig{
-						{Name: "aREws5gmsY", Size: 100},
-						{Name: "grcWVDVTZN", Size: 100},
+						{Name: "fake-persistent_disk", Size: 1},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "eE7YhmI4yV"},
@@ -123,7 +125,7 @@ var _ = Describe("JobsRandomizer", func() {
 		}
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
-		nameGenerator := NewNameGenerator()
+		nameGenerator := bftnamegen.NewNameGenerator()
 		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
 		jobsRandomizer = NewJobsRandomizer(parameters, fakeParameterProvider, 1, nameGenerator, logger)
 

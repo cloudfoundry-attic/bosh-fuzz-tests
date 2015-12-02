@@ -1,4 +1,4 @@
-package deployment
+package name_generator
 
 import (
 	"math/rand"

@@ -1,9 +1,9 @@
-package deployment_test
+package name_generator_test
 
 import (
 	"math/rand"
 
-	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
