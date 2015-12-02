@@ -3,6 +3,8 @@ package deployment_test
 import (
 	"math/rand"
 
+	fakebftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/fakes"
+
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -33,7 +35,8 @@ var _ = Describe("JobsRandomizer", func() {
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
 		nameGenerator := NewNameGenerator()
-		jobsRandomizer = NewJobsRandomizer(parameters, 2, nameGenerator, logger)
+		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
+		jobsRandomizer = NewJobsRandomizer(parameters, fakeParameterProvider, 2, nameGenerator, logger)
 
 		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
@@ -68,7 +71,7 @@ var _ = Describe("JobsRandomizer", func() {
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
-					{OS: "toronto-os", Version: "1", Alias: "default"},
+					{Name: "fake-stemcell"},
 				},
 			},
 			{
@@ -100,7 +103,7 @@ var _ = Describe("JobsRandomizer", func() {
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
-					{OS: "toronto-os", Version: "1", Alias: "default"},
+					{Name: "fake-stemcell"},
 				},
 			},
 		}))
@@ -121,7 +124,8 @@ var _ = Describe("JobsRandomizer", func() {
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
 		nameGenerator := NewNameGenerator()
-		jobsRandomizer = NewJobsRandomizer(parameters, 1, nameGenerator, logger)
+		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
+		jobsRandomizer = NewJobsRandomizer(parameters, fakeParameterProvider, 1, nameGenerator, logger)
 
 		inputs, err := jobsRandomizer.Generate()
 		Expect(err).ToNot(HaveOccurred())
@@ -141,11 +145,7 @@ var _ = Describe("JobsRandomizer", func() {
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
-					{
-						Name:    "ubuntu-stemcell",
-						Version: "1",
-						Alias:   "default",
-					},
+					{Name: "fake-stemcell"},
 				},
 			},
 			{
@@ -167,11 +167,7 @@ var _ = Describe("JobsRandomizer", func() {
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
-					{
-						Name:    "ubuntu-stemcell",
-						Version: "1",
-						Alias:   "default",
-					},
+					{Name: "fake-stemcell"},
 				},
 			},
 		}))

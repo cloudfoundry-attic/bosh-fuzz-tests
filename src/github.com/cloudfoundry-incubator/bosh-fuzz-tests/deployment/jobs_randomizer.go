@@ -15,14 +15,22 @@ type JobsRandomizer interface {
 
 type jobsRandomizer struct {
 	parameters                bftconfig.Parameters
+	parameterProvider         bftparam.ParameterProvider
 	numberOfConsequentDeploys int
 	nameGenerator             NameGenerator
 	logger                    boshlog.Logger
 }
 
-func NewJobsRandomizer(parameters bftconfig.Parameters, numberOfConsequentDeploys int, nameGenerator NameGenerator, logger boshlog.Logger) JobsRandomizer {
+func NewJobsRandomizer(
+	parameters bftconfig.Parameters,
+	parameterProvider bftparam.ParameterProvider,
+	numberOfConsequentDeploys int,
+	nameGenerator NameGenerator,
+	logger boshlog.Logger,
+) JobsRandomizer {
 	return &jobsRandomizer{
 		parameters:                parameters,
+		parameterProvider:         parameterProvider,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
 		nameGenerator:             nameGenerator,
 		logger:                    logger,
@@ -65,8 +73,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 	azs := map[string]bool{}
 	persistentDiskDefinition := ir.parameters.PersistentDiskDefinition[rand.Intn(len(ir.parameters.PersistentDiskDefinition))]
 	vmTypeDefinition := ir.parameters.VmTypeDefinition[rand.Intn(len(ir.parameters.VmTypeDefinition))]
-	stemcellDefinition := ir.parameters.StemcellDefinition[rand.Intn(len(ir.parameters.StemcellDefinition))]
-	stemcell := bftparam.NewStemcell(stemcellDefinition)
+	stemcell := ir.parameterProvider.Get("stemcell")
 
 	for _, jobName := range jobNames {
 		job := &bftinput.Job{
@@ -76,7 +83,7 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 		}
 
 		ir.assignPersistentDisk(persistentDiskDefinition, job, input)
-		ir.assignVmType(vmTypeDefinition, stemcellDefinition, job, input)
+		ir.assignVmType(vmTypeDefinition, job, input)
 		input = stemcell.Apply(input)
 
 		for _, az := range job.AvailabilityZones {
@@ -159,7 +166,7 @@ func (ir *jobsRandomizer) assignPersistentDisk(persistentDiskDefinition string, 
 	}
 }
 
-func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, stemcellDefinition string, job *bftinput.Job, input *bftinput.Input) {
+func (ir *jobsRandomizer) assignVmType(vmTypeDefinition string, job *bftinput.Job, input *bftinput.Input) {
 	if vmTypeDefinition == "vm_type" {
 		job.VmType = ir.nameGenerator.Generate(10)
 		input.CloudConfig.VmTypes = append(
