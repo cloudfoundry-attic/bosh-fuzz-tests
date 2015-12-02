@@ -71,23 +71,10 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 		Jobs: []bftinput.Job{},
 	}
 
-	azs := map[string]bool{}
-	stemcell := ir.parameterProvider.Get("stemcell")
-	persistentDisk := ir.parameterProvider.Get("persistent_disk")
-	vmType := ir.parameterProvider.Get("vm_type")
-
 	for _, jobName := range jobNames {
 		job := &bftinput.Job{
-			Name:              jobName,
-			Instances:         ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
-			AvailabilityZones: ir.parameters.AvailabilityZones[rand.Intn(len(ir.parameters.AvailabilityZones))],
-		}
-
-		for _, az := range job.AvailabilityZones {
-			if azs[az] != true {
-				input.CloudConfig.AvailabilityZones = append(input.CloudConfig.AvailabilityZones, az)
-			}
-			azs[az] = true
+			Name:      jobName,
+			Instances: ir.parameters.Instances[rand.Intn(len(ir.parameters.Instances))],
 		}
 
 		if !migratingDeployment {
@@ -101,9 +88,10 @@ func (ir *jobsRandomizer) generateInput(jobNames []string, migratingDeployment b
 		input.Jobs = append(input.Jobs, *job)
 	}
 
-	input = stemcell.Apply(input)
-	input = persistentDisk.Apply(input)
-	input = vmType.Apply(input)
+	input = ir.parameterProvider.Get("availability_zone").Apply(input)
+	input = ir.parameterProvider.Get("stemcell").Apply(input)
+	input = ir.parameterProvider.Get("persistent_disk").Apply(input)
+	input = ir.parameterProvider.Get("vm_type").Apply(input)
 
 	return *input
 }

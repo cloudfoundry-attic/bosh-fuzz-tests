@@ -1,0 +1,52 @@
+package parameter_test
+
+import (
+	"math/rand"
+
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
+
+	. "github.com/onsi/ginkgo"
+	. "github.com/onsi/gomega"
+)
+
+var _ = Describe("AvailabilityZone", func() {
+	var (
+		az Parameter
+	)
+
+	Context("when definition is os", func() {
+		BeforeEach(func() {
+			rand.Seed(64)
+
+			az = NewAvailabilityZone([][]string{[]string{"z1", "z2"}, []string{"z2", "z3"}})
+		})
+
+		It("adds azs to the input", func() {
+			input := &bftinput.Input{
+				Jobs: []bftinput.Job{
+					{Name: "fake-job-1"},
+					{Name: "fake-job-2"},
+				},
+			}
+
+			result := az.Apply(input)
+			Expect(result).To(Equal(&bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:              "fake-job-1",
+						AvailabilityZones: []string{"z2", "z3"},
+					},
+					{
+						Name:              "fake-job-2",
+						AvailabilityZones: []string{"z1", "z2"},
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: []string{"z2", "z3", "z1"},
+				},
+			}))
+		})
+	})
+})

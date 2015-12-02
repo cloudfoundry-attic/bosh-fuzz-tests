@@ -33,6 +33,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 	} else if name == "vm_type" {
 		vmTypeDefinition := p.parameters.VmTypeDefinition[rand.Intn(len(p.parameters.VmTypeDefinition))]
 		return NewVmType(vmTypeDefinition, p.nameGenerator)
+	} else if name == "availability_zone" {
+		return NewAvailabilityZone(p.parameters.AvailabilityZones)
 	}
 
 	return nil

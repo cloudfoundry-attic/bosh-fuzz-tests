@@ -113,7 +113,7 @@ var _ = Describe("JobsRandomizer", func() {
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5},
 			Instances:                []int{2},
-			AvailabilityZones:        [][]string{[]string{"z1"}, nil},
+			AvailabilityZones:        [][]string{[]string{"z1"}},
 			PersistentDiskDefinition: []string{"persistent_disk_size"},
 			PersistentDiskSize:       []int{0},
 			NumberOfJobs:             []int{1},
@@ -134,12 +134,21 @@ var _ = Describe("JobsRandomizer", func() {
 			{
 				Jobs: []bftinput.Job{
 					{
-						Name:      "vmz6agRjDT",
-						Instances: 2,
-						VmType:    "fake-vm-type",
+						Name:               "g8elgrKicN",
+						Instances:          2,
+						VmType:             "fake-vm-type",
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskPool: "fake-persistent-disk",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: []string{"z1"},
+					PersistentDiskPools: []bftinput.DiskConfig{
+						{
+							Name: "fake-persistent-disk",
+							Size: 1,
+						},
+					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
 					},
@@ -151,17 +160,24 @@ var _ = Describe("JobsRandomizer", func() {
 			{
 				Jobs: []bftinput.Job{
 					{
-						Name:              "joNAw",
-						Instances:         2,
-						AvailabilityZones: []string{"z1"},
-						VmType:            "fake-vm-type",
+						Name:               "joNAw",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1"},
+						VmType:             "fake-vm-type",
+						PersistentDiskPool: "fake-persistent-disk",
 						MigratedFrom: []bftinput.MigratedFromConfig{
-							{Name: "vmz6agRjDT", AvailabilityZone: "z1"},
+							{Name: "g8elgrKicN"},
 						},
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []string{"z1"},
+					PersistentDiskPools: []bftinput.DiskConfig{
+						{
+							Name: "fake-persistent-disk",
+							Size: 1,
+						},
+					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
 					},
