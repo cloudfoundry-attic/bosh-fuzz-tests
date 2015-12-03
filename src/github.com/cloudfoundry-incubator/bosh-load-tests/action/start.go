@@ -39,7 +39,7 @@ func (r *start) Execute() error {
 	}
 
 	deployWrapper := NewDeployWrapper(r.cliRunner)
-	err = deployWrapper.RunWithDebug("start", "simple", "0")
+	_, err = deployWrapper.RunWithDebug("start", "simple", "0")
 	if err != nil {
 		return err
 	}

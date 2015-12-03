@@ -81,7 +81,7 @@ func (d *deployer) RunDeploys() error {
 			}
 
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
-			err = deployWrapper.RunWithDebug("deploy")
+			_, err = deployWrapper.RunWithDebug("deploy")
 			if err != nil {
 				return err
 			}

@@ -39,7 +39,7 @@ func (r *deleteDeployment) Execute() error {
 	}
 
 	deployWrapper := NewDeployWrapper(r.cliRunner)
-	err = deployWrapper.RunWithDebug("delete", "deployment", r.deploymentName)
+	_, err = deployWrapper.RunWithDebug("delete", "deployment", r.deploymentName)
 	if err != nil {
 		return err
 	}

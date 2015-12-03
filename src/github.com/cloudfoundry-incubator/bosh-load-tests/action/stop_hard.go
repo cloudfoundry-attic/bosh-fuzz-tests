@@ -39,7 +39,7 @@ func (r *stopHard) Execute() error {
 	}
 
 	deployWrapper := NewDeployWrapper(r.cliRunner)
-	err = deployWrapper.RunWithDebug("stop", "--hard", "simple", "0")
+	_, err = deployWrapper.RunWithDebug("stop", "--hard", "simple", "0")
 	if err != nil {
 		return err
 	}

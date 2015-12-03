@@ -77,7 +77,7 @@ func (d *deployWithStatic) Execute() error {
 	}
 
 	deployWrapper := NewDeployWrapper(d.cliRunner)
-	err = deployWrapper.RunWithDebug("deploy")
+	_, err = deployWrapper.RunWithDebug("deploy")
 	if err != nil {
 		return err
 	}

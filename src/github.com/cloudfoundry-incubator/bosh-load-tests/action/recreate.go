@@ -39,7 +39,7 @@ func (r *recreate) Execute() error {
 	}
 
 	deployWrapper := NewDeployWrapper(r.cliRunner)
-	err = deployWrapper.RunWithDebug("recreate", "simple", "0")
+	_, err = deployWrapper.RunWithDebug("recreate", "simple", "0")
 	if err != nil {
 		return err
 	}
