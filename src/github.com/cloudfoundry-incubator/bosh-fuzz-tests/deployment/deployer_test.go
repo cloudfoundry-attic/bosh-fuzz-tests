@@ -61,11 +61,12 @@ var _ = Describe("Deployer", func() {
 		rand.Seed(64)
 
 		nameGenerator := bftnamegen.NewNameGenerator()
-		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator)
+		decider := &fakebftdecider.FakeDecider{}
+
+		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator, decider)
 		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
-		staticIpDecider := &fakebftdecider.FakeDecider{}
-		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
+		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, decider)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, false)
 	})
 

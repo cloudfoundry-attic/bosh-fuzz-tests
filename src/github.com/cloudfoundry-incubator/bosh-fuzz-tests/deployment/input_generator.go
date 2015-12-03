@@ -103,12 +103,13 @@ func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
 				Name: jobName,
 			})
 		}
-	} else if numberOfJobs < len(jobs) {
-		for i := 0; i < len(jobs)-numberOfJobs; i++ {
-			jobIdxToRemove := rand.Intn(len(jobs))
-			jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
-		}
 	}
+	// } else if numberOfJobs < len(jobs) {
+	// 	for i := 0; i < len(jobs)-numberOfJobs; i++ {
+	// 		jobIdxToRemove := rand.Intn(len(jobs))
+	// 		jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
+	// 	}
+	// }
 
 	return jobs
 }
