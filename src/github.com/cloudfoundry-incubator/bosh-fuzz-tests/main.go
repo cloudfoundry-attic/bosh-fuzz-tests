@@ -53,7 +53,7 @@ func main() {
 	environmentProvider := bltenv.NewProvider(envConfig, fs, cmdRunner, assetsProvider)
 	environment := environmentProvider.Get()
 
-	if !envConfig.GenerateManifestOnly {
+	if !testConfig.GenerateManifestOnly {
 		err = environment.Setup()
 		if err != nil {
 			panic(err)
@@ -73,7 +73,7 @@ func main() {
 	cliRunnerFactory := bltclirunner.NewFactory(envConfig.CliCmd, cmdRunner, fs)
 
 	var directorInfo bltaction.DirectorInfo
-	if envConfig.GenerateManifestOnly {
+	if testConfig.GenerateManifestOnly {
 		directorInfo = bltaction.DirectorInfo{
 			UUID: "blah",
 			URL:  "xxx",
@@ -89,7 +89,7 @@ func main() {
 	cliRunner.Configure()
 	defer cliRunner.Clean()
 
-	if !envConfig.GenerateManifestOnly {
+	if !testConfig.GenerateManifestOnly {
 		logger.Debug("main", "Preparing to deploy")
 		preparer := bftdeployment.NewPreparer(directorInfo, cliRunner, fs, assetsProvider)
 		err = preparer.Prepare()
@@ -119,7 +119,7 @@ func main() {
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
 	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
 
-	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, envConfig.GenerateManifestOnly)
+	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, testConfig.GenerateManifestOnly)
 	err = deployer.RunDeploys()
 	if err != nil {
 		panic(err)

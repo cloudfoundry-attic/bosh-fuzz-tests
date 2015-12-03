@@ -9,6 +9,7 @@ import (
 type Config struct {
 	fs boshsys.FileSystem
 
+	GenerateManifestOnly      bool
 	Parameters                Parameters `json:"parameters"`
 	NumberOfConsequentDeploys int        `json:"number_of_consequent_deploys"`
 }
