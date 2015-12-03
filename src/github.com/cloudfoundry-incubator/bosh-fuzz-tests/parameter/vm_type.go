@@ -1,6 +1,8 @@
 package parameter
 
 import (
+	"math/rand"
+
 	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
@@ -34,32 +36,56 @@ func (s *vmType) Apply(input bftinput.Input) bftinput.Input {
 
 	s.logger.Debug("vm_type", "Using vm_type definition %s", s.definition)
 
+	usedVmTypes := map[string]bool{}
+
 	for j, _ := range input.Jobs {
 		if s.definition == "vm_type" {
 			input.Jobs[j].ResourcePool = ""
 
-			if !s.reuseDecider.IsYes() || input.Jobs[j].VmType == "" {
-				input.Jobs[j].VmType = s.nameGenerator.Generate(10)
+			reuseFromOtherJob := s.reuseDecider.IsYes()
+			if reuseFromOtherJob && j > 0 {
+				previousJob := input.Jobs[rand.Intn(j)]
+				input.Jobs[j].VmType = previousJob.VmType
+
+			} else {
+				reuseFromPreviousDeploy := s.reuseDecider.IsYes()
+				if !reuseFromPreviousDeploy || input.Jobs[j].VmType == "" {
+					input.Jobs[j].VmType = s.nameGenerator.Generate(10)
+				}
 			}
 
-			input.CloudConfig.VmTypes = append(
-				input.CloudConfig.VmTypes,
-				bftinput.VmTypeConfig{Name: input.Jobs[j].VmType},
-			)
+			if usedVmTypes[input.Jobs[j].VmType] != true {
+				input.CloudConfig.VmTypes = append(
+					input.CloudConfig.VmTypes,
+					bftinput.VmTypeConfig{Name: input.Jobs[j].VmType},
+				)
+			}
+			usedVmTypes[input.Jobs[j].VmType] = true
 
 		} else if s.definition == "resource_pool" {
 			input.Jobs[j].VmType = ""
 
-			if !s.reuseDecider.IsYes() || input.Jobs[j].ResourcePool == "" {
-				input.Jobs[j].ResourcePool = s.nameGenerator.Generate(10)
+			reuseFromOtherJob := s.reuseDecider.IsYes()
+			if reuseFromOtherJob && j > 0 {
+				previousJob := input.Jobs[rand.Intn(j)]
+				input.Jobs[j].ResourcePool = previousJob.ResourcePool
+
+			} else {
+				reuseFromPreviousDeploy := s.reuseDecider.IsYes()
+				if !reuseFromPreviousDeploy || input.Jobs[j].ResourcePool == "" {
+					input.Jobs[j].ResourcePool = s.nameGenerator.Generate(10)
+				}
 			}
 
-			input.CloudConfig.ResourcePools = append(
-				input.CloudConfig.ResourcePools,
-				bftinput.ResourcePoolConfig{
-					Name: input.Jobs[j].ResourcePool,
-				},
-			)
+			if usedVmTypes[input.Jobs[j].ResourcePool] != true {
+				input.CloudConfig.ResourcePools = append(
+					input.CloudConfig.ResourcePools,
+					bftinput.ResourcePoolConfig{
+						Name: input.Jobs[j].ResourcePool,
+					},
+				)
+			}
+			usedVmTypes[input.Jobs[j].ResourcePool] = true
 		}
 	}
 
