@@ -107,17 +107,22 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 
 func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
 	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
-	if numberOfJobs > len(jobs) {
-		for i := 0; i < numberOfJobs-len(jobs); i++ {
+	jobsSize := len(jobs)
+	if numberOfJobs > jobsSize {
+		for i := 0; i < numberOfJobs-jobsSize; i++ {
 			jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
 			jobs = append(jobs, bftinput.Job{
 				Name: jobName,
 			})
 		}
-	} else if numberOfJobs < len(jobs) {
-		for i := 0; i < len(jobs)-numberOfJobs; i++ {
+	} else if numberOfJobs < jobsSize {
+		for i := 0; i < jobsSize-numberOfJobs; i++ {
 			jobIdxToRemove := rand.Intn(len(jobs))
-			jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
+			if jobIdxToRemove == len(jobs)-1 {
+				jobs = jobs[:jobIdxToRemove]
+			} else {
+				jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
+			}
 		}
 	}
 
