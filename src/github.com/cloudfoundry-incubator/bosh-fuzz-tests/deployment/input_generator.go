@@ -1,6 +1,7 @@
 package deployment
 
 import (
+	"fmt"
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
@@ -68,14 +69,24 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 		previousInput = input
 	}
 
+	g.logger.Debug("input_generator", fmt.Sprintf("Generated inputs: %#v", inputs))
+
 	return inputs, nil
 }
 
-func (g *inputGenerator) fuzzInput(input bftinput.Input, migratingDeployment bool) bftinput.Input {
-	input.Jobs = g.randomizeJobs(input.Jobs)
+func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeployment bool) bftinput.Input {
+	input := bftinput.Input{
+		CloudConfig: previousInput.CloudConfig,
+		Stemcells:   previousInput.Stemcells,
+	}
+	for _, job := range previousInput.Jobs {
+		input.Jobs = append(input.Jobs, job)
+	}
+	// input.Jobs = g.randomizeJobs(input.Jobs)
 
 	for j, job := range input.Jobs {
 		input.Jobs[j].Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
+		input.Jobs[j].MigratedFrom = nil
 
 		if !migratingDeployment {
 			migratedFromCount := g.parameters.MigratedFromCount[rand.Intn(len(g.parameters.MigratedFromCount))]
@@ -94,25 +105,24 @@ func (g *inputGenerator) fuzzInput(input bftinput.Input, migratingDeployment boo
 	return input
 }
 
-func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
-	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
-	if numberOfJobs > len(jobs) {
-		for i := 0; i < numberOfJobs-len(jobs); i++ {
-			jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
-			jobs = append(jobs, bftinput.Job{
-				Name: jobName,
-			})
-		}
-	}
-	// } else if numberOfJobs < len(jobs) {
-	// 	for i := 0; i < len(jobs)-numberOfJobs; i++ {
-	// 		jobIdxToRemove := rand.Intn(len(jobs))
-	// 		jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
-	// 	}
-	// }
+// func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
+// 	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
+// 	if numberOfJobs > len(jobs) {
+// 		for i := 0; i < numberOfJobs-len(jobs); i++ {
+// 			jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
+// 			jobs = append(jobs, bftinput.Job{
+// 				Name: jobName,
+// 			})
+// 		}
+// 	} else if numberOfJobs < len(jobs) {
+// 		for i := 0; i < len(jobs)-numberOfJobs; i++ {
+// 			jobIdxToRemove := rand.Intn(len(jobs))
+// 			jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
+// 		}
+// 	}
 
-	return jobs
-}
+// 	return jobs
+// }
 
 func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.Input {
 	input := bftinput.Input{

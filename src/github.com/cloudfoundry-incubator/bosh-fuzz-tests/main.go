@@ -115,7 +115,7 @@ func main() {
 	decider := bftdecider.NewRandomDecider()
 
 	ipPoolProvider := bftdeployment.NewIpPoolProvider()
-	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider)
+	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, logger)
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
 	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
 
