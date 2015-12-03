@@ -4,6 +4,7 @@ import (
 	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	fakebftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator/fakes"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
@@ -15,6 +16,7 @@ var _ = Describe("VmType", func() {
 	var (
 		fakeNameGenerator *fakebftnamegen.FakeNameGenerator
 		fakeDecider       *fakebftdecider.FakeDecider
+		logger            boshlog.Logger
 		vmType            Parameter
 	)
 
@@ -23,12 +25,13 @@ var _ = Describe("VmType", func() {
 			Names: []string{"fake-vm-type"},
 		}
 		fakeDecider = &fakebftdecider.FakeDecider{}
+		logger = boshlog.NewLogger(boshlog.LevelNone)
 	})
 
 	Context("when definition is vm_type", func() {
 		BeforeEach(func() {
 			fakeDecider.IsYesYes = false
-			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider)
+			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider, logger)
 		})
 
 		It("adds vm_types to the input", func() {
@@ -63,7 +66,7 @@ var _ = Describe("VmType", func() {
 	Context("when it is decided to keep previous input", func() {
 		BeforeEach(func() {
 			fakeDecider.IsYesYes = true
-			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider)
+			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider, logger)
 		})
 
 		It("uses previous input", func() {

@@ -63,7 +63,7 @@ var _ = Describe("Deployer", func() {
 		nameGenerator := bftnamegen.NewNameGenerator()
 		decider := &fakebftdecider.FakeDecider{}
 
-		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator, decider)
+		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator, decider, logger)
 		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
 		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, decider)

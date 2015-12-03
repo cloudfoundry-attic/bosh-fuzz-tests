@@ -84,7 +84,12 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 	}
 	// input.Jobs = g.randomizeJobs(input.Jobs)
 
-	for j, job := range input.Jobs {
+	input = g.parameterProvider.Get("availability_zone").Apply(input)
+	input = g.parameterProvider.Get("vm_type").Apply(input)
+	input = g.parameterProvider.Get("stemcell").Apply(input)
+	input = g.parameterProvider.Get("persistent_disk").Apply(input)
+
+	for j := range input.Jobs {
 		input.Jobs[j].Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
 		input.Jobs[j].MigratedFrom = nil
 
@@ -92,15 +97,10 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 			migratedFromCount := g.parameters.MigratedFromCount[rand.Intn(len(g.parameters.MigratedFromCount))]
 			for i := 0; i < migratedFromCount; i++ {
 				migratedFromName := g.nameGenerator.Generate(10)
-				input.Jobs[j].MigratedFrom = append(job.MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
+				input.Jobs[j].MigratedFrom = append(input.Jobs[j].MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
 			}
 		}
 	}
-
-	input = g.parameterProvider.Get("availability_zone").Apply(input)
-	input = g.parameterProvider.Get("vm_type").Apply(input)
-	input = g.parameterProvider.Get("stemcell").Apply(input)
-	input = g.parameterProvider.Get("persistent_disk").Apply(input)
 
 	return input
 }
