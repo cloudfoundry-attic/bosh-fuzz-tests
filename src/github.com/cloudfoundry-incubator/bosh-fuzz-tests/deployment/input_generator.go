@@ -121,7 +121,13 @@ func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
 		}
 	}
 
-	return jobs
+	shuffledJobs := []bftinput.Job{}
+	shuffledJobsIndeces := rand.Perm(numberOfJobs)
+	for _, jobIndex := range shuffledJobsIndeces {
+		shuffledJobs = append(shuffledJobs, jobs[jobIndex])
+	}
+
+	return shuffledJobs
 }
 
 func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.Input {
