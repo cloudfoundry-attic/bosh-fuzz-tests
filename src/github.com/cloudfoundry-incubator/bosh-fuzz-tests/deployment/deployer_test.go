@@ -4,10 +4,10 @@ import (
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
-	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -64,7 +64,7 @@ var _ = Describe("Deployer", func() {
 		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator)
 		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
-		staticIpDecider := &fakebftdepl.FakeDecider{}
+		staticIpDecider := &fakebftdecider.FakeDecider{}
 		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, false)
 	})

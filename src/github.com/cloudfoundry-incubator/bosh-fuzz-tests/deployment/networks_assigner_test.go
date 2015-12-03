@@ -3,6 +3,7 @@ package deployment_test
 import (
 	"math/rand"
 
+	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
 	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	fakebftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator/fakes"
@@ -63,7 +64,7 @@ var _ = Describe("NetworksAssigner", func() {
 			},
 			AvailableIps: []string{},
 		}
-		staticIpDecider := &fakebftdepl.FakeDecider{}
+		staticIpDecider := &fakebftdecider.FakeDecider{}
 		staticIpDecider.IsYesYes = true
 		networksAssigner = NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
 	})

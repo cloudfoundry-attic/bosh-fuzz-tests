@@ -1,7 +1,7 @@
 package deployment_test
 
 import (
-	fakedepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
+	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 
@@ -15,7 +15,7 @@ var _ = Describe("ReservedRangeGenerator", func() {
 	)
 
 	BeforeEach(func() {
-		decider := &fakedepl.FakeDecider{}
+		decider := &fakebftdecider.FakeDecider{}
 		decider.IsYesYes = true
 		generator = NewReservedRangeGenerator("192.168.0", decider)
 	})

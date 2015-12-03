@@ -1,6 +1,10 @@
 package deployment
 
-import "fmt"
+import (
+	"fmt"
+
+	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
+)
 
 type ReservedRangeGenerator interface {
 	Generate(usedIps []int, reservedBorders []int) []string
@@ -8,10 +12,10 @@ type ReservedRangeGenerator interface {
 
 type reservedRangeGenerator struct {
 	prefix  string
-	decider Decider
+	decider bftdecider.Decider
 }
 
-func NewReservedRangeGenerator(prefix string, decider Decider) ReservedRangeGenerator {
+func NewReservedRangeGenerator(prefix string, decider bftdecider.Decider) ReservedRangeGenerator {
 	return &reservedRangeGenerator{
 		prefix:  prefix,
 		decider: decider,

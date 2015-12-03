@@ -3,6 +3,7 @@ package deployment
 import (
 	"math/rand"
 
+	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 )
@@ -15,10 +16,10 @@ type networksAssigner struct {
 	networks        [][]string
 	nameGenerator   bftnamegen.NameGenerator
 	ipPoolProvider  IpPoolProvider
-	staticIpDecider Decider
+	staticIpDecider bftdecider.Decider
 }
 
-func NewNetworksAssigner(networks [][]string, nameGenerator bftnamegen.NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider Decider) NetworksAssigner {
+func NewNetworksAssigner(networks [][]string, nameGenerator bftnamegen.NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider bftdecider.Decider) NetworksAssigner {
 	return &networksAssigner{
 		networks:        networks,
 		nameGenerator:   nameGenerator,

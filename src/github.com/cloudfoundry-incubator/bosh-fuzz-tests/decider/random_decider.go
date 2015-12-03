@@ -1,4 +1,4 @@
-package deployment
+package decider
 
 import (
 	"math/rand"

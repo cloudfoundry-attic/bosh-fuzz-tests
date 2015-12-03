@@ -5,6 +5,7 @@ import (
 	"math/rand"
 	"sort"
 
+	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )
 
@@ -59,7 +60,7 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *bftinput.IpPool {
 	sort.Ints(usedIps)
 	sort.Ints(reservedBorders)
 
-	decider := NewRandomDecider()
+	decider := bftdecider.NewRandomDecider()
 	reservedRangeGenerator := NewReservedRangeGenerator(prefix, decider)
 	reservedRanges := reservedRangeGenerator.Generate(usedIps, reservedBorders)
 
