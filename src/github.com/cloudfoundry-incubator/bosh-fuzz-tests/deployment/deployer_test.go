@@ -42,6 +42,14 @@ var _ = Describe("Deployer", func() {
 		cliRunner.Configure()
 		renderer := NewRenderer(fs)
 
+		cmdRunner.AddCmdResult("bosh -n -c cli-config-path deploy", fakesys.FakeCmdResult{
+			Stdout: "Task 15 done",
+		})
+
+		cmdRunner.AddCmdResult("bosh -n -c cli-config-path deploy", fakesys.FakeCmdResult{
+			Stdout: "Task 20 done",
+		})
+
 		parameters := bftconfig.Parameters{
 			NameLength:               []int{5, 10},
 			Instances:                []int{2, 4},
