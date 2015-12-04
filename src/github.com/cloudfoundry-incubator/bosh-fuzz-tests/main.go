@@ -120,8 +120,7 @@ func main() {
 	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, logger)
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
 	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
-	expectationFactory := bftexpectation.NewFactory(cliRunner)
-	analyzer := bftanalyzer.NewAnalyzer(expectationFactory, logger)
+	analyzer := bftanalyzer.NewAnalyzer(logger)
 
 	deployer := bftdeployment.NewDeployer(
 		cliRunner,

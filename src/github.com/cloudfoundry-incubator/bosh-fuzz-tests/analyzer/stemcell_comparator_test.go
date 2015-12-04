@@ -3,9 +3,7 @@ package analyzer_test
 import (
 	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
-	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
-	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	fakesys "github.com/cloudfoundry/bosh-utils/system/fakes"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 
@@ -18,19 +16,11 @@ var _ = Describe("StemcellComparator", func() {
 		stemcellComparator Comparator
 		previousInput      bftinput.Input
 		currentInput       bftinput.Input
-		cliRunner          bltclirunner.Runner
 	)
 
 	BeforeEach(func() {
-		fs := fakesys.NewFakeFileSystem()
-		cmdRunner := fakesys.NewFakeCmdRunner()
-		boshCmd := boshsys.Command{Name: "bosh"}
-
-		cliRunner = bltclirunner.NewRunner(boshCmd, cmdRunner, fs)
-		cliRunner.Configure()
-
-		expectationFactory := bftexpectation.NewFactory(cliRunner)
-		stemcellComparator = NewStemcellComparator(expectationFactory)
+		logger := boshlog.NewLogger(boshlog.LevelNone)
+		stemcellComparator = NewStemcellComparator(logger)
 	})
 
 	Context("when there are same jobs that have different stemcell versions using vm types", func() {
@@ -68,7 +58,7 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInput, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewDebugLog("stemcell_changed?", cliRunner)
+			expectedDebugLogExpectation := bftexpectation.NewDebugLog("stemcell_changed?")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
@@ -118,7 +108,7 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInput, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewDebugLog("stemcell_changed?", cliRunner)
+			expectedDebugLogExpectation := bftexpectation.NewDebugLog("stemcell_changed?")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})

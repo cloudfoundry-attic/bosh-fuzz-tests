@@ -7,14 +7,12 @@ import (
 )
 
 type stemcellComparator struct {
-	expectationFactory bftexpectation.Factory
-	logger             boshlog.Logger
+	logger boshlog.Logger
 }
 
-func NewStemcellComparator(expectationFactory bftexpectation.Factory, logger boshlog.Logger) Comparator {
+func NewStemcellComparator(logger boshlog.Logger) Comparator {
 	return &stemcellComparator{
-		expectationFactory: expectationFactory,
-		logger:             logger,
+		logger: logger,
 	}
 }
 
@@ -22,7 +20,7 @@ func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput 
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
 		if s.jobStemcellChanged(job, currentInput, previousInput) {
-			expectations = append(expectations, s.expectationFactory.CreateDebugLog("stemcell_changed?"))
+			expectations = append(expectations, bftexpectation.NewDebugLog("stemcell_changed?"))
 		}
 	}
 

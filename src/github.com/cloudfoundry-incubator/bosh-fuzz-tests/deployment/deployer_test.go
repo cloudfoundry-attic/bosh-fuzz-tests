@@ -6,7 +6,6 @@ import (
 	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
-	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
@@ -76,8 +75,7 @@ var _ = Describe("Deployer", func() {
 		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
 		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, decider)
-		expectationFactory := bftexpectation.NewFactory(cliRunner)
-		analyzer := bftanalyzer.NewAnalyzer(expectationFactory)
+		analyzer := bftanalyzer.NewAnalyzer(logger)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, analyzer, fs, false)
 	})
 
@@ -103,6 +101,10 @@ var _ = Describe("Deployer", func() {
 			},
 			{
 				Name: "bosh",
+				Args: []string{"-n", "-c", "cli-config-path", "task", "15", "--debug"},
+			},
+			{
+				Name: "bosh",
 				Args: []string{"-n", "-c", "cli-config-path", "update", "cloud-config", "manifest-path"},
 			},
 			{
@@ -112,6 +114,10 @@ var _ = Describe("Deployer", func() {
 			{
 				Name: "bosh",
 				Args: []string{"-n", "-c", "cli-config-path", "deploy"},
+			},
+			{
+				Name: "bosh",
+				Args: []string{"-n", "-c", "cli-config-path", "task", "20", "--debug"},
 			},
 		}))
 	})

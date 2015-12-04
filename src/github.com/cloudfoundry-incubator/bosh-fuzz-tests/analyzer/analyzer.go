@@ -16,14 +16,12 @@ type Case struct {
 }
 
 type analyzer struct {
-	expectationFactory bftexpectation.Factory
 	stemcellComparator Comparator
 }
 
-func NewAnalyzer(expectationFactory bftexpectation.Factory, logger boshlog.Logger) Analyzer {
+func NewAnalyzer(logger boshlog.Logger) Analyzer {
 	return &analyzer{
-		expectationFactory: expectationFactory,
-		stemcellComparator: NewStemcellComparator(expectationFactory, logger),
+		stemcellComparator: NewStemcellComparator(logger),
 	}
 }
 
