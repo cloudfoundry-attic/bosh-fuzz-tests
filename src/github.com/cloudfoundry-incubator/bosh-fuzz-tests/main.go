@@ -129,6 +129,7 @@ func main() {
 		networksAssigner,
 		analyzer,
 		fs,
+		logger,
 		testConfig.GenerateManifestOnly,
 	)
 	err = deployer.RunDeploys()

@@ -2,6 +2,7 @@ package deployment
 
 import (
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
 	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
@@ -21,6 +22,7 @@ type deployer struct {
 	networksAssigner     NetworksAssigner
 	analyzer             bftanalyzer.Analyzer
 	fs                   boshsys.FileSystem
+	logger               boshlog.Logger
 	generateManifestOnly bool
 }
 
@@ -32,6 +34,7 @@ func NewDeployer(
 	networksAssigner NetworksAssigner,
 	analyzer bftanalyzer.Analyzer,
 	fs boshsys.FileSystem,
+	logger boshlog.Logger,
 	generateManifestOnly bool,
 ) Deployer {
 	return &deployer{
@@ -42,6 +45,7 @@ func NewDeployer(
 		networksAssigner:     networksAssigner,
 		analyzer:             analyzer,
 		fs:                   fs,
+		logger:               logger,
 		generateManifestOnly: generateManifestOnly,
 	}
 }

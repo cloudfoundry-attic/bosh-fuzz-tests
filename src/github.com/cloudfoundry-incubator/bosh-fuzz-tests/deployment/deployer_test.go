@@ -76,7 +76,7 @@ var _ = Describe("Deployer", func() {
 		ipPoolProvider := NewIpPoolProvider()
 		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, decider)
 		analyzer := bftanalyzer.NewAnalyzer(logger)
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, analyzer, fs, false)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, analyzer, fs, logger, false)
 	})
 
 	It("runs deploys with generated manifests", func() {
