@@ -3,6 +3,7 @@ package analyzer
 import (
 	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
 type Analyzer interface {
@@ -19,10 +20,10 @@ type analyzer struct {
 	stemcellComparator Comparator
 }
 
-func NewAnalyzer(expectationFactory bftexpectation.Factory) Analyzer {
+func NewAnalyzer(expectationFactory bftexpectation.Factory, logger boshlog.Logger) Analyzer {
 	return &analyzer{
 		expectationFactory: expectationFactory,
-		stemcellComparator: NewStemcellComparator(expectationFactory),
+		stemcellComparator: NewStemcellComparator(expectationFactory, logger),
 	}
 }
 

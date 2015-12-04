@@ -3,15 +3,18 @@ package analyzer
 import (
 	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
 type stemcellComparator struct {
 	expectationFactory bftexpectation.Factory
+	logger             boshlog.Logger
 }
 
-func NewStemcellComparator(expectationFactory bftexpectation.Factory) Comparator {
+func NewStemcellComparator(expectationFactory bftexpectation.Factory, logger boshlog.Logger) Comparator {
 	return &stemcellComparator{
 		expectationFactory: expectationFactory,
+		logger:             logger,
 	}
 }
 
@@ -26,7 +29,7 @@ func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput 
 	return expectations
 }
 
-func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, previousInput bftinput.Input, currentInput bftinput.Input) bool {
+func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput bftinput.Input, previousInput bftinput.Input) bool {
 	prevJob, found := s.findJobByName(job.Name, previousInput)
 	if !found {
 		return false
@@ -42,11 +45,13 @@ func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, previousInput 
 	if prevJob.Stemcell != "" {
 		prevStemcell := s.findVmTypeStemcellByAlias(prevJob.Stemcell, previousInput)
 		if prevStemcell.Version != currentStemcell.Version {
+			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match")
 			return true
 		}
 	} else {
 		prevStemcell := s.findResourcePoolStemcell(prevJob.ResourcePool, previousInput)
 		if prevStemcell.Version != currentStemcell.Version {
+			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match")
 			return true
 		}
 	}
