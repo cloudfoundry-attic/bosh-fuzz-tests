@@ -15,7 +15,6 @@ import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftdeployment "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
-	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
