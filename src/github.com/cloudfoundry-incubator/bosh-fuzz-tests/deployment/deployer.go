@@ -3,6 +3,7 @@ package deployment
 import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
+	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 )
@@ -17,6 +18,7 @@ type deployer struct {
 	renderer             Renderer
 	inputGenerator       InputGenerator
 	networksAssigner     NetworksAssigner
+	analyzer             bftanalyzer.Analyzer
 	fs                   boshsys.FileSystem
 	generateManifestOnly bool
 }
@@ -27,6 +29,7 @@ func NewDeployer(
 	renderer Renderer,
 	inputGenerator InputGenerator,
 	networksAssigner NetworksAssigner,
+	analyzer bftanalyzer.Analyzer,
 	fs boshsys.FileSystem,
 	generateManifestOnly bool,
 ) Deployer {
@@ -36,6 +39,7 @@ func NewDeployer(
 		renderer:             renderer,
 		inputGenerator:       inputGenerator,
 		networksAssigner:     networksAssigner,
+		analyzer:             analyzer,
 		fs:                   fs,
 		generateManifestOnly: generateManifestOnly,
 	}
@@ -61,7 +65,10 @@ func (d *deployer) RunDeploys() error {
 
 	d.networksAssigner.Assign(inputs)
 
-	for _, input := range inputs {
+	cases := d.analyzer.Analyze(inputs)
+
+	for _, testCase := range cases {
+		input := testCase.Input
 		input.DirectorUUID = d.directorInfo.UUID
 
 		err = d.renderer.Render(input, manifestPath.Name(), cloudConfigPath.Name())
@@ -81,9 +88,16 @@ func (d *deployer) RunDeploys() error {
 			}
 
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
-			_, err = deployWrapper.RunWithDebug("deploy")
+			taskId, err := deployWrapper.RunWithDebug("deploy")
 			if err != nil {
 				return err
+			}
+
+			for _, expectation := range testCase.Expectations {
+				err := expectation.Run(taskId)
+				if err != nil {
+					return err
+				}
 			}
 		}
 	}

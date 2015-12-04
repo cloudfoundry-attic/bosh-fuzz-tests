@@ -3,11 +3,12 @@ package deployment_test
 import (
 	"math/rand"
 
+	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
+	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
-
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -75,7 +76,9 @@ var _ = Describe("Deployer", func() {
 		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
 		ipPoolProvider := NewIpPoolProvider()
 		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, decider)
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, false)
+		expectationFactory := bftexpectation.NewFactory(cliRunner)
+		analyzer := bftanalyzer.NewAnalyzer(expectationFactory)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, analyzer, fs, false)
 	})
 
 	It("runs deploys with generated manifests", func() {
