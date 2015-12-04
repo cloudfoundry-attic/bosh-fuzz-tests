@@ -11,9 +11,11 @@ import (
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
+	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftdeployment "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
@@ -118,8 +120,19 @@ func main() {
 	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, logger)
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
 	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
+	expectationFactory := bftexpectation.NewFactory(cliRunner)
+	analyzer := bftanalyzer.NewAnalyzer(expectationFactory)
 
-	deployer := bftdeployment.NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, fs, testConfig.GenerateManifestOnly)
+	deployer := bftdeployment.NewDeployer(
+		cliRunner,
+		directorInfo,
+		renderer,
+		inputGenerator,
+		networksAssigner,
+		analyzer,
+		fs,
+		testConfig.GenerateManifestOnly,
+	)
 	err = deployer.RunDeploys()
 	if err != nil {
 		panic(err)
