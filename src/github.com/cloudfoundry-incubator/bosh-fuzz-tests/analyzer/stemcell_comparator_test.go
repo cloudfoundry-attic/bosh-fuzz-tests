@@ -58,7 +58,7 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInput, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewDebugLog("stemcell_changed?")
+			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
@@ -108,7 +108,7 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInput, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewDebugLog("stemcell_changed?")
+			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})

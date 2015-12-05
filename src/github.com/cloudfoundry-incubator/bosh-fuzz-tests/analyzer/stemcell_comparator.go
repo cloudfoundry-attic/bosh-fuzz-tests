@@ -20,7 +20,7 @@ func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput 
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
 		if s.jobStemcellChanged(job, currentInput, previousInput) {
-			expectations = append(expectations, bftexpectation.NewDebugLog("stemcell_changed?"))
+			expectations = append(expectations, bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?"))
 		}
 	}
 
