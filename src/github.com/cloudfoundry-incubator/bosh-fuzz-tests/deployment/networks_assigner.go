@@ -122,12 +122,17 @@ func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkCon
 	return jobNetworks
 }
 
-func (n *networksAssigner) generateSubnets(azs []string) []bftinput.SubnetConfig {
+func (n *networksAssigner) generateSubnets(azs []bftinput.AvailabilityZone) []bftinput.SubnetConfig {
 	subnets := []bftinput.SubnetConfig{}
 
+	azNames := []string{}
+	for _, az := range azs {
+		azNames = append(azNames, az.Name)
+	}
+
 	placedAzs := NewPlacedAZs()
-	for !placedAzs.AllPlaced(azs) {
-		newAzs := n.randomCombination(azs)
+	for !placedAzs.AllPlaced(azNames) {
+		newAzs := n.randomCombination(azNames)
 		placedAzs.Place(newAzs)
 		subnets = append(subnets, bftinput.SubnetConfig{AvailabilityZones: newAzs})
 	}

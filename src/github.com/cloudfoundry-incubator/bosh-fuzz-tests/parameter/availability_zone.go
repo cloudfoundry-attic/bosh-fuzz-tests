@@ -23,11 +23,15 @@ func (a *availabilityZone) Apply(input bftinput.Input) bftinput.Input {
 	for j := range input.Jobs {
 		input.Jobs[j].AvailabilityZones = a.azs[rand.Intn(len(a.azs))]
 
-		for _, az := range input.Jobs[j].AvailabilityZones {
-			if azs[az] != true {
-				input.CloudConfig.AvailabilityZones = append(input.CloudConfig.AvailabilityZones, az)
+		for _, name := range input.Jobs[j].AvailabilityZones {
+			if azs[name] != true {
+				input.CloudConfig.AvailabilityZones = append(
+					input.CloudConfig.AvailabilityZones,
+					bftinput.AvailabilityZone{
+						Name: name,
+					})
 			}
-			azs[az] = true
+			azs[name] = true
 		}
 	}
 

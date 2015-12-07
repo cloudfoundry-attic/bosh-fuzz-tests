@@ -2,8 +2,9 @@ package deployment
 
 var CloudTemplate = `---{{ if .CloudConfig.AvailabilityZones }}
 azs:{{ range .CloudConfig.AvailabilityZones }}
-- name: {{ . }}
-  cloud_properties: {}{{ end }}{{ end }}
+- name: {{ .Name }}
+  cloud_properties: {{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
+  {{ $key }}: {{ $value }}{{ end }}{{ else }}{}{{ end }}{{ end }}{{ end }}
 
 networks:{{ range .CloudConfig.Networks }}
 - name: {{ .Name }}

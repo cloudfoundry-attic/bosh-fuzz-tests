@@ -44,7 +44,11 @@ var _ = Describe("AvailabilityZone", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z2", "z3", "z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z2"},
+						{Name: "z3"},
+						{Name: "z1"},
+					},
 				},
 			}))
 		})

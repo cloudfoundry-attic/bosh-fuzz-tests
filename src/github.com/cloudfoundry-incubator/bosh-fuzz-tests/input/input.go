@@ -22,7 +22,7 @@ type Job struct {
 }
 
 type CloudConfig struct {
-	AvailabilityZones           []string
+	AvailabilityZones           []AvailabilityZone
 	PersistentDiskPools         []DiskConfig
 	PersistentDiskTypes         []DiskConfig
 	Networks                    []NetworkConfig
@@ -35,6 +35,11 @@ type CloudConfig struct {
 type DiskConfig struct {
 	Name string
 	Size int
+}
+
+type AvailabilityZone struct {
+	Name            string
+	CloudProperties map[string]interface{}
 }
 
 type VmTypeConfig struct {

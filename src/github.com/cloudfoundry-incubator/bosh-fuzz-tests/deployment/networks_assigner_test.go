@@ -80,7 +80,9 @@ var _ = Describe("NetworksAssigner", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
 				},
 			},
 		}
@@ -108,7 +110,9 @@ var _ = Describe("NetworksAssigner", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
 					Networks: []bftinput.NetworkConfig{
 						{
 							Name: "foo-net",

@@ -61,7 +61,9 @@ var _ = Describe("InputGenerator", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{
 							Name: "fake-persistent-disk",
@@ -94,7 +96,9 @@ var _ = Describe("InputGenerator", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{Name: "fake-persistent-disk", Size: 1},
 					},
@@ -142,7 +146,9 @@ var _ = Describe("InputGenerator", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{
 							Name: "fake-persistent-disk",
@@ -171,7 +177,9 @@ var _ = Describe("InputGenerator", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []string{"z1"},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{
 							Name: "fake-persistent-disk",

@@ -63,7 +63,12 @@ var _ = Describe("Manifest/Renderer", func() {
 				},
 			},
 			CloudConfig: bftinput.CloudConfig{
-				AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
+				AvailabilityZones: []bftinput.AvailabilityZone{
+					{Name: "z1"},
+					{Name: "z2"},
+					{Name: "z3"},
+					{Name: "z4"},
+				},
 				PersistentDiskPools: []bftinput.DiskConfig{
 					{
 						Name: "fast-disks",
