@@ -20,7 +20,7 @@ func NewExistingInstanceDebugLog(expectedString string) Expectation {
 }
 
 func (d *existingInstanceDebugLog) Run(debugLog string) error {
-	re := regexp.MustCompile("Existing desired instance '(.*)'")
+	re := regexp.MustCompile("Existing desired instance '([^']+)'")
 	matches := re.FindAllStringSubmatch(debugLog, -1)
 
 	for _, match := range matches {
@@ -30,7 +30,7 @@ func (d *existingInstanceDebugLog) Run(debugLog string) error {
 			expectedMatches := expectedRe.FindAllStringSubmatch(debugLog, -1)
 
 			if len(expectedMatches) == 0 {
-				return bosherr.Errorf("Task debug logs output does not contain expected string: %s", d.expectedString)
+				return bosherr.Errorf("Task debug logs output does not contain expected string: %s for instance %s", d.expectedString, instanceName)
 			}
 		}
 	}

@@ -19,8 +19,8 @@ var _ = Describe("ExistingInstanceDebugLog", func() {
 	Context("when debug logs contain expected string for existing instance", func() {
 		It("does not return an error", func() {
 			debugLog := `
-			Existing desired instance 'etcd/0'
-			stemcell_changed? changed FROM: version: 1 TO: version: 2 on instance etcd/0
+			Existing desired instance 'foobar/0' in az 'z1'
+			stemcell_changed? changed FROM: version: 1 TO: version: 2 on instance foobar/0
 			`
 			err := existingInstanceDebugLog.Run(debugLog)
 			Expect(err).ToNot(HaveOccurred())
