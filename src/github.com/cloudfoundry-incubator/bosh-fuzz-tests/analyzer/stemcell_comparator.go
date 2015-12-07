@@ -28,7 +28,7 @@ func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput 
 }
 
 func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput bftinput.Input, previousInput bftinput.Input) bool {
-	prevJob, found := s.findJobByName(job.Name, previousInput)
+	prevJob, found := previousInput.FindJobByName(job.Name)
 	if !found {
 		return false
 	}
@@ -75,13 +75,4 @@ func (s *stemcellComparator) findResourcePoolStemcell(resourcePoolName string, i
 	}
 
 	return bftinput.StemcellConfig{}
-}
-
-func (s *stemcellComparator) findJobByName(jobName string, input bftinput.Input) (bftinput.Job, bool) {
-	for _, job := range input.Jobs {
-		if job.Name == jobName {
-			return job, true
-		}
-	}
-	return bftinput.Job{}, false
 }

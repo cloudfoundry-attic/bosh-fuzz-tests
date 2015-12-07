@@ -1,5 +1,7 @@
 package input
 
+import "reflect"
+
 type Input struct {
 	DirectorUUID string
 	Jobs         []Job
@@ -7,18 +9,40 @@ type Input struct {
 	Stemcells    []StemcellConfig
 }
 
-type Job struct {
-	Name               string
-	Instances          int
-	AvailabilityZones  []string
-	PersistentDiskSize int
-	PersistentDiskPool string
-	PersistentDiskType string
-	Networks           []JobNetworkConfig
-	MigratedFrom       []MigratedFromConfig
-	VmType             string
-	ResourcePool       string
-	Stemcell           string
+func (i Input) FindJobByName(jobName string) (Job, bool) {
+	for _, job := range i.Jobs {
+		if job.Name == jobName {
+			return job, true
+		}
+	}
+	return Job{}, false
+}
+
+func (i Input) FindAzByName(azName string) (AvailabilityZone, bool) {
+	for _, az := range i.CloudConfig.AvailabilityZones {
+		if az.Name == azName {
+			return az, true
+		}
+	}
+	return AvailabilityZone{}, false
+}
+
+func (i Input) FindDiskPoolByName(diskName string) (DiskConfig, bool) {
+	for _, disk := range i.CloudConfig.PersistentDiskPools {
+		if disk.Name == diskName {
+			return disk, true
+		}
+	}
+	return DiskConfig{}, false
+}
+
+func (i Input) FindDiskTypeByName(diskName string) (DiskConfig, bool) {
+	for _, disk := range i.CloudConfig.PersistentDiskTypes {
+		if disk.Name == diskName {
+			return disk, true
+		}
+	}
+	return DiskConfig{}, false
 }
 
 type CloudConfig struct {
@@ -37,9 +61,17 @@ type DiskConfig struct {
 	Size int
 }
 
+func (d DiskConfig) IsEqual(other DiskConfig) bool {
+	return d == other
+}
+
 type AvailabilityZone struct {
 	Name            string
 	CloudProperties map[string]interface{}
+}
+
+func (a AvailabilityZone) IsEqual(other AvailabilityZone) bool {
+	return reflect.DeepEqual(a, other)
 }
 
 type VmTypeConfig struct {
