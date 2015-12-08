@@ -13,14 +13,14 @@ var _ = Describe("ExistingInstanceDebugLog", func() {
 	)
 
 	BeforeEach(func() {
-		existingInstanceDebugLog = NewExistingInstanceDebugLog("stemcell_changed?")
+		existingInstanceDebugLog = NewExistingInstanceDebugLog("stemcell_changed?", "etcd")
 	})
 
 	Context("when debug logs contain expected string for existing instance", func() {
 		It("does not return an error", func() {
 			debugLog := `
-			Existing desired instance 'foobar/0' in az 'z1'
-			stemcell_changed? changed FROM: version: 1 TO: version: 2 on instance foobar/0
+			Existing desired instance 'etcd/0' in az 'z1'
+			stemcell_changed? changed FROM: version: 1 TO: version: 2 on instance etcd/0
 			`
 			err := existingInstanceDebugLog.Run(debugLog)
 			Expect(err).ToNot(HaveOccurred())
@@ -45,5 +45,13 @@ var _ = Describe("ExistingInstanceDebugLog", func() {
 			err := existingInstanceDebugLog.Run(debugLog)
 			Expect(err).ToNot(HaveOccurred())
 		})
+	})
+
+	It("only checks the specified instance for expectation", func() {
+		debugLog := `
+			Existing desired instance 'another/0'
+			`
+		err := existingInstanceDebugLog.Run(debugLog)
+		Expect(err).ToNot(HaveOccurred())
 	})
 })

@@ -11,16 +11,19 @@ import (
 type existingInstanceDebugLog struct {
 	expectedString string
 	cliRunner      bltclirunner.Runner
+	jobName        string
 }
 
-func NewExistingInstanceDebugLog(expectedString string) Expectation {
+func NewExistingInstanceDebugLog(expectedString string, jobName string) Expectation {
 	return &existingInstanceDebugLog{
 		expectedString: expectedString,
+		jobName:        jobName,
 	}
 }
 
 func (d *existingInstanceDebugLog) Run(debugLog string) error {
-	re := regexp.MustCompile("Existing desired instance '([^']+)'")
+	regexString := fmt.Sprintf("Existing desired instance '(%s[^']+)'", d.jobName)
+	re := regexp.MustCompile(regexString)
 	matches := re.FindAllStringSubmatch(debugLog, -1)
 
 	for _, match := range matches {

@@ -58,7 +58,7 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInput, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?")
+			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-job")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
@@ -75,12 +75,23 @@ var _ = Describe("StemcellComparator", func() {
 								Version: "1",
 							},
 						},
+						{
+							Name: "fake-same-pool",
+							Stemcell: bftinput.StemcellConfig{
+								Name:    "fake-stemcell",
+								Version: "1",
+							},
+						},
 					},
 				},
 				Jobs: []bftinput.Job{
 					{
 						Name:         "foo-job",
 						ResourcePool: "fake-resource-pool",
+					},
+					{
+						Name:         "another-job",
+						ResourcePool: "fake-same-pool",
 					},
 				},
 			}
@@ -95,6 +106,13 @@ var _ = Describe("StemcellComparator", func() {
 								Version: "2",
 							},
 						},
+						{
+							Name: "fake-same-pool",
+							Stemcell: bftinput.StemcellConfig{
+								Name:    "fake-stemcell",
+								Version: "1",
+							},
+						},
 					},
 				},
 				Jobs: []bftinput.Job{
@@ -102,13 +120,17 @@ var _ = Describe("StemcellComparator", func() {
 						Name:         "foo-job",
 						ResourcePool: "fake-resource-pool",
 					},
+					{
+						Name:         "another-job",
+						ResourcePool: "fake-same-pool",
+					},
 				},
 			}
 		})
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInput, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?")
+			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-job")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})

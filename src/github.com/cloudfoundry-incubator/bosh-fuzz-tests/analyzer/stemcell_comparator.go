@@ -20,7 +20,7 @@ func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput 
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
 		if s.jobStemcellChanged(job, currentInput, previousInput) {
-			expectations = append(expectations, bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?"))
+			expectations = append(expectations, bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", job.Name))
 		}
 	}
 
@@ -35,21 +35,21 @@ func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput b
 
 	var currentStemcell bftinput.StemcellConfig
 	if job.Stemcell != "" {
-		currentStemcell = s.findVmTypeStemcellByAlias(job.Stemcell, currentInput)
+		currentStemcell = s.findStemcellByAlias(job.Stemcell, currentInput)
 	} else {
 		currentStemcell = s.findResourcePoolStemcell(job.ResourcePool, currentInput)
 	}
 
 	if prevJob.Stemcell != "" {
-		prevStemcell := s.findVmTypeStemcellByAlias(prevJob.Stemcell, previousInput)
+		prevStemcell := s.findStemcellByAlias(prevJob.Stemcell, previousInput)
 		if prevStemcell.Version != currentStemcell.Version {
-			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match")
+			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", previousInput, currentInput)
 			return true
 		}
 	} else {
 		prevStemcell := s.findResourcePoolStemcell(prevJob.ResourcePool, previousInput)
 		if prevStemcell.Version != currentStemcell.Version {
-			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match")
+			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", previousInput, currentInput)
 			return true
 		}
 	}
@@ -57,7 +57,7 @@ func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput b
 	return false
 }
 
-func (s *stemcellComparator) findVmTypeStemcellByAlias(alias string, input bftinput.Input) bftinput.StemcellConfig {
+func (s *stemcellComparator) findStemcellByAlias(alias string, input bftinput.Input) bftinput.StemcellConfig {
 	for _, stemcell := range input.Stemcells {
 		if stemcell.Alias == alias {
 			return stemcell
