@@ -57,6 +57,10 @@ func (s *stemcell) Apply(input bftinput.Input) bftinput.Input {
 			stemcellConfig.Version = s.stemcellVersions[rand.Intn(len(s.stemcellVersions))]
 			input.CloudConfig.ResourcePools[r].Stemcell = stemcellConfig
 		}
+
+		for j := range input.Jobs {
+			input.Jobs[j].Stemcell = ""
+		}
 	}
 
 	return input

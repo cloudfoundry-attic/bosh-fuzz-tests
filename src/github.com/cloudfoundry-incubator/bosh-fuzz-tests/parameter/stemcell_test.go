@@ -180,5 +180,57 @@ var _ = Describe("Stemcell", func() {
 				},
 			}))
 		})
+
+		It("generates stemcell version for each resource pool and assigns stemcell to corresponding job", func() {
+			input := bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:         "fake-job-1",
+						ResourcePool: "fake-resource-pool-1",
+					},
+					{
+						Name:         "fake-job-2",
+						ResourcePool: "fake-resource-pool-2",
+						Stemcell:     "unused-stemcell-from-previous-input",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					ResourcePools: []bftinput.ResourcePoolConfig{
+						{Name: "fake-resource-pool-1"},
+						{Name: "fake-resource-pool-2"},
+					},
+				},
+			}
+
+			result := stemcell.Apply(input)
+			Expect(result).To(Equal(bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:         "fake-job-1",
+						ResourcePool: "fake-resource-pool-1",
+					},
+					{
+						Name:         "fake-job-2",
+						ResourcePool: "fake-resource-pool-2",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					ResourcePools: []bftinput.ResourcePoolConfig{
+						{
+							Name: "fake-resource-pool-1",
+							Stemcell: bftinput.StemcellConfig{
+								Name: "ubuntu-stemcell", Version: "1",
+							},
+						},
+						{
+							Name: "fake-resource-pool-2",
+							Stemcell: bftinput.StemcellConfig{
+								Name: "ubuntu-stemcell", Version: "2",
+							},
+						},
+					},
+				},
+			}))
+		})
 	})
 })

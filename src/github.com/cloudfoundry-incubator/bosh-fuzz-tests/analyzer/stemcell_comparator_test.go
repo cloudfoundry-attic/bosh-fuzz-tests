@@ -112,4 +112,48 @@ var _ = Describe("StemcellComparator", func() {
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
+
+	Context("when switching from vm type (stemcell on Job) to resource pool", func() {
+		BeforeEach(func() {
+			previousInput = bftinput.Input{
+				Stemcells: []bftinput.StemcellConfig{
+					{
+						Alias:   "fake-stemcell",
+						Version: "1",
+					},
+				},
+				Jobs: []bftinput.Job{
+					{
+						Name:     "foo-job",
+						Stemcell: "fake-stemcell",
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					ResourcePools: []bftinput.ResourcePoolConfig{
+						{
+							Name: "fake-resource-pool",
+							Stemcell: bftinput.StemcellConfig{
+								OS:      "toronto-os",
+								Version: "1",
+							},
+						},
+					},
+				},
+				Jobs: []bftinput.Job{
+					{
+						Name:         "foo-job",
+						ResourcePool: "fake-resource-pool",
+					},
+				},
+			}
+		})
+
+		It("returns debug log expectation", func() {
+			expectations := stemcellComparator.Compare(previousInput, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
 })
