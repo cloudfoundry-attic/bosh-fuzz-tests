@@ -66,6 +66,14 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 		}
 	}
 
+	if job.VmType != "" {
+		currentVmType, _ := currentInput.FindVmTypeByName(job.VmType)
+		prevVmType, _ := previousInput.FindVmTypeByName(job.VmType)
+		if !currentVmType.IsEqual(prevVmType) {
+			return false
+		}
+	}
+
 	for _, jobNetwork := range job.Networks {
 		currentNetwork, _ := currentInput.FindNetworkByName(jobNetwork.Name)
 		prevNetwork, _ := previousInput.FindNetworkByName(jobNetwork.Name)

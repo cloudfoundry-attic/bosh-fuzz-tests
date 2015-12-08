@@ -273,7 +273,7 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 	})
 
-	Context("when ResourcePools properties was changed", func() {
+	Context("when ResourcePool property was changed", func() {
 		BeforeEach(func() {
 			previousInput = bftinput.Input{
 				Jobs: []bftinput.Job{
@@ -307,6 +307,53 @@ var _ = Describe("NothingChangedComparator", func() {
 							Name: "foo-resource-pool",
 							Stemcell: bftinput.StemcellConfig{
 								Name: "foo-name-two",
+							},
+						},
+					},
+				},
+			}
+		})
+
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
+
+	Context("when VmType property was changed", func() {
+		BeforeEach(func() {
+			previousInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:   "foo-job",
+						VmType: "foo-vm-type",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
+						{
+							Name: "foo-vm-type",
+							CloudProperties: map[string]interface{}{
+								"fake-key": "fake-property",
+							},
+						},
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:   "foo-job",
+						VmType: "foo-vm-type",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
+						{
+							Name: "foo-vm-type",
+							CloudProperties: map[string]interface{}{
+								"fake-key": "fake-updated-property",
 							},
 						},
 					},

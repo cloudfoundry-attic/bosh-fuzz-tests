@@ -63,6 +63,15 @@ func (i Input) FindResourcePoolByName(resourcePoolName string) (ResourcePoolConf
 	return ResourcePoolConfig{}, false
 }
 
+func (i Input) FindVmTypeByName(vmTypeName string) (VmTypeConfig, bool) {
+	for _, vmType := range i.CloudConfig.VmTypes {
+		if vmType.Name == vmTypeName {
+			return vmType, true
+		}
+	}
+	return VmTypeConfig{}, false
+}
+
 type CloudConfig struct {
 	AvailabilityZones           []AvailabilityZone
 	PersistentDiskPools         []DiskConfig
@@ -93,7 +102,12 @@ func (a AvailabilityZone) IsEqual(other AvailabilityZone) bool {
 }
 
 type VmTypeConfig struct {
-	Name string
+	Name            string
+	CloudProperties map[string]interface{}
+}
+
+func (v VmTypeConfig) IsEqual(other VmTypeConfig) bool {
+	return reflect.DeepEqual(v, other)
 }
 
 type ResourcePoolConfig struct {
