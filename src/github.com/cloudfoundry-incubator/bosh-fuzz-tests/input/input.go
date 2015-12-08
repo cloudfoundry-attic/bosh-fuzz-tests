@@ -36,6 +36,15 @@ func (i Input) FindDiskPoolByName(diskName string) (DiskConfig, bool) {
 	return DiskConfig{}, false
 }
 
+func (i Input) FindNetworkByName(networkName string) (NetworkConfig, bool) {
+	for _, network := range i.CloudConfig.Networks {
+		if network.Name == networkName {
+			return network, true
+		}
+	}
+	return NetworkConfig{}, false
+}
+
 func (i Input) FindDiskTypeByName(diskName string) (DiskConfig, bool) {
 	for _, disk := range i.CloudConfig.PersistentDiskTypes {
 		if disk.Name == diskName {
@@ -99,6 +108,10 @@ type NetworkConfig struct {
 	Name    string
 	Type    string
 	Subnets []SubnetConfig
+}
+
+func (n NetworkConfig) IsEqual(other NetworkConfig) bool {
+	return reflect.DeepEqual(n, other)
 }
 
 type SubnetConfig struct {
