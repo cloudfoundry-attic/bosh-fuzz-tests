@@ -72,6 +72,15 @@ func (i Input) FindVmTypeByName(vmTypeName string) (VmTypeConfig, bool) {
 	return VmTypeConfig{}, false
 }
 
+func (i Input) FindStemcellByName(stemcellName string) (StemcellConfig, bool) {
+	for _, stemcell := range i.Stemcells {
+		if stemcell.Name == stemcellName {
+			return stemcell, true
+		}
+	}
+	return StemcellConfig{}, false
+}
+
 type CloudConfig struct {
 	AvailabilityZones           []AvailabilityZone
 	PersistentDiskPools         []DiskConfig
@@ -124,6 +133,10 @@ type StemcellConfig struct {
 	OS      string
 	Version string
 	Alias   string
+}
+
+func (s StemcellConfig) IsEqual(other StemcellConfig) bool {
+	return s.Version == other.Version
 }
 
 type MigratedFromConfig struct {

@@ -366,4 +366,43 @@ var _ = Describe("NothingChangedComparator", func() {
 			Expect(expectations).To(BeEmpty())
 		})
 	})
+
+	Context("when Stemcell property was changed", func() {
+		BeforeEach(func() {
+			previousInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:     "foo-job",
+						Stemcell: "foo-stemcell",
+					},
+				},
+				Stemcells: []bftinput.StemcellConfig{
+					{
+						Name:    "foo-stemcell",
+						Version: "1",
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:     "foo-job",
+						Stemcell: "foo-stemcell",
+					},
+				},
+				Stemcells: []bftinput.StemcellConfig{
+					{
+						Name:    "foo-stemcell",
+						Version: "2",
+					},
+				},
+			}
+		})
+
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
 })

@@ -74,6 +74,14 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 		}
 	}
 
+	if job.Stemcell != "" {
+		currentStemcell, _ := currentInput.FindStemcellByName(job.Stemcell)
+		prevStemcell, _ := previousInput.FindStemcellByName(job.Stemcell)
+		if !currentStemcell.IsEqual(prevStemcell) {
+			return false
+		}
+	}
+
 	for _, jobNetwork := range job.Networks {
 		currentNetwork, _ := currentInput.FindNetworkByName(jobNetwork.Name)
 		prevNetwork, _ := previousInput.FindNetworkByName(jobNetwork.Name)
