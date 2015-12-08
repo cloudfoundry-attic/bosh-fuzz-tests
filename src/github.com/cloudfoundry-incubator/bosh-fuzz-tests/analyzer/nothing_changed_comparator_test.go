@@ -86,7 +86,7 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 		})
 
-		It("returns debug log expectation", func() {
+		It("returns no expectations", func() {
 			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
@@ -130,7 +130,7 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 		})
 
-		It("returns debug log expectation", func() {
+		It("returns no expectations", func() {
 			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
@@ -167,7 +167,7 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 		})
 
-		It("returns debug log expectation", func() {
+		It("returns no expectations", func() {
 			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
@@ -204,7 +204,7 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 		})
 
-		It("returns debug log expectation", func() {
+		It("returns no expectations", func() {
 			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
@@ -267,7 +267,54 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 		})
 
-		It("returns debug log expectation", func() {
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
+
+	Context("when ResourcePools properties was changed", func() {
+		BeforeEach(func() {
+			previousInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:         "foo-job",
+						ResourcePool: "foo-resource-pool",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					ResourcePools: []bftinput.ResourcePoolConfig{
+						{
+							Name: "foo-resource-pool",
+							Stemcell: bftinput.StemcellConfig{
+								Name: "foo-name-one",
+							},
+						},
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:         "foo-job",
+						ResourcePool: "foo-resource-pool",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					ResourcePools: []bftinput.ResourcePoolConfig{
+						{
+							Name: "foo-resource-pool",
+							Stemcell: bftinput.StemcellConfig{
+								Name: "foo-name-two",
+							},
+						},
+					},
+				},
+			}
+		})
+
+		It("returns no expectations", func() {
 			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})

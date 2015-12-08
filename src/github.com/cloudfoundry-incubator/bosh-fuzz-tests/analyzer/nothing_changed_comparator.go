@@ -58,6 +58,14 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 		}
 	}
 
+	if job.ResourcePool != "" {
+		currentResourcePool, _ := currentInput.FindResourcePoolByName(job.ResourcePool)
+		prevResourcePool, _ := previousInput.FindResourcePoolByName(job.ResourcePool)
+		if !currentResourcePool.IsEqual(prevResourcePool) {
+			return false
+		}
+	}
+
 	for _, jobNetwork := range job.Networks {
 		currentNetwork, _ := currentInput.FindNetworkByName(jobNetwork.Name)
 		prevNetwork, _ := previousInput.FindNetworkByName(jobNetwork.Name)

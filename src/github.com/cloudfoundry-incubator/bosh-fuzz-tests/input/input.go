@@ -36,6 +36,15 @@ func (i Input) FindDiskPoolByName(diskName string) (DiskConfig, bool) {
 	return DiskConfig{}, false
 }
 
+func (i Input) FindDiskTypeByName(diskName string) (DiskConfig, bool) {
+	for _, disk := range i.CloudConfig.PersistentDiskTypes {
+		if disk.Name == diskName {
+			return disk, true
+		}
+	}
+	return DiskConfig{}, false
+}
+
 func (i Input) FindNetworkByName(networkName string) (NetworkConfig, bool) {
 	for _, network := range i.CloudConfig.Networks {
 		if network.Name == networkName {
@@ -45,13 +54,13 @@ func (i Input) FindNetworkByName(networkName string) (NetworkConfig, bool) {
 	return NetworkConfig{}, false
 }
 
-func (i Input) FindDiskTypeByName(diskName string) (DiskConfig, bool) {
-	for _, disk := range i.CloudConfig.PersistentDiskTypes {
-		if disk.Name == diskName {
-			return disk, true
+func (i Input) FindResourcePoolByName(resourcePoolName string) (ResourcePoolConfig, bool) {
+	for _, resourcePool := range i.CloudConfig.ResourcePools {
+		if resourcePool.Name == resourcePoolName {
+			return resourcePool, true
 		}
 	}
-	return DiskConfig{}, false
+	return ResourcePoolConfig{}, false
 }
 
 type CloudConfig struct {
@@ -90,6 +99,10 @@ type VmTypeConfig struct {
 type ResourcePoolConfig struct {
 	Name     string
 	Stemcell StemcellConfig
+}
+
+func (r ResourcePoolConfig) IsEqual(other ResourcePoolConfig) bool {
+	return reflect.DeepEqual(r, other)
 }
 
 type StemcellConfig struct {
