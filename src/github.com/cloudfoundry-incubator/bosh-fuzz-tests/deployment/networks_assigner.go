@@ -112,12 +112,18 @@ func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkCon
 
 	totalNumberOfJobNetworks := rand.Intn(len(networkPool)) + 1
 	networksToPick := rand.Perm(len(networkPool))[:totalNumberOfJobNetworks]
-	for _, k := range networksToPick {
+	nonVipNetworkIdxs := []int{}
+
+	for idx, k := range networksToPick {
 		network := networkPool[k]
 		jobNetworks = append(jobNetworks, bftinput.JobNetworkConfig{Name: network.Name})
+		if network.Type != "vip" {
+			nonVipNetworkIdxs = append(nonVipNetworkIdxs, idx)
+		}
 	}
 
-	jobNetworks[rand.Intn(totalNumberOfJobNetworks)].DefaultDNSnGW = true
+	randomNonVipNetworkIdx := nonVipNetworkIdxs[rand.Intn(len(nonVipNetworkIdxs))]
+	jobNetworks[randomNonVipNetworkIdx].DefaultDNSnGW = true
 
 	return jobNetworks
 }
