@@ -16,12 +16,14 @@ type Case struct {
 }
 
 type analyzer struct {
-	stemcellComparator Comparator
+	stemcellComparator       Comparator
+	nothingChangedComparator Comparator
 }
 
 func NewAnalyzer(logger boshlog.Logger) Analyzer {
 	return &analyzer{
-		stemcellComparator: NewStemcellComparator(logger),
+		stemcellComparator:       NewStemcellComparator(logger),
+		nothingChangedComparator: NewNothingChangedComparator(),
 	}
 }
 
@@ -32,6 +34,7 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 
 		if i != 0 {
 			expectations = append(expectations, a.stemcellComparator.Compare(inputs[i-1], inputs[i])...)
+			expectations = append(expectations, a.nothingChangedComparator.Compare(inputs[i-1], inputs[i])...)
 		}
 
 		cases = append(cases, Case{
