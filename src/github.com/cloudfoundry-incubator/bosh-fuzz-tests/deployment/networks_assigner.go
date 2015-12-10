@@ -122,8 +122,10 @@ func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkCon
 		}
 	}
 
-	randomNonVipNetworkIdx := nonVipNetworkIdxs[rand.Intn(len(nonVipNetworkIdxs))]
-	jobNetworks[randomNonVipNetworkIdx].DefaultDNSnGW = true
+	if len(nonVipNetworkIdxs) > 0 {
+		randomNonVipNetworkIdx := nonVipNetworkIdxs[rand.Intn(len(nonVipNetworkIdxs))]
+		jobNetworks[randomNonVipNetworkIdx].DefaultDNSnGW = true
+	}
 
 	return jobNetworks
 }
