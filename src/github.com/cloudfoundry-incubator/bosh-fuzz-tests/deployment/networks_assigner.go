@@ -128,8 +128,7 @@ func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkCon
 		jobNetworks = append(jobNetworks, bftinput.JobNetworkConfig{Name: network.Name})
 	}
 
-	defaultNetwork := jobNetworks[rand.Intn(len(jobNetworks))]
-	defaultNetwork.DefaultDNSnGW = true
+	jobNetworks[rand.Intn(len(jobNetworks))].DefaultDNSnGW = true
 
 	if len(vipNetworks) != 0 {
 		totalNumberOfVipNetworks := rand.Intn(len(vipNetworks)) // can be 0
@@ -142,7 +141,7 @@ func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkCon
 
 	if len(jobNetworks) == 1 && !n.decider.IsYes() {
 		// if we only have one network on job, we don't necessarily need to specify default DNS n GW
-		defaultNetwork.DefaultDNSnGW = false
+		jobNetworks[0].DefaultDNSnGW = false
 	}
 
 	return jobNetworks

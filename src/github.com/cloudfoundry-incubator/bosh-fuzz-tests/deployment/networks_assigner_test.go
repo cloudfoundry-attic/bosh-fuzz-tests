@@ -99,7 +99,7 @@ var _ = Describe("NetworksAssigner", func() {
 						Networks: []bftinput.JobNetworkConfig{
 							{
 								Name:          "foo-net",
-								DefaultDNSnGW: false,
+								DefaultDNSnGW: true,
 								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
 							},
 						},
