@@ -98,12 +98,8 @@ var _ = Describe("NetworksAssigner", func() {
 						AvailabilityZones: []string{"z1"},
 						Networks: []bftinput.JobNetworkConfig{
 							{
-								Name:      "bar-net",
-								StaticIps: []string{"10.10.0.6", "10.10.0.32"},
-							},
-							{
 								Name:          "foo-net",
-								DefaultDNSnGW: true,
+								DefaultDNSnGW: false,
 								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
 							},
 						},

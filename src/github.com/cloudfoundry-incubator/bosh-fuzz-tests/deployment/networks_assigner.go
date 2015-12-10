@@ -13,18 +13,18 @@ type NetworksAssigner interface {
 }
 
 type networksAssigner struct {
-	networks        [][]string
-	nameGenerator   bftnamegen.NameGenerator
-	ipPoolProvider  IpPoolProvider
-	staticIpDecider bftdecider.Decider
+	networks       [][]string
+	nameGenerator  bftnamegen.NameGenerator
+	ipPoolProvider IpPoolProvider
+	decider        bftdecider.Decider
 }
 
-func NewNetworksAssigner(networks [][]string, nameGenerator bftnamegen.NameGenerator, ipPoolProvider IpPoolProvider, staticIpDecider bftdecider.Decider) NetworksAssigner {
+func NewNetworksAssigner(networks [][]string, nameGenerator bftnamegen.NameGenerator, ipPoolProvider IpPoolProvider, decider bftdecider.Decider) NetworksAssigner {
 	return &networksAssigner{
-		networks:        networks,
-		nameGenerator:   nameGenerator,
-		ipPoolProvider:  ipPoolProvider,
-		staticIpDecider: staticIpDecider,
+		networks:       networks,
+		nameGenerator:  nameGenerator,
+		ipPoolProvider: ipPoolProvider,
+		decider:        decider,
 	}
 }
 
@@ -76,9 +76,9 @@ func (n *networksAssigner) Assign(inputs []bftinput.Input) {
 
 		for j, job := range inputs[i].Jobs {
 			if job.AvailabilityZones == nil {
-				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithoutAzs, nil)
+				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithoutAzs)
 			} else {
-				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithAzs, job.AvailabilityZones)
+				inputs[i].Jobs[j].Networks = n.generateJobNetworks(networkPoolWithAzs)
 			}
 		}
 
@@ -107,24 +107,42 @@ func (n *networksAssigner) Assign(inputs []bftinput.Input) {
 	}
 }
 
-func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkConfig, azs []string) []bftinput.JobNetworkConfig {
+func (n *networksAssigner) generateJobNetworks(networkPool []bftinput.NetworkConfig) []bftinput.JobNetworkConfig {
 	jobNetworks := []bftinput.JobNetworkConfig{}
 
-	totalNumberOfJobNetworks := rand.Intn(len(networkPool)) + 1
-	networksToPick := rand.Perm(len(networkPool))[:totalNumberOfJobNetworks]
-	nonVipNetworkIdxs := []int{}
-
-	for idx, k := range networksToPick {
-		network := networkPool[k]
-		jobNetworks = append(jobNetworks, bftinput.JobNetworkConfig{Name: network.Name})
-		if network.Type != "vip" {
-			nonVipNetworkIdxs = append(nonVipNetworkIdxs, idx)
+	nonVipNetworks := []bftinput.NetworkConfig{}
+	vipNetworks := []bftinput.NetworkConfig{}
+	for _, network := range networkPool {
+		if network.Type == "vip" {
+			vipNetworks = append(vipNetworks, network)
+		} else {
+			nonVipNetworks = append(nonVipNetworks, network)
 		}
 	}
 
-	if len(nonVipNetworkIdxs) > 0 {
-		randomNonVipNetworkIdx := nonVipNetworkIdxs[rand.Intn(len(nonVipNetworkIdxs))]
-		jobNetworks[randomNonVipNetworkIdx].DefaultDNSnGW = true
+	totalNumberOfNonVipNetworks := rand.Intn(len(nonVipNetworks)) + 1 // can not be 0
+
+	networksToPick := rand.Perm(len(nonVipNetworks))[:totalNumberOfNonVipNetworks]
+	for _, k := range networksToPick {
+		network := nonVipNetworks[k]
+		jobNetworks = append(jobNetworks, bftinput.JobNetworkConfig{Name: network.Name})
+	}
+
+	defaultNetwork := jobNetworks[rand.Intn(len(jobNetworks))]
+	defaultNetwork.DefaultDNSnGW = true
+
+	if len(vipNetworks) != 0 {
+		totalNumberOfVipNetworks := rand.Intn(len(vipNetworks)) // can be 0
+		networksToPick = rand.Perm(len(vipNetworks))[:totalNumberOfVipNetworks]
+		for _, k := range networksToPick {
+			network := vipNetworks[k]
+			jobNetworks = append(jobNetworks, bftinput.JobNetworkConfig{Name: network.Name})
+		}
+	}
+
+	if len(jobNetworks) == 1 && !n.decider.IsYes() {
+		// if we only have one network on job, we don't necessarily need to specify default DNS n GW
+		defaultNetwork.DefaultDNSnGW = false
 	}
 
 	return jobNetworks
@@ -208,7 +226,7 @@ func (n *networksAssigner) assignStaticIps(networks []bftinput.NetworkConfig, jo
 			}
 
 			for _, job := range jobsOnNetwork.Jobs {
-				if !hasNetworkWithStaticIps && n.staticIpDecider.IsYes() { // use static IPs
+				if !hasNetworkWithStaticIps && n.decider.IsYes() { // use static IPs
 					hasNetworkWithStaticIps = true
 					for ji := 0; ji < job.Instances; ji++ {
 						subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
