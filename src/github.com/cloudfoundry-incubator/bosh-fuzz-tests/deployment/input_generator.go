@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
@@ -20,6 +21,7 @@ type inputGenerator struct {
 	parameterProvider         bftparam.ParameterProvider
 	numberOfConsequentDeploys int
 	nameGenerator             bftnamegen.NameGenerator
+	decider                   bftdecider.Decider
 	logger                    boshlog.Logger
 }
 
@@ -28,6 +30,7 @@ func NewInputGenerator(
 	parameterProvider bftparam.ParameterProvider,
 	numberOfConsequentDeploys int,
 	nameGenerator bftnamegen.NameGenerator,
+	decider bftdecider.Decider,
 	logger boshlog.Logger,
 ) InputGenerator {
 	return &inputGenerator{
@@ -35,6 +38,7 @@ func NewInputGenerator(
 		parameterProvider:         parameterProvider,
 		numberOfConsequentDeploys: numberOfConsequentDeploys,
 		nameGenerator:             nameGenerator,
+		decider:                   decider,
 		logger:                    logger,
 	}
 }
@@ -46,22 +50,30 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 	previousInput := g.generateInputWithJobNames(jobNames)
 
 	for i := 0; i < g.numberOfConsequentDeploys; i++ {
-		input := g.fuzzInput(previousInput, false)
+		reusePreviousInput := g.decider.IsYes()
+		var input bftinput.Input
 
-		migratingJobNames := []string{}
-		for _, j := range input.Jobs {
-			for _, m := range j.MigratedFrom {
-				migratingJobNames = append(migratingJobNames, m.Name)
+		if i > 0 && reusePreviousInput {
+			input = previousInput
+			println("Reusing!!!")
+		} else {
+			input = g.fuzzInput(previousInput, false)
+
+			migratingJobNames := []string{}
+			for _, j := range input.Jobs {
+				for _, m := range j.MigratedFrom {
+					migratingJobNames = append(migratingJobNames, m.Name)
+				}
 			}
-		}
 
-		if len(migratingJobNames) > 0 {
-			migratingInput := g.generateInputWithJobNames(migratingJobNames)
-			migratingInput = g.fuzzInput(migratingInput, true)
+			if len(migratingJobNames) > 0 {
+				migratingInput := g.generateInputWithJobNames(migratingJobNames)
+				migratingInput = g.fuzzInput(migratingInput, true)
 
-			g.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
+				g.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
 
-			inputs = append(inputs, migratingInput)
+				inputs = append(inputs, migratingInput)
+			}
 		}
 
 		inputs = append(inputs, input)

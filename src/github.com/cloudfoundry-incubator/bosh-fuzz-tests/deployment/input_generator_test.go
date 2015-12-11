@@ -3,6 +3,7 @@ package deployment_test
 import (
 	"math/rand"
 
+	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
 	fakebftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/fakes"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
@@ -23,6 +24,7 @@ var _ = Describe("InputGenerator", func() {
 		logger                boshlog.Logger
 		nameGenerator         bftnamegen.NameGenerator
 		fakeParameterProvider *fakebftparam.FakeParameterProvider
+		decider               *fakebftdecider.FakeDecider
 	)
 
 	BeforeEach(func() {
@@ -40,6 +42,7 @@ var _ = Describe("InputGenerator", func() {
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
 		fakeParameterProvider = fakebftparam.NewFakeParameterProvider()
+		decider = &fakebftdecider.FakeDecider{}
 	})
 
 	It("generates requested number of inputs", func() {
@@ -55,7 +58,7 @@ var _ = Describe("InputGenerator", func() {
 			StemcellDefinition:       []string{"os"},
 		}
 		rand.Seed(64)
-		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, logger)
+		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, decider, logger)
 
 		inputs, err := inputGenerator.Generate()
 		Expect(err).ToNot(HaveOccurred())
@@ -151,7 +154,7 @@ var _ = Describe("InputGenerator", func() {
 
 	It("when migrated job does not have az it sets random az in migrated_from", func() {
 		rand.Seed(64)
-		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, logger)
+		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, decider, logger)
 
 		inputs, err := inputGenerator.Generate()
 		Expect(err).ToNot(HaveOccurred())

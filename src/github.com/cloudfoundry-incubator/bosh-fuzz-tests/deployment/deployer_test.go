@@ -75,7 +75,7 @@ var _ = Describe("Deployer", func() {
 		ipPoolProvider := bftnetwork.NewIpPoolProvider()
 		networkAssigner := bftnetwork.NewAssigner(networks, nameGenerator, ipPoolProvider, decider)
 		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator, decider, networkAssigner, logger)
-		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
+		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, decider, logger)
 		analyzer := bftanalyzer.NewAnalyzer(logger)
 		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, analyzer, fs, logger, false)
 	})

@@ -119,7 +119,7 @@ func main() {
 	ipPoolProvider := bftnetwork.NewIpPoolProvider()
 	networksAssigner := bftnetwork.NewAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
 	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, networksAssigner, logger)
-	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
+	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, decider, logger)
 	analyzer := bftanalyzer.NewAnalyzer(logger)
 
 	deployer := bftdeployment.NewDeployer(
