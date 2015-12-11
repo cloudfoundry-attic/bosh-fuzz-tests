@@ -18,11 +18,32 @@ import (
 
 var _ = Describe("InputGenerator", func() {
 	var (
-		inputGenerator InputGenerator
+		inputGenerator        InputGenerator
+		parameters            bftconfig.Parameters
+		logger                boshlog.Logger
+		nameGenerator         bftnamegen.NameGenerator
+		fakeParameterProvider *fakebftparam.FakeParameterProvider
 	)
 
+	BeforeEach(func() {
+		parameters = bftconfig.Parameters{
+			NameLength:               []int{5},
+			Instances:                []int{2},
+			AvailabilityZones:        [][]string{[]string{"z1"}},
+			PersistentDiskDefinition: []string{"persistent_disk_size"},
+			PersistentDiskSize:       []int{0},
+			NumberOfJobs:             []int{1},
+			MigratedFromCount:        []int{1},
+			VmTypeDefinition:         []string{"vm_type"},
+			StemcellDefinition:       []string{"name"},
+		}
+		logger = boshlog.NewLogger(boshlog.LevelNone)
+		nameGenerator = bftnamegen.NewNameGenerator()
+		fakeParameterProvider = fakebftparam.NewFakeParameterProvider()
+	})
+
 	It("generates requested number of inputs", func() {
-		parameters := bftconfig.Parameters{
+		parameters = bftconfig.Parameters{
 			NameLength:               []int{5},
 			Instances:                []int{2},
 			AvailabilityZones:        [][]string{[]string{"z1"}, []string{"z1", "z2"}},
@@ -33,10 +54,7 @@ var _ = Describe("InputGenerator", func() {
 			VmTypeDefinition:         []string{"vm_type"},
 			StemcellDefinition:       []string{"os"},
 		}
-		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
-		nameGenerator := bftnamegen.NewNameGenerator()
-		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, logger)
 
 		inputs, err := inputGenerator.Generate()
@@ -132,21 +150,7 @@ var _ = Describe("InputGenerator", func() {
 	})
 
 	It("when migrated job does not have az it sets random az in migrated_from", func() {
-		parameters := bftconfig.Parameters{
-			NameLength:               []int{5},
-			Instances:                []int{2},
-			AvailabilityZones:        [][]string{[]string{"z1"}},
-			PersistentDiskDefinition: []string{"persistent_disk_size"},
-			PersistentDiskSize:       []int{0},
-			NumberOfJobs:             []int{1},
-			MigratedFromCount:        []int{1},
-			VmTypeDefinition:         []string{"vm_type"},
-			StemcellDefinition:       []string{"name"},
-		}
-		logger := boshlog.NewLogger(boshlog.LevelNone)
 		rand.Seed(64)
-		nameGenerator := bftnamegen.NewNameGenerator()
-		fakeParameterProvider := fakebftparam.NewFakeParameterProvider()
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, logger)
 
 		inputs, err := inputGenerator.Generate()
