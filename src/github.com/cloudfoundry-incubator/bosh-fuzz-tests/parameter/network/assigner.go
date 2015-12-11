@@ -108,6 +108,8 @@ func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
 	}
 	if len(azs) > 0 {
 		input.CloudConfig.CompilationAvailabilityZone = azs[rand.Intn(len(azs))]
+	} else {
+		input.CloudConfig.CompilationAvailabilityZone = ""
 	}
 
 	return input
