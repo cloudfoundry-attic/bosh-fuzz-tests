@@ -19,6 +19,7 @@ var _ = Describe("NetworksAssigner", func() {
 		networksAssigner Assigner
 		networks         [][]string
 		expectedIpPool   *bftinput.IpPool
+		decider          *fakebftdecider.FakeDecider
 	)
 
 	BeforeEach(func() {
@@ -51,6 +52,8 @@ var _ = Describe("NetworksAssigner", func() {
 		ipPoolProvider.RegisterIpPool(ipPool)
 		ipPoolProvider.RegisterIpPool(ipPool)
 
+		ipPoolProvider.RegisterIpPool(ipPool)
+
 		expectedIpPool = &bftinput.IpPool{
 			IpRange: "192.168.0.0/24",
 			Gateway: "192.168.0.1",
@@ -64,9 +67,9 @@ var _ = Describe("NetworksAssigner", func() {
 			},
 			AvailableIps: []string{},
 		}
-		staticIpDecider := &fakebftdecider.FakeDecider{}
-		staticIpDecider.IsYesYes = true
-		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
+		decider = &fakebftdecider.FakeDecider{}
+		decider.IsYesYes = true
+		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, decider)
 	})
 
 	It("assigns network of the given type to job and cloud config", func() {
@@ -139,5 +142,95 @@ var _ = Describe("NetworksAssigner", func() {
 			},
 		},
 		))
+	})
+
+	Context("when it is decided to reuse same network name", func() {
+		BeforeEach(func() {
+			decider.IsYesYes = true
+		})
+
+		It("reuses network name from previous input", func() {
+			input := bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:              "foo",
+						Instances:         2,
+						AvailabilityZones: []string{"z1"},
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "prev-net"},
+						},
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
+					Networks: []bftinput.NetworkConfig{
+						{
+							Name: "prev-net",
+							Type: "dynamic",
+						},
+					},
+				},
+			}
+
+			result := networksAssigner.Assign(input)
+
+			Expect(result).To(BeEquivalentTo(bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:              "foo",
+						Instances:         2,
+						AvailabilityZones: []string{"z1"},
+						Networks: []bftinput.JobNetworkConfig{
+							{
+								Name:          "prev-net",
+								DefaultDNSnGW: true,
+								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
+							},
+						},
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{Name: "z1"},
+					},
+					Networks: []bftinput.NetworkConfig{
+						{
+							Name: "prev-net",
+							Type: "manual",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool:            expectedIpPool,
+									AvailabilityZones: []string{"z1"},
+								},
+							},
+						},
+						{
+							Name: "foo-net",
+							Type: "vip",
+						},
+						{
+							Name: "bar-net",
+							Type: "manual",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: expectedIpPool,
+								},
+								{
+									IpPool: expectedIpPool,
+								},
+							},
+						},
+						{
+							Name: "baz-net",
+							Type: "vip",
+						},
+					},
+					CompilationNetwork: "bar-net",
+				},
+			},
+			))
+		})
 	})
 })

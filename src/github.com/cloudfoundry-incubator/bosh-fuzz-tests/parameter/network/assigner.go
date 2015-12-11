@@ -44,14 +44,17 @@ func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
 	networkPoolWithAzs := []bftinput.NetworkConfig{}
 	var networkTypes []string
 
+	networkReuser := NewReuser(
+		input.CloudConfig.Networks,
+		n.decider,
+		n.nameGenerator,
+	)
+
 	if len(input.CloudConfig.AvailabilityZones) > 0 {
 		networkTypes = n.networks[rand.Intn(len(n.networks))]
 
 		for _, networkType := range networkTypes {
-			network := bftinput.NetworkConfig{
-				Name: n.nameGenerator.Generate(7),
-				Type: networkType,
-			}
+			network := networkReuser.CreateNetwork(networkType)
 			networkPoolWithAzs = append(networkPoolWithAzs, network)
 		}
 
@@ -65,10 +68,7 @@ func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
 	networkPoolWithoutAzs := []bftinput.NetworkConfig{}
 	networkTypes = n.networks[rand.Intn(len(n.networks))]
 	for _, networkType := range networkTypes {
-		network := bftinput.NetworkConfig{
-			Name: n.nameGenerator.Generate(7),
-			Type: networkType,
-		}
+		network := networkReuser.CreateNetwork(networkType)
 		networkPoolWithoutAzs = append(networkPoolWithoutAzs, network)
 	}
 
@@ -90,6 +90,7 @@ func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
 	n.assignStaticIps(allNetworks, input.Jobs)
 
 	nonVipNetworks := []bftinput.NetworkConfig{}
+	input.CloudConfig.Networks = []bftinput.NetworkConfig{}
 
 	for _, network := range allNetworks {
 		input.CloudConfig.Networks = append(input.CloudConfig.Networks, network)
