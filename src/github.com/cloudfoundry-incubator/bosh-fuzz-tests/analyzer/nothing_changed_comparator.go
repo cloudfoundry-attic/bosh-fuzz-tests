@@ -27,7 +27,7 @@ func (n *nothingChangedComparator) Compare(previousInput bftinput.Input, current
 func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput bftinput.Input, previousInput bftinput.Input) bool {
 	prevJob, found := previousInput.FindJobByName(job.Name)
 	if !found {
-		return true
+		return false
 	}
 
 	if !prevJob.IsEqual(job) {
