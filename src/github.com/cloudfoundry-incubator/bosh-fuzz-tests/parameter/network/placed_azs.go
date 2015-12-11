@@ -1,4 +1,4 @@
-package deployment
+package network
 
 type PlacedAZs struct {
 	azs map[string]bool

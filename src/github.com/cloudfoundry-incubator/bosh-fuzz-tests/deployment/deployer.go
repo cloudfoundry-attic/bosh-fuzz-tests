@@ -19,7 +19,6 @@ type deployer struct {
 	directorInfo         bltaction.DirectorInfo
 	renderer             Renderer
 	inputGenerator       InputGenerator
-	networksAssigner     NetworksAssigner
 	analyzer             bftanalyzer.Analyzer
 	fs                   boshsys.FileSystem
 	logger               boshlog.Logger
@@ -31,7 +30,6 @@ func NewDeployer(
 	directorInfo bltaction.DirectorInfo,
 	renderer Renderer,
 	inputGenerator InputGenerator,
-	networksAssigner NetworksAssigner,
 	analyzer bftanalyzer.Analyzer,
 	fs boshsys.FileSystem,
 	logger boshlog.Logger,
@@ -42,7 +40,6 @@ func NewDeployer(
 		directorInfo:         directorInfo,
 		renderer:             renderer,
 		inputGenerator:       inputGenerator,
-		networksAssigner:     networksAssigner,
 		analyzer:             analyzer,
 		fs:                   fs,
 		logger:               logger,
@@ -67,8 +64,6 @@ func (d *deployer) RunDeploys() error {
 	if err != nil {
 		return bosherr.WrapError(err, "Generating input")
 	}
-
-	d.networksAssigner.Assign(inputs)
 
 	cases := d.analyzer.Analyze(inputs)
 

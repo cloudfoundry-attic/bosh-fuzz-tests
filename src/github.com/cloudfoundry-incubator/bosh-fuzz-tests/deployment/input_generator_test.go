@@ -51,6 +51,9 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
 					},
 					{
 						Name:               "joNAw",
@@ -58,9 +61,15 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
+					Networks: []bftinput.NetworkConfig{
+						{Name: "foo-network"},
+					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{Name: "z1"},
 					},
@@ -86,6 +95,9 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
 					},
 					{
 						Name:               "gQ8el",
@@ -93,6 +105,9 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
@@ -101,6 +116,9 @@ var _ = Describe("InputGenerator", func() {
 					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{Name: "fake-persistent-disk", Size: 1},
+					},
+					Networks: []bftinput.NetworkConfig{
+						{Name: "foo-network"},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
@@ -143,6 +161,9 @@ var _ = Describe("InputGenerator", func() {
 						VmType:             "fake-vm-type",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
@@ -154,6 +175,9 @@ var _ = Describe("InputGenerator", func() {
 							Name: "fake-persistent-disk",
 							Size: 1,
 						},
+					},
+					Networks: []bftinput.NetworkConfig{
+						{Name: "foo-network"},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
@@ -171,6 +195,9 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						VmType:             "fake-vm-type",
 						PersistentDiskPool: "fake-persistent-disk",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
 						MigratedFrom: []bftinput.MigratedFromConfig{
 							{Name: "algrKicN3O"},
 						},
@@ -185,6 +212,9 @@ var _ = Describe("InputGenerator", func() {
 							Name: "fake-persistent-disk",
 							Size: 1,
 						},
+					},
+					Networks: []bftinput.NetworkConfig{
+						{Name: "foo-network"},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},

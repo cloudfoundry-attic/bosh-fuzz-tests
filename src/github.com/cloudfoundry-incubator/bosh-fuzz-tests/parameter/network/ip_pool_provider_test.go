@@ -1,9 +1,9 @@
-package deployment_test
+package network_test
 
 import (
 	"math/rand"
 
-	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"

@@ -8,6 +8,7 @@ import (
 	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
+	bftnetwork "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -71,12 +72,12 @@ var _ = Describe("Deployer", func() {
 		nameGenerator := bftnamegen.NewNameGenerator()
 		decider := &fakebftdecider.FakeDecider{}
 
-		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator, decider, logger)
+		ipPoolProvider := bftnetwork.NewIpPoolProvider()
+		networkAssigner := bftnetwork.NewAssigner(networks, nameGenerator, ipPoolProvider, decider)
+		parameterProvider := bftparam.NewParameterProvider(parameters, nameGenerator, decider, networkAssigner, logger)
 		inputGenerator := NewInputGenerator(parameters, parameterProvider, 2, nameGenerator, logger)
-		ipPoolProvider := NewIpPoolProvider()
-		networksAssigner := NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, decider)
 		analyzer := bftanalyzer.NewAnalyzer(logger)
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, networksAssigner, analyzer, fs, logger, false)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, analyzer, fs, logger, false)
 	})
 
 	It("runs deploys with generated manifests", func() {

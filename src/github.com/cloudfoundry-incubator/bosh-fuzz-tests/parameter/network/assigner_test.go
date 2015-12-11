@@ -1,14 +1,14 @@
-package deployment_test
+package network_test
 
 import (
 	"math/rand"
 
 	fakebftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider/fakes"
-	fakebftdepl "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/fakes"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	fakebftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator/fakes"
+	fakebftnetwork "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network/fakes"
 
-	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
@@ -16,7 +16,7 @@ import (
 
 var _ = Describe("NetworksAssigner", func() {
 	var (
-		networksAssigner NetworksAssigner
+		networksAssigner Assigner
 		networks         [][]string
 		expectedIpPool   *bftinput.IpPool
 	)
@@ -27,7 +27,7 @@ var _ = Describe("NetworksAssigner", func() {
 		networks = [][]string{[]string{"manual", "vip"}}
 		nameGenerator := &fakebftnamegen.FakeNameGenerator{}
 		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net", "qux-net"}
-		ipPoolProvider := &fakebftdepl.FakeIpPoolProvider{}
+		ipPoolProvider := &fakebftnetwork.FakeIpPoolProvider{}
 		vipPool := &bftinput.IpPool{
 			AvailableIps: []string{
 				"10.10.0.6",
@@ -66,80 +66,76 @@ var _ = Describe("NetworksAssigner", func() {
 		}
 		staticIpDecider := &fakebftdecider.FakeDecider{}
 		staticIpDecider.IsYesYes = true
-		networksAssigner = NewNetworksAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
+		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, staticIpDecider)
 	})
 
 	It("assigns network of the given type to job and cloud config", func() {
-		inputs := []bftinput.Input{
-			{
-				Jobs: []bftinput.Job{
-					{
-						Name:              "foo",
-						Instances:         2,
-						AvailabilityZones: []string{"z1"},
-					},
+		input := bftinput.Input{
+			Jobs: []bftinput.Job{
+				{
+					Name:              "foo",
+					Instances:         2,
+					AvailabilityZones: []string{"z1"},
 				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
-					},
+			},
+			CloudConfig: bftinput.CloudConfig{
+				AvailabilityZones: []bftinput.AvailabilityZone{
+					{Name: "z1"},
 				},
 			},
 		}
 
-		networksAssigner.Assign(inputs)
+		result := networksAssigner.Assign(input)
 
-		Expect(inputs).To(BeEquivalentTo([]bftinput.Input{
-			{
-				Jobs: []bftinput.Job{
+		Expect(result).To(BeEquivalentTo(bftinput.Input{
+			Jobs: []bftinput.Job{
+				{
+					Name:              "foo",
+					Instances:         2,
+					AvailabilityZones: []string{"z1"},
+					Networks: []bftinput.JobNetworkConfig{
+						{
+							Name:          "foo-net",
+							DefaultDNSnGW: true,
+							StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
+						},
+					},
+				},
+			},
+			CloudConfig: bftinput.CloudConfig{
+				AvailabilityZones: []bftinput.AvailabilityZone{
+					{Name: "z1"},
+				},
+				Networks: []bftinput.NetworkConfig{
 					{
-						Name:              "foo",
-						Instances:         2,
-						AvailabilityZones: []string{"z1"},
-						Networks: []bftinput.JobNetworkConfig{
+						Name: "foo-net",
+						Type: "manual",
+						Subnets: []bftinput.SubnetConfig{
 							{
-								Name:          "foo-net",
-								DefaultDNSnGW: true,
-								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
+								IpPool:            expectedIpPool,
+								AvailabilityZones: []string{"z1"},
 							},
 						},
+					},
+					{
+						Name: "bar-net",
+						Type: "vip",
+					},
+					{
+						Name: "baz-net",
+						Type: "manual",
+						Subnets: []bftinput.SubnetConfig{
+							{
+								IpPool: expectedIpPool,
+							},
+						},
+					},
+					{
+						Name: "qux-net",
+						Type: "vip",
 					},
 				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
-					},
-					Networks: []bftinput.NetworkConfig{
-						{
-							Name: "foo-net",
-							Type: "manual",
-							Subnets: []bftinput.SubnetConfig{
-								{
-									IpPool:            expectedIpPool,
-									AvailabilityZones: []string{"z1"},
-								},
-							},
-						},
-						{
-							Name: "bar-net",
-							Type: "vip",
-						},
-						{
-							Name: "baz-net",
-							Type: "manual",
-							Subnets: []bftinput.SubnetConfig{
-								{
-									IpPool: expectedIpPool,
-								},
-							},
-						},
-						{
-							Name: "qux-net",
-							Type: "vip",
-						},
-					},
-					CompilationNetwork: "baz-net",
-				},
+				CompilationNetwork: "baz-net",
 			},
 		},
 		))

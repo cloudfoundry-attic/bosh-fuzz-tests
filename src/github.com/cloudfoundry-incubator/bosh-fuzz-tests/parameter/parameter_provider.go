@@ -6,6 +6,7 @@ import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
 	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
+	bftnetwork "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
@@ -14,23 +15,26 @@ type ParameterProvider interface {
 }
 
 type parameterProvider struct {
-	parameters    bftconfig.Parameters
-	nameGenerator bftnamegen.NameGenerator
-	reuseDecider  bftdecider.Decider
-	logger        boshlog.Logger
+	parameters      bftconfig.Parameters
+	nameGenerator   bftnamegen.NameGenerator
+	reuseDecider    bftdecider.Decider
+	networkAssigner bftnetwork.Assigner
+	logger          boshlog.Logger
 }
 
 func NewParameterProvider(
 	parameters bftconfig.Parameters,
 	nameGenerator bftnamegen.NameGenerator,
 	reuseDecider bftdecider.Decider,
+	networkAssigner bftnetwork.Assigner,
 	logger boshlog.Logger,
 ) ParameterProvider {
 	return &parameterProvider{
-		parameters:    parameters,
-		nameGenerator: nameGenerator,
-		reuseDecider:  reuseDecider,
-		logger:        logger,
+		parameters:      parameters,
+		nameGenerator:   nameGenerator,
+		reuseDecider:    reuseDecider,
+		networkAssigner: networkAssigner,
+		logger:          logger,
 	}
 }
 
@@ -46,6 +50,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewVmType(vmTypeDefinition, p.nameGenerator, p.reuseDecider, p.logger)
 	} else if name == "availability_zone" {
 		return NewAvailabilityZone(p.parameters.AvailabilityZones)
+	} else if name == "network" {
+		return NewNetwork(p.networkAssigner)
 	}
 
 	return nil

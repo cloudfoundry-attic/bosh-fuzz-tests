@@ -18,6 +18,7 @@ import (
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
 
+	bftnetwork "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
@@ -115,10 +116,10 @@ func main() {
 	nameGenerator := bftnamegen.NewNameGenerator()
 	decider := bftdecider.NewRandomDecider()
 
-	ipPoolProvider := bftdeployment.NewIpPoolProvider()
-	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, logger)
+	ipPoolProvider := bftnetwork.NewIpPoolProvider()
+	networksAssigner := bftnetwork.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
+	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, networksAssigner, logger)
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, logger)
-	networksAssigner := bftdeployment.NewNetworksAssigner(testConfig.Parameters.Networks, nameGenerator, ipPoolProvider, decider)
 	analyzer := bftanalyzer.NewAnalyzer(logger)
 
 	deployer := bftdeployment.NewDeployer(
@@ -126,7 +127,6 @@ func main() {
 		directorInfo,
 		renderer,
 		inputGenerator,
-		networksAssigner,
 		analyzer,
 		fs,
 		logger,
