@@ -9,9 +9,9 @@ import (
 )
 
 type reuser struct {
-	previousNetworks []bftinput.NetworkConfig
-	decider          bftdecider.Decider
-	nameGenerator    bftnamegen.NameGenerator
+	previousNetworkNames []string
+	decider              bftdecider.Decider
+	nameGenerator        bftnamegen.NameGenerator
 }
 
 func NewReuser(
@@ -19,10 +19,14 @@ func NewReuser(
 	decider bftdecider.Decider,
 	nameGenerator bftnamegen.NameGenerator,
 ) *reuser {
+	previousNetworkNames := []string{}
+	for _, networkNames := range previousNetworks {
+		previousNetworkNames = append(previousNetworkNames, networkNames.Name)
+	}
 	return &reuser{
-		previousNetworks: previousNetworks,
-		decider:          decider,
-		nameGenerator:    nameGenerator,
+		previousNetworkNames: previousNetworkNames,
+		decider:              decider,
+		nameGenerator:        nameGenerator,
 	}
 }
 
@@ -30,12 +34,12 @@ func (r *reuser) CreateNetwork(networkType string) bftinput.NetworkConfig {
 	var network bftinput.NetworkConfig
 
 	reusePreviousNetwork := r.decider.IsYes()
-	if reusePreviousNetwork && len(r.previousNetworks) > 0 {
-		networkToReuseIdx := rand.Intn(len(r.previousNetworks))
+	if reusePreviousNetwork && len(r.previousNetworkNames) > 0 {
+		networkToReuseIdx := rand.Intn(len(r.previousNetworkNames))
 		network = bftinput.NetworkConfig{
-			Name: r.previousNetworks[networkToReuseIdx].Name,
+			Name: r.previousNetworkNames[networkToReuseIdx],
 		}
-		r.previousNetworks = append(r.previousNetworks[:networkToReuseIdx], r.previousNetworks[networkToReuseIdx+1:]...)
+		r.previousNetworkNames = append(r.previousNetworkNames[:networkToReuseIdx], r.previousNetworkNames[networkToReuseIdx+1:]...)
 
 	} else {
 		network = bftinput.NetworkConfig{
