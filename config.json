@@ -21,7 +21,8 @@
     "vm_type_definition": ["vm_type", "resource_pool"],
     "stemcell_definition": ["os", "name"],
     "stemcell_versions": ["1", "2"],
-    "templates": [["foo", "simple"], ["foo"], ["simple"]]
+    "templates": [["foo", "simple"], ["foo"], ["simple"]],
+    "number_of_compilation_workers": [1, 2, 3]
   },
   "number_of_consequent_deploys": 10,
   "generate_manifest_only": false

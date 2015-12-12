@@ -114,6 +114,7 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 	input = g.parameterProvider.Get("persistent_disk").Apply(input)
 	input = g.parameterProvider.Get("network").Apply(input)
 	input = g.parameterProvider.Get("template").Apply(input)
+	input = g.parameterProvider.Get("compilation").Apply(input)
 
 	return input
 }

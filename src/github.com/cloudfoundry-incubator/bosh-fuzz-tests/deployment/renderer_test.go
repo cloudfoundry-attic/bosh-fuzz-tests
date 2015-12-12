@@ -116,6 +116,7 @@ var _ = Describe("Manifest/Renderer", func() {
 				},
 				CompilationNetwork:          "default",
 				CompilationAvailabilityZone: "z1",
+				NumberOfCompilationWorkers:  3,
 			},
 			Stemcells: []bftinput.StemcellConfig{
 				{
@@ -225,7 +226,7 @@ networks:
     dns: ["8.8.8.8"]
 
 compilation:
-  workers: 1
+  workers: 3
   network: default
   cloud_properties: {}
   az: z1
@@ -276,7 +277,8 @@ disk_pools:
 							},
 						},
 					},
-					CompilationNetwork: "default",
+					CompilationNetwork:         "default",
+					NumberOfCompilationWorkers: 3,
 				},
 			}
 
@@ -326,7 +328,7 @@ networks:
     dns: ["8.8.8.8"]
 
 compilation:
-  workers: 1
+  workers: 3
   network: default
   cloud_properties: {}
 `
@@ -374,7 +376,8 @@ compilation:
 						},
 					},
 				},
-				CompilationNetwork: "default",
+				CompilationNetwork:         "default",
+				NumberOfCompilationWorkers: 3,
 			},
 		}
 
@@ -425,7 +428,7 @@ networks:
     dns: ["8.8.8.8"]
 
 compilation:
-  workers: 1
+  workers: 3
   network: default
   cloud_properties: {}
 
@@ -477,7 +480,8 @@ disk_pools:
 						},
 					},
 				},
-				CompilationNetwork: "default",
+				CompilationNetwork:         "default",
+				NumberOfCompilationWorkers: 3,
 			},
 		}
 
@@ -528,7 +532,7 @@ networks:
     dns: ["8.8.8.8"]
 
 compilation:
-  workers: 1
+  workers: 3
   network: default
   cloud_properties: {}
 

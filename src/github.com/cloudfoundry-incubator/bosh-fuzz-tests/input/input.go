@@ -90,6 +90,7 @@ type CloudConfig struct {
 	CompilationAvailabilityZone string
 	VmTypes                     []VmTypeConfig
 	ResourcePools               []ResourcePoolConfig
+	NumberOfCompilationWorkers  int
 }
 
 type DiskConfig struct {

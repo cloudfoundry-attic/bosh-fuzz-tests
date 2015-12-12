@@ -22,7 +22,7 @@ networks:{{ range .CloudConfig.Networks }}
     - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}
 
 compilation:
-  workers: 1
+  workers: {{ .CloudConfig.NumberOfCompilationWorkers }}
   network: {{ .CloudConfig.CompilationNetwork }}
   cloud_properties: {}{{ if .CloudConfig.CompilationAvailabilityZone }}
   az: {{ .CloudConfig.CompilationAvailabilityZone }}{{ end }}{{ if .CloudConfig.VmTypes }}

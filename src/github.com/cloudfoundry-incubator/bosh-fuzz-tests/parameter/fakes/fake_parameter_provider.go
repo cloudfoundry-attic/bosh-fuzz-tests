@@ -11,6 +11,7 @@ type FakeParameterProvider struct {
 	AvailabilityZone *FakeAvailabilityZone
 	Network          *FakeNetwork
 	Template         *FakeTemplate
+	Compilation      *FakeCompilation
 }
 
 func NewFakeParameterProvider() *FakeParameterProvider {
@@ -20,6 +21,7 @@ func NewFakeParameterProvider() *FakeParameterProvider {
 		VmType:           NewFakeVmType(),
 		AvailabilityZone: NewFakeAvailabilityZone(),
 		Template:         NewFakeTemplate(),
+		Compilation:      NewFakeCompilation(),
 	}
 }
 
@@ -36,6 +38,8 @@ func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
 		return p.Network
 	} else if name == "template" {
 		return p.Template
+	} else if name == "compilation" {
+		return p.Compilation
 	}
 
 	return nil

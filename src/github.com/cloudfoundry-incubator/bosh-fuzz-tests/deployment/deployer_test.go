@@ -52,17 +52,18 @@ var _ = Describe("Deployer", func() {
 		})
 
 		parameters := bftconfig.Parameters{
-			NameLength:               []int{5, 10},
-			Instances:                []int{2, 4},
-			AvailabilityZones:        [][]string{[]string{"z1"}, []string{"z1", "z2"}},
-			PersistentDiskDefinition: []string{"disk_type", "disk_pool"},
-			PersistentDiskSize:       []int{0, 100},
-			NumberOfJobs:             []int{1, 2},
-			MigratedFromCount:        []int{0},
-			VmTypeDefinition:         []string{"vm_type"},
-			StemcellDefinition:       []string{"name"},
-			StemcellVersions:         []string{"1"},
-			Templates:                [][]string{[]string{"simple"}},
+			NameLength:                 []int{5, 10},
+			Instances:                  []int{2, 4},
+			AvailabilityZones:          [][]string{[]string{"z1"}, []string{"z1", "z2"}},
+			PersistentDiskDefinition:   []string{"disk_type", "disk_pool"},
+			PersistentDiskSize:         []int{0, 100},
+			NumberOfJobs:               []int{1, 2},
+			MigratedFromCount:          []int{0},
+			VmTypeDefinition:           []string{"vm_type"},
+			StemcellDefinition:         []string{"name"},
+			StemcellVersions:           []string{"1"},
+			Templates:                  [][]string{[]string{"simple"}},
+			NumberOfCompilationWorkers: []int{3},
 		}
 
 		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}

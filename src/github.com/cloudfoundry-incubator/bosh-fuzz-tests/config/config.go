@@ -15,18 +15,19 @@ type Config struct {
 }
 
 type Parameters struct {
-	NameLength               []int      `json:"name_length"`
-	Instances                []int      `json:"instances"`
-	AvailabilityZones        [][]string `json:"availability_zones"`
-	PersistentDiskDefinition []string   `json:"persistent_disk_definition"`
-	PersistentDiskSize       []int      `json:"persistent_disk_size"`
-	NumberOfJobs             []int      `json:"number_of_jobs"`
-	MigratedFromCount        []int      `json:"migrated_from_count"`
-	Networks                 [][]string `json:"networks"`
-	VmTypeDefinition         []string   `json:"vm_type_definition"`
-	StemcellDefinition       []string   `json:"stemcell_definition"`
-	StemcellVersions         []string   `json:"stemcell_versions"`
-	Templates                [][]string `json:"templates"`
+	NameLength                 []int      `json:"name_length"`
+	Instances                  []int      `json:"instances"`
+	AvailabilityZones          [][]string `json:"availability_zones"`
+	PersistentDiskDefinition   []string   `json:"persistent_disk_definition"`
+	PersistentDiskSize         []int      `json:"persistent_disk_size"`
+	NumberOfJobs               []int      `json:"number_of_jobs"`
+	MigratedFromCount          []int      `json:"migrated_from_count"`
+	Networks                   [][]string `json:"networks"`
+	VmTypeDefinition           []string   `json:"vm_type_definition"`
+	StemcellDefinition         []string   `json:"stemcell_definition"`
+	StemcellVersions           []string   `json:"stemcell_versions"`
+	Templates                  [][]string `json:"templates"`
+	NumberOfCompilationWorkers []int      `json:"number_of_compilation_workers"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

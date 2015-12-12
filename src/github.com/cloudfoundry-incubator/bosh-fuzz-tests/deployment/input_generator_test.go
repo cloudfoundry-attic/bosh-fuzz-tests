@@ -29,16 +29,17 @@ var _ = Describe("InputGenerator", func() {
 
 	BeforeEach(func() {
 		parameters = bftconfig.Parameters{
-			NameLength:               []int{5},
-			Instances:                []int{2},
-			AvailabilityZones:        [][]string{[]string{"z1"}},
-			PersistentDiskDefinition: []string{"persistent_disk_size"},
-			PersistentDiskSize:       []int{0},
-			NumberOfJobs:             []int{1},
-			MigratedFromCount:        []int{1},
-			VmTypeDefinition:         []string{"vm_type"},
-			StemcellDefinition:       []string{"name"},
-			Templates:                [][]string{[]string{"simple"}},
+			NameLength:                 []int{5},
+			Instances:                  []int{2},
+			AvailabilityZones:          [][]string{[]string{"z1"}},
+			PersistentDiskDefinition:   []string{"persistent_disk_size"},
+			PersistentDiskSize:         []int{0},
+			NumberOfJobs:               []int{1},
+			MigratedFromCount:          []int{1},
+			VmTypeDefinition:           []string{"vm_type"},
+			StemcellDefinition:         []string{"name"},
+			Templates:                  [][]string{[]string{"simple"}},
+			NumberOfCompilationWorkers: []int{3},
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
@@ -48,16 +49,17 @@ var _ = Describe("InputGenerator", func() {
 
 	It("generates requested number of inputs", func() {
 		parameters = bftconfig.Parameters{
-			NameLength:               []int{5},
-			Instances:                []int{2},
-			AvailabilityZones:        [][]string{[]string{"z1"}, []string{"z1", "z2"}},
-			PersistentDiskDefinition: []string{"disk_pool"},
-			PersistentDiskSize:       []int{100},
-			NumberOfJobs:             []int{2},
-			MigratedFromCount:        []int{0},
-			VmTypeDefinition:         []string{"vm_type"},
-			StemcellDefinition:       []string{"os"},
-			Templates:                [][]string{[]string{"simple"}},
+			NameLength:                 []int{5},
+			Instances:                  []int{2},
+			AvailabilityZones:          [][]string{[]string{"z1"}, []string{"z1", "z2"}},
+			PersistentDiskDefinition:   []string{"disk_pool"},
+			PersistentDiskSize:         []int{100},
+			NumberOfJobs:               []int{2},
+			MigratedFromCount:          []int{0},
+			VmTypeDefinition:           []string{"vm_type"},
+			StemcellDefinition:         []string{"os"},
+			Templates:                  [][]string{[]string{"simple"}},
+			NumberOfCompilationWorkers: []int{3},
 		}
 		rand.Seed(64)
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, decider, logger)
@@ -111,6 +113,7 @@ var _ = Describe("InputGenerator", func() {
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
 					},
+					NumberOfCompilationWorkers: 3,
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
@@ -146,6 +149,7 @@ var _ = Describe("InputGenerator", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
+					NumberOfCompilationWorkers: 3,
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{Name: "z1"},
 					},
@@ -206,6 +210,7 @@ var _ = Describe("InputGenerator", func() {
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
 					},
+					NumberOfCompilationWorkers: 3,
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
@@ -246,6 +251,7 @@ var _ = Describe("InputGenerator", func() {
 					VmTypes: []bftinput.VmTypeConfig{
 						{Name: "fake-vm-type"},
 					},
+					NumberOfCompilationWorkers: 3,
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
