@@ -1,0 +1,9 @@
+---
+name: foo
+templates:
+  ctl: bin/ctl
+
+packages:
+- foo
+
+properties: {}

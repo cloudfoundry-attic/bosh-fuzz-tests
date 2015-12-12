@@ -10,6 +10,7 @@ type FakeParameterProvider struct {
 	VmType           *FakeVmType
 	AvailabilityZone *FakeAvailabilityZone
 	Network          *FakeNetwork
+	Template         *FakeTemplate
 }
 
 func NewFakeParameterProvider() *FakeParameterProvider {
@@ -18,6 +19,7 @@ func NewFakeParameterProvider() *FakeParameterProvider {
 		PersistentDisk:   NewFakePersistentDisk(),
 		VmType:           NewFakeVmType(),
 		AvailabilityZone: NewFakeAvailabilityZone(),
+		Template:         NewFakeTemplate(),
 	}
 }
 
@@ -32,6 +34,8 @@ func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
 		return p.AvailabilityZone
 	} else if name == "network" {
 		return p.Network
+	} else if name == "template" {
+		return p.Template
 	}
 
 	return nil

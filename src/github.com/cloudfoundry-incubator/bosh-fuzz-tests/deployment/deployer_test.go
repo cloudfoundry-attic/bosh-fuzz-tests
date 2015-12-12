@@ -62,6 +62,7 @@ var _ = Describe("Deployer", func() {
 			VmTypeDefinition:         []string{"vm_type"},
 			StemcellDefinition:       []string{"name"},
 			StemcellVersions:         []string{"1"},
+			Templates:                [][]string{[]string{"simple"}},
 		}
 
 		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}

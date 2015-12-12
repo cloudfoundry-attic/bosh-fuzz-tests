@@ -1,0 +1,3 @@
+set -ex
+
+cp bar ${BOSH_INSTALL_TARGET}/

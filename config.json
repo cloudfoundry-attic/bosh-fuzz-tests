@@ -20,7 +20,8 @@
     "networks": [["dynamic", "vip"], ["dynamic", "manual"], ["dynamic", "vip", "dynamic"], ["manual"], ["vip", "manual", "manual"], ["manual", "dynamic", "vip"]],
     "vm_type_definition": ["vm_type", "resource_pool"],
     "stemcell_definition": ["os", "name"],
-    "stemcell_versions": ["1", "2"]
+    "stemcell_versions": ["1", "2"],
+    "templates": [["foo", "simple"], ["foo"], ["simple"]]
   },
   "number_of_consequent_deploys": 10,
   "generate_manifest_only": false

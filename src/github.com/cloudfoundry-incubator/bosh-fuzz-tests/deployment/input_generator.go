@@ -55,7 +55,6 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 
 		if i > 0 && reusePreviousInput {
 			input = previousInput
-			println("Reusing!!!")
 		} else {
 			input = g.fuzzInput(previousInput, false)
 
@@ -101,6 +100,7 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 	input = g.parameterProvider.Get("stemcell").Apply(input)
 	input = g.parameterProvider.Get("persistent_disk").Apply(input)
 	input = g.parameterProvider.Get("network").Apply(input)
+	input = g.parameterProvider.Get("template").Apply(input)
 
 	for j := range input.Jobs {
 		input.Jobs[j].Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]

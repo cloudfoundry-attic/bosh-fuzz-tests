@@ -14,8 +14,24 @@ type Job struct {
 	VmType             string
 	ResourcePool       string
 	Stemcell           string
+	Templates          []Template
 }
 
 func (j Job) IsEqual(other Job) bool {
 	return reflect.DeepEqual(j, other)
+}
+
+type Template struct {
+	Name string
+}
+
+type JobNetworkConfig struct {
+	Name          string
+	DefaultDNSnGW bool
+	StaticIps     []string
+}
+
+type MigratedFromConfig struct {
+	Name             string
+	AvailabilityZone string
 }

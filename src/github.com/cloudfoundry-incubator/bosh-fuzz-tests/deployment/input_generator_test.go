@@ -38,6 +38,7 @@ var _ = Describe("InputGenerator", func() {
 			MigratedFromCount:        []int{1},
 			VmTypeDefinition:         []string{"vm_type"},
 			StemcellDefinition:       []string{"name"},
+			Templates:                [][]string{[]string{"simple"}},
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
@@ -56,6 +57,7 @@ var _ = Describe("InputGenerator", func() {
 			MigratedFromCount:        []int{0},
 			VmTypeDefinition:         []string{"vm_type"},
 			StemcellDefinition:       []string{"os"},
+			Templates:                [][]string{[]string{"simple"}},
 		}
 		rand.Seed(64)
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, decider, logger)
@@ -75,6 +77,9 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.JobNetworkConfig{
 							{Name: "foo-network"},
 						},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
+						},
 					},
 					{
 						Name:               "joNAw",
@@ -84,6 +89,9 @@ var _ = Describe("InputGenerator", func() {
 						VmType:             "fake-vm-type",
 						Networks: []bftinput.JobNetworkConfig{
 							{Name: "foo-network"},
+						},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
 						},
 					},
 				},
@@ -119,6 +127,9 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.JobNetworkConfig{
 							{Name: "foo-network"},
 						},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
+						},
 					},
 					{
 						Name:               "gQ8el",
@@ -128,6 +139,9 @@ var _ = Describe("InputGenerator", func() {
 						VmType:             "fake-vm-type",
 						Networks: []bftinput.JobNetworkConfig{
 							{Name: "foo-network"},
+						},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
 						},
 					},
 				},
@@ -171,6 +185,9 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.JobNetworkConfig{
 							{Name: "foo-network"},
 						},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
+						},
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
@@ -207,6 +224,9 @@ var _ = Describe("InputGenerator", func() {
 						},
 						MigratedFrom: []bftinput.MigratedFromConfig{
 							{Name: "algrKicN3O"},
+						},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
 						},
 					},
 				},

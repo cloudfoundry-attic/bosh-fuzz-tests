@@ -139,11 +139,6 @@ func (s StemcellConfig) IsEqual(other StemcellConfig) bool {
 	return s.Version == other.Version
 }
 
-type MigratedFromConfig struct {
-	Name             string
-	AvailabilityZone string
-}
-
 type NetworkConfig struct {
 	Name    string
 	Type    string
@@ -157,10 +152,4 @@ func (n NetworkConfig) IsEqual(other NetworkConfig) bool {
 type SubnetConfig struct {
 	AvailabilityZones []string
 	IpPool            *IpPool
-}
-
-type JobNetworkConfig struct {
-	Name          string
-	DefaultDNSnGW bool
-	StaticIps     []string
 }

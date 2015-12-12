@@ -36,6 +36,9 @@ var _ = Describe("Manifest/Renderer", func() {
 					PersistentDiskSize: 100,
 					VmType:             "default",
 					Stemcell:           "default",
+					Templates: []bftinput.Template{
+						{Name: "simple"},
+					},
 					Networks: []bftinput.JobNetworkConfig{
 						{
 							Name:          "default",
@@ -51,6 +54,9 @@ var _ = Describe("Manifest/Renderer", func() {
 					PersistentDiskPool: "fast-disks",
 					VmType:             "default",
 					Stemcell:           "default",
+					Templates: []bftinput.Template{
+						{Name: "simple"},
+					},
 					Networks: []bftinput.JobNetworkConfig{
 						{
 							Name:          "default",
@@ -248,6 +254,9 @@ disk_pools:
 						Name:      "foo-job",
 						Instances: 5,
 						Networks:  []bftinput.JobNetworkConfig{{Name: "default"}},
+						Templates: []bftinput.Template{
+							{Name: "simple"},
+						},
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
@@ -337,6 +346,9 @@ compilation:
 					Instances:          5,
 					PersistentDiskPool: "fast-disks",
 					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
+					Templates: []bftinput.Template{
+						{Name: "simple"},
+					},
 				},
 			},
 			CloudConfig: bftinput.CloudConfig{
@@ -437,6 +449,9 @@ disk_pools:
 					Instances:          5,
 					PersistentDiskType: "fast-disks",
 					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
+					Templates: []bftinput.Template{
+						{Name: "simple"},
+					},
 				},
 			},
 			CloudConfig: bftinput.CloudConfig{

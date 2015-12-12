@@ -35,9 +35,9 @@ jobs:{{ range .Jobs }}
     az: {{ .AvailabilityZone }}{{ end }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
   - {{ . }}{{ end }}{{ end }}
-  templates:
-  - name: simple
-    release: foo-release
+  templates:{{ range .Templates }}
+  - name: {{ .Name }}
+    release: foo-release{{ end }}
   networks:{{ range .Networks }}
   - name: {{ .Name }}{{ if .DefaultDNSnGW }}
     default: [dns, gateway]{{ end }}{{ if .StaticIps }}

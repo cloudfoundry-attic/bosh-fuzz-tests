@@ -52,6 +52,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewAvailabilityZone(p.parameters.AvailabilityZones)
 	} else if name == "network" {
 		return NewNetwork(p.networkAssigner)
+	} else if name == "template" {
+		return NewTemplate(p.parameters.Templates)
 	}
 
 	return nil
