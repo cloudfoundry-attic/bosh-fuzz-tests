@@ -95,13 +95,6 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 	}
 	input.Jobs = g.randomizeJobs(input.Jobs)
 
-	input = g.parameterProvider.Get("availability_zone").Apply(input)
-	input = g.parameterProvider.Get("vm_type").Apply(input)
-	input = g.parameterProvider.Get("stemcell").Apply(input)
-	input = g.parameterProvider.Get("persistent_disk").Apply(input)
-	input = g.parameterProvider.Get("network").Apply(input)
-	input = g.parameterProvider.Get("template").Apply(input)
-
 	for j := range input.Jobs {
 		input.Jobs[j].Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
 		input.Jobs[j].MigratedFrom = nil
@@ -114,6 +107,13 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 			}
 		}
 	}
+
+	input = g.parameterProvider.Get("availability_zone").Apply(input)
+	input = g.parameterProvider.Get("vm_type").Apply(input)
+	input = g.parameterProvider.Get("stemcell").Apply(input)
+	input = g.parameterProvider.Get("persistent_disk").Apply(input)
+	input = g.parameterProvider.Get("network").Apply(input)
+	input = g.parameterProvider.Get("template").Apply(input)
 
 	return input
 }
