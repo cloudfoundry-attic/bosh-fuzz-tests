@@ -68,6 +68,11 @@ var _ = Describe("Manifest/Renderer", func() {
 					},
 				},
 			},
+			Update: bftinput.UpdateConfig{
+				Canaries:    1,
+				MaxInFlight: 3,
+				Serial:      "true",
+			},
 			CloudConfig: bftinput.CloudConfig{
 				AvailabilityZones: []bftinput.AvailabilityZone{
 					{Name: "z1"},
@@ -144,10 +149,11 @@ releases:
   version: latest
 
 update:
-  canaries: 2
+  canaries: 1
   canary_watch_time: 4000
-  max_in_flight: 1
+  max_in_flight: 3
   update_watch_time: 20
+  serial: true
 
 jobs:
 - name: foo-job
@@ -260,6 +266,11 @@ disk_pools:
 						},
 					},
 				},
+				Update: bftinput.UpdateConfig{
+					Canaries:    1,
+					MaxInFlight: 3,
+					Serial:      "not_specified",
+				},
 				CloudConfig: bftinput.CloudConfig{
 					Networks: []bftinput.NetworkConfig{
 						{
@@ -294,9 +305,9 @@ releases:
   version: latest
 
 update:
-  canaries: 2
+  canaries: 1
   canary_watch_time: 4000
-  max_in_flight: 1
+  max_in_flight: 3
   update_watch_time: 20
 
 jobs:
@@ -353,6 +364,11 @@ compilation:
 					},
 				},
 			},
+			Update: bftinput.UpdateConfig{
+				Canaries:    3,
+				MaxInFlight: 5,
+				Serial:      "true",
+			},
 			CloudConfig: bftinput.CloudConfig{
 				PersistentDiskPools: []bftinput.DiskConfig{
 					{
@@ -393,10 +409,11 @@ releases:
   version: latest
 
 update:
-  canaries: 2
+  canaries: 3
   canary_watch_time: 4000
-  max_in_flight: 1
+  max_in_flight: 5
   update_watch_time: 20
+  serial: true
 
 jobs:
 - name: foo-job
@@ -457,6 +474,11 @@ disk_pools:
 					},
 				},
 			},
+			Update: bftinput.UpdateConfig{
+				Canaries:    2,
+				MaxInFlight: 4,
+				Serial:      "false",
+			},
 			CloudConfig: bftinput.CloudConfig{
 				PersistentDiskTypes: []bftinput.DiskConfig{
 					{
@@ -499,8 +521,9 @@ releases:
 update:
   canaries: 2
   canary_watch_time: 4000
-  max_in_flight: 1
+  max_in_flight: 4
   update_watch_time: 20
+  serial: false
 
 jobs:
 - name: foo-job

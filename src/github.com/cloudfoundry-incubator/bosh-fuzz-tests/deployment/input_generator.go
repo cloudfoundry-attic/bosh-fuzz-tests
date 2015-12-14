@@ -1,7 +1,6 @@
 package deployment
 
 import (
-	"fmt"
 	"math/rand"
 
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
@@ -80,7 +79,7 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 		previousInput = input
 	}
 
-	g.logger.Debug("input_generator", fmt.Sprintf("Generated inputs: %#v", inputs))
+	// g.logger.Debug("input_generator", fmt.Sprintf("Generated inputs: %#v", inputs))
 
 	return inputs, nil
 }
@@ -115,6 +114,7 @@ func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeploy
 	input = g.parameterProvider.Get("network").Apply(input)
 	input = g.parameterProvider.Get("template").Apply(input)
 	input = g.parameterProvider.Get("compilation").Apply(input)
+	input = g.parameterProvider.Get("update").Apply(input)
 
 	return input
 }

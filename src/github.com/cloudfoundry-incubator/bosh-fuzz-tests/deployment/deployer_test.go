@@ -64,6 +64,9 @@ var _ = Describe("Deployer", func() {
 			StemcellVersions:           []string{"1"},
 			Templates:                  [][]string{[]string{"simple"}},
 			NumberOfCompilationWorkers: []int{3},
+			Canaries:                   []int{3},
+			MaxInFlight:                []int{3},
+			Serial:                     []string{"true"},
 		}
 
 		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}

@@ -16,10 +16,11 @@ releases:
   version: latest
 
 update:
-  canaries: 2
+  canaries: {{ .Update.Canaries }}
   canary_watch_time: 4000
-  max_in_flight: 1
-  update_watch_time: 20
+  max_in_flight: {{ .Update.MaxInFlight }}
+  update_watch_time: 20{{ if ne .Update.Serial "not_specified" }}
+  serial: {{ .Update.Serial }}{{ end }}
 
 jobs:{{ range .Jobs }}
 - name: {{ .Name }}

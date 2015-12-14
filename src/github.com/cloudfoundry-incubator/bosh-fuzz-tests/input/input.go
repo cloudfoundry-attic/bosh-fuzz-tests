@@ -5,6 +5,7 @@ import "reflect"
 type Input struct {
 	DirectorUUID string
 	Jobs         []Job
+	Update       UpdateConfig
 	CloudConfig  CloudConfig
 	Stemcells    []StemcellConfig
 }
@@ -127,6 +128,12 @@ type ResourcePoolConfig struct {
 
 func (r ResourcePoolConfig) IsEqual(other ResourcePoolConfig) bool {
 	return reflect.DeepEqual(r, other)
+}
+
+type UpdateConfig struct {
+	Canaries    int
+	MaxInFlight int
+	Serial      string
 }
 
 type StemcellConfig struct {

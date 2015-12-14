@@ -40,6 +40,9 @@ var _ = Describe("InputGenerator", func() {
 			StemcellDefinition:         []string{"name"},
 			Templates:                  [][]string{[]string{"simple"}},
 			NumberOfCompilationWorkers: []int{3},
+			Canaries:                   []int{5},
+			MaxInFlight:                []int{3},
+			Serial:                     []string{"true"},
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
@@ -97,6 +100,11 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 				},
+				Update: bftinput.UpdateConfig{
+					Canaries:    3,
+					MaxInFlight: 5,
+					Serial:      "true",
+				},
 				CloudConfig: bftinput.CloudConfig{
 					Networks: []bftinput.NetworkConfig{
 						{Name: "foo-network"},
@@ -148,6 +156,11 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 				},
+				Update: bftinput.UpdateConfig{
+					Canaries:    3,
+					MaxInFlight: 5,
+					Serial:      "true",
+				},
 				CloudConfig: bftinput.CloudConfig{
 					NumberOfCompilationWorkers: 3,
 					AvailabilityZones: []bftinput.AvailabilityZone{
@@ -194,6 +207,11 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 				},
+				Update: bftinput.UpdateConfig{
+					Canaries:    3,
+					MaxInFlight: 5,
+					Serial:      "true",
+				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{Name: "z1"},
@@ -234,6 +252,11 @@ var _ = Describe("InputGenerator", func() {
 							{Name: "simple"},
 						},
 					},
+				},
+				Update: bftinput.UpdateConfig{
+					Canaries:    3,
+					MaxInFlight: 5,
+					Serial:      "true",
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []bftinput.AvailabilityZone{

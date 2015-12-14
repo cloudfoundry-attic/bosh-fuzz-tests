@@ -56,6 +56,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewTemplate(p.parameters.Templates)
 	} else if name == "compilation" {
 		return NewCompilation(p.parameters.NumberOfCompilationWorkers)
+	} else if name == "update" {
+		return NewUpdate(p.parameters.Canaries, p.parameters.MaxInFlight, p.parameters.Serial)
 	}
 
 	return nil

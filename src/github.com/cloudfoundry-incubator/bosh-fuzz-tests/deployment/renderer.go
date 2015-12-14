@@ -27,7 +27,6 @@ func (g *renderer) Render(input bftinput.Input, manifestPath string, cloudConfig
 	deploymentTemplate := template.Must(template.New("deployment").Parse(DeploymentTemplate))
 
 	buffer := bytes.NewBuffer([]byte{})
-
 	err := deploymentTemplate.Execute(buffer, input)
 	if err != nil {
 		return bosherr.WrapErrorf(err, "Generating deployment manifest")

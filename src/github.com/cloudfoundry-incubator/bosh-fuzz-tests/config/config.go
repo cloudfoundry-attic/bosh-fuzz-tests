@@ -28,6 +28,9 @@ type Parameters struct {
 	StemcellVersions           []string   `json:"stemcell_versions"`
 	Templates                  [][]string `json:"templates"`
 	NumberOfCompilationWorkers []int      `json:"number_of_compilation_workers"`
+	Canaries                   []int      `json:"canaries"`
+	MaxInFlight                []int      `json:"max_in_flight"`
+	Serial                     []string   `json:"serial"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {
