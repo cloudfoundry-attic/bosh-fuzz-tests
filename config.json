@@ -28,5 +28,5 @@
     "serial": ["not_specified", "true", "false"]
   },
   "number_of_consequent_deploys": 10,
-  "generate_manifest_only": true
+  "generate_manifest_only": false
 }
