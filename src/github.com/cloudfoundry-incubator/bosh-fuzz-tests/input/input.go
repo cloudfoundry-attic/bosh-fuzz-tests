@@ -105,7 +105,7 @@ func (d DiskConfig) IsEqual(other DiskConfig) bool {
 
 type AvailabilityZone struct {
 	Name            string
-	CloudProperties map[string]interface{}
+	CloudProperties map[string]string
 }
 
 func (a AvailabilityZone) IsEqual(other AvailabilityZone) bool {
@@ -114,7 +114,7 @@ func (a AvailabilityZone) IsEqual(other AvailabilityZone) bool {
 
 type VmTypeConfig struct {
 	Name            string
-	CloudProperties map[string]interface{}
+	CloudProperties map[string]string
 }
 
 func (v VmTypeConfig) IsEqual(other VmTypeConfig) bool {

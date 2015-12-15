@@ -121,7 +121,7 @@ var _ = Describe("NothingChangedComparator", func() {
 						{Name: "z1"},
 						{
 							Name: "z2",
-							CloudProperties: map[string]interface{}{
+							CloudProperties: map[string]string{
 								"fake-key": "fake-property",
 							},
 						},
@@ -333,7 +333,7 @@ var _ = Describe("NothingChangedComparator", func() {
 					VmTypes: []bftinput.VmTypeConfig{
 						{
 							Name: "foo-vm-type",
-							CloudProperties: map[string]interface{}{
+							CloudProperties: map[string]string{
 								"fake-key": "fake-property",
 							},
 						},
@@ -352,7 +352,7 @@ var _ = Describe("NothingChangedComparator", func() {
 					VmTypes: []bftinput.VmTypeConfig{
 						{
 							Name: "foo-vm-type",
-							CloudProperties: map[string]interface{}{
+							CloudProperties: map[string]string{
 								"fake-key": "fake-updated-property",
 							},
 						},
