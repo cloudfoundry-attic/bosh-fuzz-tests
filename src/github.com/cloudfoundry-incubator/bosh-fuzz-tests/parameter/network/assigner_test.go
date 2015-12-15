@@ -23,7 +23,7 @@ var _ = Describe("NetworksAssigner", func() {
 	)
 
 	BeforeEach(func() {
-		rand.Seed(32)
+		rand.Seed(64)
 
 		networks = [][]string{[]string{"manual", "vip"}}
 		nameGenerator := &fakebftnamegen.FakeNameGenerator{}
@@ -44,15 +44,9 @@ var _ = Describe("NetworksAssigner", func() {
 		ipPoolProvider.RegisterIpPool(ipPool)
 
 		ipPoolProvider.RegisterIpPool(ipPool)
+		ipPoolProvider.RegisterIpPool(ipPool)
 
-		expectedIpPool = bftinput.NewIpPool(
-			"192.168.0",
-			1,
-			[]string{
-				"192.168.0.15-192.168.0.58",
-				"192.168.0.157-192.168.0.203",
-			},
-		)
+		expectedIpPool = ipPool
 		// reserving 2 ips since we have 2 instances
 		expectedIpPool.NextStaticIp()
 		expectedIpPool.NextStaticIp()
@@ -90,7 +84,7 @@ var _ = Describe("NetworksAssigner", func() {
 						{
 							Name:          "foo-net",
 							DefaultDNSnGW: true,
-							StaticIps:     []string{"192.168.0.200", "192.168.0.201"},
+							StaticIps:     []string{"192.168.0.252", "192.168.0.219"},
 						},
 					},
 				},
@@ -128,7 +122,8 @@ var _ = Describe("NetworksAssigner", func() {
 						Type: "vip",
 					},
 				},
-				CompilationNetwork: "baz-net",
+				CompilationNetwork:          "foo-net",
+				CompilationAvailabilityZone: "z1",
 			},
 		},
 		))
@@ -176,7 +171,7 @@ var _ = Describe("NetworksAssigner", func() {
 							{
 								Name:          "prev-net",
 								DefaultDNSnGW: true,
-								StaticIps:     []string{"192.168.0.200", "192.168.0.201"},
+								StaticIps:     []string{"192.168.0.252", "192.168.0.219"},
 							},
 						},
 					},
@@ -207,9 +202,6 @@ var _ = Describe("NetworksAssigner", func() {
 								{
 									IpPool: expectedIpPool,
 								},
-								{
-									IpPool: expectedIpPool,
-								},
 							},
 						},
 						{
@@ -217,7 +209,8 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "vip",
 						},
 					},
-					CompilationNetwork: "bar-net",
+					CompilationNetwork:          "prev-net",
+					CompilationAvailabilityZone: "z1",
 				},
 			},
 			))

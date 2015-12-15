@@ -56,15 +56,15 @@ var _ = Describe("IpPoolProvider", func() {
 			ipPool := ipPoolProvider.NewIpPool(1)
 			ip, err := ipPool.NextStaticIp()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(ip).To(Equal("192.168.0.200"))
+			Expect(ip).To(Equal("192.168.0.215"))
 
 			ip, err = ipPool.NextStaticIp()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(ip).To(Equal("192.168.0.201"))
+			Expect(ip).To(Equal("192.168.0.250"))
 
 			ip, err = ipPool.NextStaticIp()
 			Expect(err).ToNot(HaveOccurred())
-			Expect(ip).To(Equal("192.168.0.202"))
+			Expect(ip).To(Equal("192.168.0.208"))
 		})
 	})
 })
