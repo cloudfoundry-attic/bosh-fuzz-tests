@@ -1,23 +1,48 @@
 package input
 
-import (
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
-)
+import "fmt"
 
 type IpPool struct {
-	IpRange      string
-	Gateway      string
-	Reserved     []string
-	Static       []string
-	AvailableIps []string
+	prefix               string
+	IpRange              string
+	Gateway              string
+	Reserved             []string
+	Static               []string
+	lastReservedStaticIp int
+	reservedStaticIps    map[string]bool
+}
+
+func NewIpPool(
+	prefix string,
+	gatewayFourthOctet int,
+	reserved []string,
+) *IpPool {
+	return &IpPool{
+		prefix:               prefix,
+		IpRange:              fmt.Sprintf("%s.0/24", prefix),
+		Gateway:              fmt.Sprintf("%s.%d", prefix, gatewayFourthOctet),
+		Reserved:             reserved,
+		Static:               []string{fmt.Sprintf("%s.200-%s.253", prefix, prefix)},
+		lastReservedStaticIp: 200,
+		reservedStaticIps:    map[string]bool{},
+	}
 }
 
 func (i *IpPool) NextStaticIp() (string, error) {
-	var ip string
-	if len(i.AvailableIps) == 0 {
-		return "", bosherr.Error("No more available")
+	var staticIp string
+
+	for {
+		staticIp = fmt.Sprintf("%s.%d", i.prefix, i.lastReservedStaticIp)
+		i.lastReservedStaticIp += 1
+
+		if _, ok := i.reservedStaticIps[staticIp]; !ok {
+			break
+		}
 	}
-	ip, i.AvailableIps = i.AvailableIps[0], i.AvailableIps[1:]
-	i.Static = append(i.Static, ip)
-	return ip, nil
+
+	return staticIp, nil
+}
+
+func (i *IpPool) ReserveStaticIp(ip string) {
+	i.reservedStaticIps[ip] = true
 }

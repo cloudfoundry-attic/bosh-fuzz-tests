@@ -37,15 +37,14 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *bftinput.IpPool {
 	prefix := fmt.Sprintf("192.168.%d", p.called)
 	p.called += 1
 
-	ipRange := fmt.Sprintf("%s.0/24", prefix)
-	gateway := fmt.Sprintf("%s.%d", prefix, p.gatewayFourthOctet)
-
 	numberOfReservedBorders := rand.Intn(6) // up to 6 borders of reserved ranges
 
 	usedIps := []int{}
 	reservedBorders := []int{}
 
-	for _, i := range rand.Perm(254) {
+	firstStaticIp := 200
+
+	for _, i := range rand.Perm(firstStaticIp) {
 		if i != 0 && i != p.gatewayFourthOctet {
 			if len(usedIps) < numOfNeededIPs {
 				usedIps = append(usedIps, i)
@@ -70,12 +69,11 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *bftinput.IpPool {
 		availableIps = append(availableIps, fmt.Sprintf("%s.%d", prefix, usedIps[ipIndex]))
 	}
 
-	return &bftinput.IpPool{
-		IpRange:      ipRange,
-		Gateway:      gateway,
-		Reserved:     reservedRanges,
-		AvailableIps: availableIps,
-	}
+	return bftinput.NewIpPool(
+		prefix,
+		p.gatewayFourthOctet,
+		reservedRanges,
+	)
 }
 
 func (p *ipPoolProvider) Reset() {

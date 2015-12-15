@@ -29,44 +29,34 @@ var _ = Describe("NetworksAssigner", func() {
 		nameGenerator := &fakebftnamegen.FakeNameGenerator{}
 		nameGenerator.Names = []string{"foo-net", "bar-net", "baz-net", "qux-net"}
 		ipPoolProvider := &fakebftnetwork.FakeIpPoolProvider{}
-		vipPool := &bftinput.IpPool{
-			AvailableIps: []string{
-				"10.10.0.6",
-				"10.10.0.32",
-			},
-		}
+		vipPool := &bftinput.IpPool{}
 		ipPoolProvider.RegisterIpPool(vipPool)
 
-		ipPool := &bftinput.IpPool{
-			IpRange: "192.168.0.0/24",
-			Gateway: "192.168.0.1",
-			Reserved: []string{
+		ipPool := bftinput.NewIpPool(
+			"192.168.0",
+			1,
+			[]string{
 				"192.168.0.15-192.168.0.58",
 				"192.168.0.157-192.168.0.203",
 			},
-			AvailableIps: []string{
-				"192.168.0.222",
-				"192.168.0.110",
-			},
-		}
+		)
 		ipPoolProvider.RegisterIpPool(ipPool)
 		ipPoolProvider.RegisterIpPool(ipPool)
 
 		ipPoolProvider.RegisterIpPool(ipPool)
 
-		expectedIpPool = &bftinput.IpPool{
-			IpRange: "192.168.0.0/24",
-			Gateway: "192.168.0.1",
-			Reserved: []string{
+		expectedIpPool = bftinput.NewIpPool(
+			"192.168.0",
+			1,
+			[]string{
 				"192.168.0.15-192.168.0.58",
 				"192.168.0.157-192.168.0.203",
 			},
-			Static: []string{
-				"192.168.0.222",
-				"192.168.0.110",
-			},
-			AvailableIps: []string{},
-		}
+		)
+		// reserving 2 ips since we have 2 instances
+		expectedIpPool.NextStaticIp()
+		expectedIpPool.NextStaticIp()
+
 		decider = &fakebftdecider.FakeDecider{}
 		decider.IsYesYes = true
 		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, decider)
@@ -100,7 +90,7 @@ var _ = Describe("NetworksAssigner", func() {
 						{
 							Name:          "foo-net",
 							DefaultDNSnGW: true,
-							StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
+							StaticIps:     []string{"192.168.0.200", "192.168.0.201"},
 						},
 					},
 				},
@@ -186,7 +176,7 @@ var _ = Describe("NetworksAssigner", func() {
 							{
 								Name:          "prev-net",
 								DefaultDNSnGW: true,
-								StaticIps:     []string{"192.168.0.222", "192.168.0.110"},
+								StaticIps:     []string{"192.168.0.200", "192.168.0.201"},
 							},
 						},
 					},
