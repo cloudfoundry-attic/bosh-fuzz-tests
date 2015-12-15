@@ -3,6 +3,8 @@ package input
 import (
 	"fmt"
 	"math/rand"
+
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
 type IpPool struct {
@@ -44,6 +46,10 @@ func (i *IpPool) NextStaticIp() (string, error) {
 	var nextStaticIp int
 
 	for {
+		if len(i.staticIps) == 0 {
+			return "", bosherr.Error("No more static IPs available")
+		}
+
 		nextStaticIp, i.staticIps = i.staticIps[0], i.staticIps[1:]
 		staticIp = fmt.Sprintf("%s.%d", i.prefix, nextStaticIp)
 
