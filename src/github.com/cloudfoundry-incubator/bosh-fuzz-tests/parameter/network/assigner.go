@@ -41,6 +41,8 @@ func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
 
 	n.ipPoolProvider.Reset()
 
+	ipRangeToStaticIps := NewIpRangeToStaticIps(input)
+
 	networkPoolWithAzs := []bftinput.NetworkConfig{}
 	var networkTypes []string
 
@@ -87,7 +89,7 @@ func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
 	}
 
 	allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
-	n.assignStaticIps(allNetworks, input.Jobs)
+	n.assignStaticIps(allNetworks, input.Jobs, ipRangeToStaticIps)
 
 	nonVipNetworks := []bftinput.NetworkConfig{}
 	input.CloudConfig.Networks = []bftinput.NetworkConfig{}
@@ -215,13 +217,10 @@ func (n *assigner) randomCombination(items []string) []string {
 	return combination
 }
 
-func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bftinput.Job) {
+func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bftinput.Job, ipRangeToStaticIps IpRangeToStaticIps) {
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
 	vipIpPool := n.ipPoolProvider.NewIpPool(254)
-
-	// only use 1 network with static IPs because it is hard to generate multiple networks with
-	// static IPs that can be distributed evenly across azs
-	hasNetworkWithStaticIps := false
+	ipRangeToStaticIps.ReserveStaticIpsInPool(vipIpPool)
 
 	for k, network := range networks {
 		jobsOnNetwork := jobsOnNetworks[network.Name]
@@ -229,17 +228,26 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 		if network.Type == "manual" {
 			for s, _ := range network.Subnets {
 				ipPool := n.ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
+				ipRangeToStaticIps.ReserveStaticIpsInPool(ipPool)
 				networks[k].Subnets[s].IpPool = ipPool
 			}
 
 			for _, job := range jobsOnNetwork.Jobs {
-				if !hasNetworkWithStaticIps && n.decider.IsYes() { // use static IPs
-					hasNetworkWithStaticIps = true
-					for ji := 0; ji < job.Instances; ji++ {
-						subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
-						if found {
-							staticIp, _ := subnetIpPool.NextStaticIp()
-							for j, jobNetwork := range job.Networks {
+				// only use 1 network with static IPs because it is hard to generate multiple networks with
+				// static IPs that can be distributed evenly across azs
+				hasNetworkWithStaticIps := false
+
+				for j, jobNetwork := range job.Networks {
+					job.Networks[j].StaticIps = []string{}
+
+					if !hasNetworkWithStaticIps && n.decider.IsYes() { // use static IPs
+						hasNetworkWithStaticIps = true
+
+						for ji := 0; ji < job.Instances; ji++ {
+							subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
+
+							if found {
+								staticIp, _ := subnetIpPool.NextStaticIp()
 								if jobNetwork.Name == network.Name {
 									job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
 								}
@@ -271,6 +279,10 @@ func (n *assigner) findIpPoolWithJobAZ(subnets []bftinput.SubnetConfig, azs []st
 	}
 
 	for i, subnet := range shuffledSubnets {
+		if len(subnet.AvailabilityZones) == 0 && len(azs) == 0 {
+			return shuffledSubnets[i].IpPool, true
+		}
+
 		for _, subnetAz := range subnet.AvailabilityZones {
 			for _, jobAz := range azs {
 				if subnetAz == jobAz {

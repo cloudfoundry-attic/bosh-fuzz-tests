@@ -216,4 +216,107 @@ var _ = Describe("NetworksAssigner", func() {
 			))
 		})
 	})
+
+	Context("when previous input has static IPs", func() {
+		BeforeEach(func() {
+			decider.IsYesYes = true
+
+			expectedIpPool.ReserveStaticIp("192.168.0.219")
+			expectedIpPool.ReserveStaticIp("192.168.0.245")
+			expectedIpPool.ReserveStaticIp("192.168.0.252")
+			expectedIpPool.ReserveStaticIp("192.168.0.236")
+		})
+
+		It("does not reuse those static IPs", func() {
+			// our fuzzing returns ips in order
+			// "192.168.0.252", "192.168.0.219", "192.168.0.234", "192.168.0.245"
+			// we put "192.168.0.252" on second job to make sure it is not going to be used by first job
+			// we put "192.168.0.245" on first job to make sure it is not going to be used by second job
+			input := bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:      "foo",
+						Instances: 2,
+						Networks: []bftinput.JobNetworkConfig{
+							{
+								Name:      "prev-net",
+								StaticIps: []string{"192.168.0.219", "192.168.0.245"},
+							},
+						},
+					},
+					{
+						Name:      "bar",
+						Instances: 2,
+						Networks: []bftinput.JobNetworkConfig{
+							{
+								Name:      "prev-net",
+								StaticIps: []string{"192.168.0.252", "192.168.0.236"},
+							},
+						},
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					Networks: []bftinput.NetworkConfig{
+						{
+							Name: "prev-net",
+							Type: "manual",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: expectedIpPool,
+								},
+							},
+						},
+					},
+				},
+			}
+
+			result := networksAssigner.Assign(input)
+
+			Expect(result).To(BeEquivalentTo(bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:      "foo",
+						Instances: 2,
+						Networks: []bftinput.JobNetworkConfig{
+							{
+								Name:          "prev-net",
+								DefaultDNSnGW: true,
+								StaticIps:     []string{"192.168.0.234", "192.168.0.223"},
+							},
+						},
+					},
+					{
+						Name:      "bar",
+						Instances: 2,
+						Networks: []bftinput.JobNetworkConfig{
+							{
+								Name:          "prev-net",
+								DefaultDNSnGW: true,
+								StaticIps:     []string{"192.168.0.214", "192.168.0.228"},
+							},
+						},
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					Networks: []bftinput.NetworkConfig{
+						{
+							Name: "prev-net",
+							Type: "manual",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: expectedIpPool,
+								},
+							},
+						},
+						{
+							Name: "foo-net",
+							Type: "vip",
+						},
+					},
+					CompilationNetwork: "prev-net",
+				},
+			},
+			))
+		})
+	})
 })
