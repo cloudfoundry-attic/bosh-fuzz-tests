@@ -16,11 +16,11 @@ type FakeParameterProvider struct {
 	CloudProperties  *FakeCloudProperties
 }
 
-func NewFakeParameterProvider(persistentDiskDef string) *FakeParameterProvider {
+func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeParameterProvider {
 	return &FakeParameterProvider{
 		Stemcell:         NewFakeStemcell(),
 		PersistentDisk:   NewFakePersistentDisk(persistentDiskDef),
-		VmType:           NewFakeVmType(),
+		VmType:           NewFakeVmType(vmTypeDef),
 		AvailabilityZone: NewFakeAvailabilityZone(),
 		Template:         NewFakeTemplate(),
 		Compilation:      NewFakeCompilation(),

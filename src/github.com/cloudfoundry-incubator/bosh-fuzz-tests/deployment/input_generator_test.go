@@ -47,7 +47,7 @@ var _ = Describe("InputGenerator", func() {
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
-		fakeParameterProvider = fakebftparam.NewFakeParameterProvider("disk_pool")
+		fakeParameterProvider = fakebftparam.NewFakeParameterProvider("disk_pool", "vm_type")
 		decider = &fakebftdecider.FakeDecider{}
 	})
 
@@ -224,7 +224,7 @@ var _ = Describe("InputGenerator", func() {
 		}
 
 		rand.Seed(64)
-		fakeParameterProvider = fakebftparam.NewFakeParameterProvider("disk_type")
+		fakeParameterProvider = fakebftparam.NewFakeParameterProvider("disk_type", "vm_type")
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, decider, logger)
 
 		inputs, err := inputGenerator.Generate()
@@ -278,6 +278,89 @@ var _ = Describe("InputGenerator", func() {
 					VmTypes: []bftinput.VmTypeConfig{
 						{
 							Name: "fake-vm-type",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
+					},
+					NumberOfCompilationWorkers: 3,
+				},
+				Stemcells: []bftinput.StemcellConfig{
+					{Name: "fake-stemcell"},
+				},
+			},
+		}))
+	})
+
+	It("generates requested number of inputs using disk_type and resource pool", func() {
+		parameters = bftconfig.Parameters{
+			NameLength:           []int{5},
+			Instances:            []int{2},
+			NumberOfJobs:         []int{1},
+			MigratedFromCount:    []int{0},
+			NumOfCloudProperties: []int{2},
+		}
+
+		rand.Seed(64)
+		fakeParameterProvider = fakebftparam.NewFakeParameterProvider("disk_type", "resource_pool")
+		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, decider, logger)
+
+		inputs, err := inputGenerator.Generate()
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(inputs).To(Equal([]bftinput.Input{
+			{
+				Jobs: []bftinput.Job{
+					{
+						Name:               "joNAw",
+						Instances:          2,
+						AvailabilityZones:  []string{"z1"},
+						PersistentDiskType: "fake-persistent-disk",
+						Networks: []bftinput.JobNetworkConfig{
+							{Name: "foo-network"},
+						},
+						ResourcePool: "fake-resource-pool",
+						Templates: []bftinput.Template{
+							{Name: "simple"},
+						},
+					},
+				},
+				Update: bftinput.UpdateConfig{
+					Canaries:    3,
+					MaxInFlight: 5,
+					Serial:      "true",
+				},
+				CloudConfig: bftinput.CloudConfig{
+					Networks: []bftinput.NetworkConfig{
+						{Name: "foo-network"},
+					},
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
+					},
+					PersistentDiskTypes: []bftinput.DiskConfig{
+						{
+							Name: "fake-persistent-disk",
+							Size: 1,
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
+					},
+					ResourcePools: []bftinput.ResourcePoolConfig{
+						{
+							Name: "fake-resource-pool",
+							Stemcell: bftinput.StemcellConfig{
+								Name:    "foo-stemcell",
+								Version: "1",
+							},
 							CloudProperties: map[string]string{
 								"foo": "bar",
 								"baz": "qux",

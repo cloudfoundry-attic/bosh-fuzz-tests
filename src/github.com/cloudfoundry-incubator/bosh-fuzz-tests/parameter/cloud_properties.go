@@ -47,6 +47,11 @@ func (c *cloudProperties) Apply(input bftinput.Input, previousInput bftinput.Inp
 		input.CloudConfig.PersistentDiskTypes[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
+	for i, subject := range input.CloudConfig.ResourcePools {
+		prevSubject, found := previousInput.FindResourcePoolByName(subject.Name)
+		input.CloudConfig.ResourcePools[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
+	}
+
 	return input
 }
 

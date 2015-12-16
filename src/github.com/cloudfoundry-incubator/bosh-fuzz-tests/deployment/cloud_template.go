@@ -39,7 +39,8 @@ resource_pools:{{ range .CloudConfig.ResourcePools }}
     name: {{ .Stemcell.Name }}{{ end }}{{ if .Stemcell.Alias }}
     alias: {{ .Stemcell.Alias }}{{ end }}{{ if .Stemcell.OS }}
     os: {{ .Stemcell.OS }}{{ end }}
-  cloud_properties: {}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskPools }}
+  cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
+    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskPools }}
 
 disk_pools:{{ range .CloudConfig.PersistentDiskPools }}
 - name: {{ .Name }}

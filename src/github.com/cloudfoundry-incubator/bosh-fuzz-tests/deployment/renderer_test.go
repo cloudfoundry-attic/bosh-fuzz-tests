@@ -597,4 +597,138 @@ disk_types:
 		Expect(err).ToNot(HaveOccurred())
 		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
 	})
+
+	It("uses the resource pool specified for job", func() {
+		input := bftinput.Input{
+			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
+			Jobs: []bftinput.Job{
+				{
+					Name:               "foo-job",
+					Instances:          5,
+					ResourcePool:       "foo-pool",
+					PersistentDiskPool: "fast-disks",
+					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
+					Templates: []bftinput.Template{
+						{Name: "simple"},
+					},
+				},
+			},
+			Update: bftinput.UpdateConfig{
+				Canaries:    3,
+				MaxInFlight: 5,
+				Serial:      "true",
+			},
+			CloudConfig: bftinput.CloudConfig{
+				PersistentDiskPools: []bftinput.DiskConfig{
+					{
+						Name: "fast-disks",
+						Size: 100,
+					},
+				},
+				Networks: []bftinput.NetworkConfig{
+					{
+						Name: "default",
+						Type: "manual",
+						Subnets: []bftinput.SubnetConfig{
+							{},
+						},
+					},
+					{
+						Name: "no-az",
+						Type: "dynamic",
+						Subnets: []bftinput.SubnetConfig{
+							{},
+						},
+					},
+				},
+				ResourcePools: []bftinput.ResourcePoolConfig{
+					{
+						Name: "foo-pool",
+						Stemcell: bftinput.StemcellConfig{
+							Name:    "foo",
+							Version: "1",
+						},
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
+					},
+				},
+				CompilationNetwork:         "default",
+				NumberOfCompilationWorkers: 3,
+			},
+		}
+
+		err := renderer.Render(input, manifestPath, cloudConfigPath)
+		Expect(err).ToNot(HaveOccurred())
+		expectedManifestContents := `---
+name: foo-deployment
+
+director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
+
+releases:
+- name: foo-release
+  version: latest
+
+update:
+  canaries: 3
+  canary_watch_time: 4000
+  max_in_flight: 5
+  update_watch_time: 20
+  serial: true
+
+jobs:
+- name: foo-job
+  instances: 5
+  resource_pool: foo-pool
+  persistent_disk_pool: fast-disks
+  templates:
+  - name: simple
+    release: foo-release
+  networks:
+  - name: default
+`
+
+		manifestContents, err := fs.ReadFileString(manifestPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(manifestContents).To(Equal(expectedManifestContents))
+
+		expectedCloudConfigContents := `---
+
+networks:
+- name: default
+  type: manual
+  subnets:
+  - cloud_properties: {}
+    dns: ["8.8.8.8"]
+- name: no-az
+  type: dynamic
+  subnets:
+  - cloud_properties: {}
+    dns: ["8.8.8.8"]
+
+compilation:
+  workers: 3
+  network: default
+  cloud_properties: {}
+
+resource_pools:
+- name: foo-pool
+  stemcell:
+    version: 1
+    name: foo
+  cloud_properties:
+    baz: qux
+    foo: bar
+
+disk_pools:
+- name: fast-disks
+  disk_size: 100
+  cloud_properties: {}
+`
+
+		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
+	})
 })

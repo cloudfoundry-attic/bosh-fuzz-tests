@@ -123,8 +123,9 @@ func (v VmTypeConfig) IsEqual(other VmTypeConfig) bool {
 }
 
 type ResourcePoolConfig struct {
-	Name     string
-	Stemcell StemcellConfig
+	Name            string
+	Stemcell        StemcellConfig
+	CloudProperties map[string]string
 }
 
 func (r ResourcePoolConfig) IsEqual(other ResourcePoolConfig) bool {
