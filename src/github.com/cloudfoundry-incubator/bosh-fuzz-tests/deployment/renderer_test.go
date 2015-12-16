@@ -506,6 +506,10 @@ disk_pools:
 					{
 						Name: "fast-disks",
 						Size: 100,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				Networks: []bftinput.NetworkConfig{
@@ -584,7 +588,9 @@ compilation:
 disk_types:
 - name: fast-disks
   disk_size: 100
-  cloud_properties: {}
+  cloud_properties:
+    baz: qux
+    foo: bar
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)

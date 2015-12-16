@@ -29,5 +29,9 @@ func (s *FakeCloudProperties) Apply(input bftinput.Input, previousInput bftinput
 		input.CloudConfig.PersistentDiskPools[i].CloudProperties = properties
 	}
 
+	for i, _ := range input.CloudConfig.PersistentDiskTypes {
+		input.CloudConfig.PersistentDiskTypes[i].CloudProperties = properties
+	}
+
 	return input
 }
