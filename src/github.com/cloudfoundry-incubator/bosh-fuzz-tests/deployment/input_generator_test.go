@@ -74,7 +74,7 @@ var _ = Describe("InputGenerator", func() {
 			{
 				Jobs: []bftinput.Job{
 					{
-						Name:               "gQ8el",
+						Name:               "joNAw",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
@@ -87,7 +87,7 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 					{
-						Name:               "joNAw",
+						Name:               "gQ8el",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
@@ -194,7 +194,7 @@ var _ = Describe("InputGenerator", func() {
 			{
 				Jobs: []bftinput.Job{
 					{
-						Name:               "algrKicN3O",
+						Name:               "vgrKicN3O2",
 						Instances:          2,
 						VmType:             "fake-vm-type",
 						AvailabilityZones:  []string{"z1"},
@@ -246,7 +246,7 @@ var _ = Describe("InputGenerator", func() {
 							{Name: "foo-network"},
 						},
 						MigratedFrom: []bftinput.MigratedFromConfig{
-							{Name: "algrKicN3O"},
+							{Name: "vgrKicN3O2"},
 						},
 						Templates: []bftinput.Template{
 							{Name: "simple"},

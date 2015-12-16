@@ -5,5 +5,5 @@ import (
 )
 
 type Parameter interface {
-	Apply(input bftinput.Input) bftinput.Input
+	Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input
 }

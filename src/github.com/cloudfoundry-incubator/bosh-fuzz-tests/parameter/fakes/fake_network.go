@@ -10,7 +10,7 @@ func NewFakeNetwork() *FakeNetwork {
 	return &FakeNetwork{}
 }
 
-func (s *FakeNetwork) Apply(input bftinput.Input) bftinput.Input {
+func (s *FakeNetwork) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.CloudConfig.Networks = []bftinput.NetworkConfig{
 		{
 			Name: "foo-network",

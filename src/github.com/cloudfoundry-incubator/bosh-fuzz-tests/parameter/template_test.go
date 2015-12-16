@@ -33,7 +33,7 @@ var _ = Describe("Template", func() {
 			},
 		}
 
-		result := template.Apply(input)
+		result := template.Apply(input, bftinput.Input{})
 
 		Expect(result).To(Equal(bftinput.Input{
 			Jobs: []bftinput.Job{

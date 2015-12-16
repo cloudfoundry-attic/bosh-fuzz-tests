@@ -16,7 +16,7 @@ func NewCompilation(numberOfWorkers []int) Parameter {
 	}
 }
 
-func (c *compilation) Apply(input bftinput.Input) bftinput.Input {
+func (c *compilation) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.CloudConfig.NumberOfCompilationWorkers = c.numberOfWorkers[rand.Intn(len(c.numberOfWorkers))]
 	return input
 }

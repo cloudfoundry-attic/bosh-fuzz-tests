@@ -6,10 +6,11 @@ import (
 	bftdecider "github.com/cloudfoundry-incubator/bosh-fuzz-tests/decider"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
 type Assigner interface {
-	Assign(input bftinput.Input) bftinput.Input
+	Assign(input bftinput.Input, previousInput bftinput.Input) bftinput.Input
 }
 
 type assigner struct {
@@ -17,6 +18,7 @@ type assigner struct {
 	nameGenerator  bftnamegen.NameGenerator
 	ipPoolProvider IpPoolProvider
 	decider        bftdecider.Decider
+	logger         boshlog.Logger
 }
 
 func NewAssigner(
@@ -24,24 +26,27 @@ func NewAssigner(
 	nameGenerator bftnamegen.NameGenerator,
 	ipPoolProvider IpPoolProvider,
 	decider bftdecider.Decider,
+	logger boshlog.Logger,
 ) Assigner {
 	return &assigner{
 		networks:       networks,
 		nameGenerator:  nameGenerator,
 		ipPoolProvider: ipPoolProvider,
 		decider:        decider,
+		logger:         logger,
 	}
 }
 
-func (n *assigner) Assign(input bftinput.Input) bftinput.Input {
+func (n *assigner) Assign(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	// 1. Generate Networks with/without AZs (network with types)
 	// 2. Assign networks to each job (network with AZs) (job with network name)
 	// 3. Generate IP specs for each network (network with IP specs)
 	// 4. Aggregate instances to compute static IPs (network with static IPs) (job with static IP)
 
 	n.ipPoolProvider.Reset()
+	n.logger.Debug("networksAssigner", "got input %#v", input)
 
-	ipRangeToStaticIps := NewIpRangeToStaticIps(input)
+	ipRangeToStaticIps := NewIpRangeToStaticIps(previousInput)
 
 	networkPoolWithAzs := []bftinput.NetworkConfig{}
 	var networkTypes []string
@@ -229,11 +234,12 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 			for s, _ := range network.Subnets {
 				ipPool := n.ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
 				ipRangeToStaticIps.ReserveStaticIpsInPool(ipPool)
+				n.logger.Debug("networkAssigner", "ipRangeToStaticIps %#v", ipRangeToStaticIps)
 				networks[k].Subnets[s].IpPool = ipPool
 			}
 
 			for _, job := range jobsOnNetwork.Jobs {
-				// only use 1 network with static IPs because it is hard to generate multiple networks with
+				// only use 1 network with static IPs per job because it is hard to generate multiple networks with
 				// static IPs that can be distributed evenly across azs
 				hasNetworkWithStaticIps := false
 
@@ -245,9 +251,10 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 
 						for ji := 0; ji < job.Instances; ji++ {
 							subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
-
+							n.logger.Debug("networkAssigner", "For job %s using subnet pool %#v", job.Name, subnetIpPool)
 							if found {
 								staticIp, _ := subnetIpPool.NextStaticIp()
+								n.logger.Debug("networkAssigner", "For job %s got static ip %s", job.Name, staticIp)
 								if jobNetwork.Name == network.Name {
 									job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
 								}

@@ -24,7 +24,7 @@ var _ = Describe("Compilation", func() {
 
 		input := bftinput.Input{}
 
-		result := compilation.Apply(input)
+		result := compilation.Apply(input, bftinput.Input{})
 
 		Expect(result).To(Equal(bftinput.Input{
 			CloudConfig: bftinput.CloudConfig{

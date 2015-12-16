@@ -31,7 +31,7 @@ var _ = Describe("Stemcell", func() {
 					},
 				}
 
-				result := stemcell.Apply(input)
+				result := stemcell.Apply(input, bftinput.Input{})
 				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						VmTypes: []bftinput.VmTypeConfig{
@@ -55,7 +55,7 @@ var _ = Describe("Stemcell", func() {
 					},
 				}
 
-				result := stemcell.Apply(input)
+				result := stemcell.Apply(input, bftinput.Input{})
 				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						ResourcePools: []bftinput.ResourcePoolConfig{
@@ -87,7 +87,7 @@ var _ = Describe("Stemcell", func() {
 					},
 				}
 
-				result := stemcell.Apply(input)
+				result := stemcell.Apply(input, bftinput.Input{})
 				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						VmTypes: []bftinput.VmTypeConfig{
@@ -111,7 +111,7 @@ var _ = Describe("Stemcell", func() {
 					},
 				}
 
-				result := stemcell.Apply(input)
+				result := stemcell.Apply(input, bftinput.Input{})
 				Expect(result).To(Equal(bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						ResourcePools: []bftinput.ResourcePoolConfig{
@@ -154,7 +154,7 @@ var _ = Describe("Stemcell", func() {
 				},
 			}
 
-			result := stemcell.Apply(input)
+			result := stemcell.Apply(input, bftinput.Input{})
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{
@@ -202,7 +202,7 @@ var _ = Describe("Stemcell", func() {
 				},
 			}
 
-			result := stemcell.Apply(input)
+			result := stemcell.Apply(input, bftinput.Input{})
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{

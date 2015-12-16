@@ -23,7 +23,7 @@ var _ = Describe("Update", func() {
 		It("adds random settings for update", func() {
 			rand.Seed(64)
 			input := bftinput.Input{}
-			result := update.Apply(input)
+			result := update.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Update: bftinput.UpdateConfig{
@@ -39,7 +39,7 @@ var _ = Describe("Update", func() {
 		It("does not show serial", func() {
 			rand.Seed(2)
 			input := bftinput.Input{}
-			result := update.Apply(input)
+			result := update.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Update: bftinput.UpdateConfig{

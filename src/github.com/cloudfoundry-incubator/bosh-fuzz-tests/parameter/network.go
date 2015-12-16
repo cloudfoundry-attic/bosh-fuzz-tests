@@ -17,6 +17,6 @@ func NewNetwork(
 	}
 }
 
-func (n *network) Apply(input bftinput.Input) bftinput.Input {
-	return n.networkAssigner.Assign(input)
+func (n *network) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
+	return n.networkAssigner.Assign(input, previousInput)
 }

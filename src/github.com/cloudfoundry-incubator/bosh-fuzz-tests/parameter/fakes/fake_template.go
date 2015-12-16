@@ -11,7 +11,7 @@ func NewFakeTemplate() *FakeTemplate {
 	return &FakeTemplate{}
 }
 
-func (s *FakeTemplate) Apply(input bftinput.Input) bftinput.Input {
+func (s *FakeTemplate) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	for j, _ := range input.Jobs {
 		input.Jobs[j].Templates = []bftinput.Template{
 			{Name: "simple"},

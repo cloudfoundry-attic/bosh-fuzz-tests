@@ -30,11 +30,9 @@ func NewVmType(
 	}
 }
 
-func (s *vmType) Apply(input bftinput.Input) bftinput.Input {
+func (s *vmType) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.CloudConfig.VmTypes = nil
 	input.CloudConfig.ResourcePools = nil
-
-	s.logger.Debug("vm_type", "Using vm_type definition %s", s.definition)
 
 	usedVmTypes := map[string]bool{}
 

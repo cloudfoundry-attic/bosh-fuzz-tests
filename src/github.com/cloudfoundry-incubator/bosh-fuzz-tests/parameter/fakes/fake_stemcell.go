@@ -11,7 +11,7 @@ func NewFakeStemcell() *FakeStemcell {
 	return &FakeStemcell{}
 }
 
-func (s *FakeStemcell) Apply(input bftinput.Input) bftinput.Input {
+func (s *FakeStemcell) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.Stemcells = []bftinput.StemcellConfig{
 		{Name: "fake-stemcell"},
 	}

@@ -31,7 +31,7 @@ var _ = Describe("AvailabilityZone", func() {
 				},
 			}
 
-			result := az.Apply(input)
+			result := az.Apply(input, bftinput.Input{})
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
 					{

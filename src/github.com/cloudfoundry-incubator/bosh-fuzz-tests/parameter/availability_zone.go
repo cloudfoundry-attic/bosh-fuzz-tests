@@ -16,7 +16,7 @@ func NewAvailabilityZone(azs [][]string) Parameter {
 	}
 }
 
-func (a *availabilityZone) Apply(input bftinput.Input) bftinput.Input {
+func (a *availabilityZone) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	azs := map[string]bool{}
 	input.CloudConfig.AvailabilityZones = nil
 

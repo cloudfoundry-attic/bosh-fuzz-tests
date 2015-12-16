@@ -11,7 +11,7 @@ func NewFakeUpdate() *FakeUpdate {
 	return &FakeUpdate{}
 }
 
-func (u *FakeUpdate) Apply(input bftinput.Input) bftinput.Input {
+func (u *FakeUpdate) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.Update.Canaries = 3
 	input.Update.MaxInFlight = 5
 	input.Update.Serial = "true"

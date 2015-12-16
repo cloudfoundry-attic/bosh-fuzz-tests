@@ -16,7 +16,7 @@ func NewTemplate(templates [][]string) Parameter {
 	}
 }
 
-func (t *template) Apply(input bftinput.Input) bftinput.Input {
+func (t *template) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	for j, _ := range input.Jobs {
 		pickedTemplates := t.templates[rand.Intn(len(t.templates))]
 		input.Jobs[j].Templates = []bftinput.Template{}

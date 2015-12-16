@@ -7,6 +7,7 @@ import (
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	fakebftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator/fakes"
 	fakebftnetwork "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network/fakes"
+	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
 
@@ -53,7 +54,8 @@ var _ = Describe("NetworksAssigner", func() {
 
 		decider = &fakebftdecider.FakeDecider{}
 		decider.IsYesYes = true
-		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, decider)
+		logger := boshlog.NewLogger(boshlog.LevelNone)
+		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, decider, logger)
 	})
 
 	It("assigns network of the given type to job and cloud config", func() {
@@ -72,7 +74,7 @@ var _ = Describe("NetworksAssigner", func() {
 			},
 		}
 
-		result := networksAssigner.Assign(input)
+		result := networksAssigner.Assign(input, bftinput.Input{})
 
 		Expect(result).To(BeEquivalentTo(bftinput.Input{
 			Jobs: []bftinput.Job{
@@ -159,7 +161,7 @@ var _ = Describe("NetworksAssigner", func() {
 				},
 			}
 
-			result := networksAssigner.Assign(input)
+			result := networksAssigner.Assign(input, bftinput.Input{})
 
 			Expect(result).To(BeEquivalentTo(bftinput.Input{
 				Jobs: []bftinput.Job{
@@ -270,7 +272,7 @@ var _ = Describe("NetworksAssigner", func() {
 				},
 			}
 
-			result := networksAssigner.Assign(input)
+			result := networksAssigner.Assign(input, input)
 
 			Expect(result).To(BeEquivalentTo(bftinput.Input{
 				Jobs: []bftinput.Job{

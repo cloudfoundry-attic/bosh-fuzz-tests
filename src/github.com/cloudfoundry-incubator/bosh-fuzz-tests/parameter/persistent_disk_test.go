@@ -31,7 +31,7 @@ var _ = Describe("PersistentDisk", func() {
 				},
 			}
 
-			result := persistentDisk.Apply(input)
+			result := persistentDisk.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{

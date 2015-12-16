@@ -43,7 +43,7 @@ var _ = Describe("VmType", func() {
 				},
 			}
 
-			result := vmType.Apply(input)
+			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
@@ -79,7 +79,7 @@ var _ = Describe("VmType", func() {
 				},
 			}
 
-			result := vmType.Apply(input)
+			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
@@ -117,7 +117,7 @@ var _ = Describe("VmType", func() {
 				},
 			}
 
-			result := vmType.Apply(input)
+			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{
@@ -159,7 +159,7 @@ var _ = Describe("VmType", func() {
 				},
 			}
 
-			result := vmType.Apply(input)
+			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
 				Jobs: []bftinput.Job{

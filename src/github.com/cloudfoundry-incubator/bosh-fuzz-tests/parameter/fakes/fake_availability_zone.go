@@ -11,7 +11,7 @@ func NewFakeAvailabilityZone() *FakeAvailabilityZone {
 	return &FakeAvailabilityZone{}
 }
 
-func (s *FakeAvailabilityZone) Apply(input bftinput.Input) bftinput.Input {
+func (s *FakeAvailabilityZone) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	azs := []string{"z1"}
 
 	input.CloudConfig.AvailabilityZones = []bftinput.AvailabilityZone{

@@ -55,8 +55,7 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 		if i > 0 && reusePreviousInput {
 			input = previousInput
 		} else {
-			input = g.fuzzInput(previousInput, false)
-
+			input = g.createInputFromPrevious(previousInput)
 			migratingJobNames := []string{}
 			for _, j := range input.Jobs {
 				for _, m := range j.MigratedFrom {
@@ -64,13 +63,16 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 				}
 			}
 
-			if len(migratingJobNames) > 0 {
+			if len(migratingJobNames) == 0 {
+				input = g.fuzzInput(input, previousInput)
+			} else {
 				migratingInput := g.generateInputWithJobNames(migratingJobNames)
-				migratingInput = g.fuzzInput(migratingInput, true)
-
 				g.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
 
+				migratingInput = g.fuzzInput(migratingInput, previousInput)
 				inputs = append(inputs, migratingInput)
+
+				input = g.fuzzInput(input, migratingInput)
 			}
 		}
 
@@ -84,37 +86,41 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 	return inputs, nil
 }
 
-func (g *inputGenerator) fuzzInput(previousInput bftinput.Input, migratingDeployment bool) bftinput.Input {
-	input := bftinput.Input{
-		CloudConfig: previousInput.CloudConfig,
-		Stemcells:   previousInput.Stemcells,
-	}
+func (g *inputGenerator) createInputFromPrevious(previousInput bftinput.Input) bftinput.Input {
+	input := bftinput.Input{}
+
 	for _, job := range previousInput.Jobs {
+		job.Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
+		job.MigratedFrom = nil
+
 		input.Jobs = append(input.Jobs, job)
 	}
+
 	input.Jobs = g.randomizeJobs(input.Jobs)
 
 	for j := range input.Jobs {
-		input.Jobs[j].Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
-		input.Jobs[j].MigratedFrom = nil
-
-		if !migratingDeployment {
-			migratedFromCount := g.parameters.MigratedFromCount[rand.Intn(len(g.parameters.MigratedFromCount))]
-			for i := 0; i < migratedFromCount; i++ {
-				migratedFromName := g.nameGenerator.Generate(10)
-				input.Jobs[j].MigratedFrom = append(input.Jobs[j].MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
-			}
+		migratedFromCount := g.parameters.MigratedFromCount[rand.Intn(len(g.parameters.MigratedFromCount))]
+		for i := 0; i < migratedFromCount; i++ {
+			migratedFromName := g.nameGenerator.Generate(10)
+			input.Jobs[j].MigratedFrom = append(input.Jobs[j].MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
 		}
 	}
 
-	input = g.parameterProvider.Get("availability_zone").Apply(input)
-	input = g.parameterProvider.Get("vm_type").Apply(input)
-	input = g.parameterProvider.Get("stemcell").Apply(input)
-	input = g.parameterProvider.Get("persistent_disk").Apply(input)
-	input = g.parameterProvider.Get("network").Apply(input)
-	input = g.parameterProvider.Get("template").Apply(input)
-	input = g.parameterProvider.Get("compilation").Apply(input)
-	input = g.parameterProvider.Get("update").Apply(input)
+	return input
+}
+
+func (g *inputGenerator) fuzzInput(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
+	input.CloudConfig = previousInput.CloudConfig
+	input.Stemcells = previousInput.Stemcells
+
+	input = g.parameterProvider.Get("availability_zone").Apply(input, previousInput)
+	input = g.parameterProvider.Get("vm_type").Apply(input, previousInput)
+	input = g.parameterProvider.Get("stemcell").Apply(input, previousInput)
+	input = g.parameterProvider.Get("persistent_disk").Apply(input, previousInput)
+	input = g.parameterProvider.Get("network").Apply(input, previousInput)
+	input = g.parameterProvider.Get("template").Apply(input, previousInput)
+	input = g.parameterProvider.Get("compilation").Apply(input, previousInput)
+	input = g.parameterProvider.Get("update").Apply(input, previousInput)
 
 	return input
 }
@@ -155,7 +161,8 @@ func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.I
 	}
 	for _, jobName := range jobNames {
 		input.Jobs = append(input.Jobs, bftinput.Job{
-			Name: jobName,
+			Name:      jobName,
+			Instances: g.parameters.Instances[rand.Intn(len(g.parameters.Instances))],
 		})
 	}
 

@@ -11,7 +11,7 @@ func NewFakeCompilation() *FakeCompilation {
 	return &FakeCompilation{}
 }
 
-func (s *FakeCompilation) Apply(input bftinput.Input) bftinput.Input {
+func (s *FakeCompilation) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.CloudConfig.NumberOfCompilationWorkers = 3
 	return input
 }
