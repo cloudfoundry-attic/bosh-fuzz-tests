@@ -53,10 +53,11 @@ var _ = Describe("InputGenerator", func() {
 
 	It("generates requested number of inputs", func() {
 		parameters = bftconfig.Parameters{
-			NameLength:        []int{5},
-			Instances:         []int{2},
-			NumberOfJobs:      []int{2},
-			MigratedFromCount: []int{0},
+			NameLength:           []int{5},
+			Instances:            []int{2},
+			NumberOfJobs:         []int{2},
+			MigratedFromCount:    []int{0},
+			NumOfCloudProperties: []int{2},
 		}
 
 		rand.Seed(64)
@@ -120,7 +121,13 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "fake-vm-type"},
+						{
+							Name: "fake-vm-type",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					NumberOfCompilationWorkers: 3,
 				},
@@ -180,7 +187,13 @@ var _ = Describe("InputGenerator", func() {
 						{Name: "foo-network"},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "fake-vm-type"},
+						{
+							Name: "fake-vm-type",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -239,7 +252,13 @@ var _ = Describe("InputGenerator", func() {
 						{Name: "foo-network"},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "fake-vm-type"},
+						{
+							Name: "fake-vm-type",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					NumberOfCompilationWorkers: 3,
 				},
@@ -291,7 +310,13 @@ var _ = Describe("InputGenerator", func() {
 						{Name: "foo-network"},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
-						{Name: "fake-vm-type"},
+						{
+							Name: "fake-vm-type",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					NumberOfCompilationWorkers: 3,
 				},

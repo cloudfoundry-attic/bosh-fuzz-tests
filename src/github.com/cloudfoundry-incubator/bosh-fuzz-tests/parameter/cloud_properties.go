@@ -32,6 +32,11 @@ func (c *cloudProperties) Apply(input bftinput.Input, previousInput bftinput.Inp
 		input.CloudConfig.AvailabilityZones[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
+	for i, subject := range input.CloudConfig.VmTypes {
+		found, prevSubject := subject.FindIn(previousInput.CloudConfig.VmTypes)
+		input.CloudConfig.VmTypes[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
+	}
+
 	return input
 }
 

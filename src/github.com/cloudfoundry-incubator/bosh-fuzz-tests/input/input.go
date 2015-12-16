@@ -130,6 +130,15 @@ func (v VmTypeConfig) IsEqual(other VmTypeConfig) bool {
 	return reflect.DeepEqual(v, other)
 }
 
+func (v VmTypeConfig) FindIn(vmTypes []VmTypeConfig) (bool, VmTypeConfig) {
+	for _, vmType := range vmTypes {
+		if vmType.Name == v.Name {
+			return true, vmType
+		}
+	}
+	return false, VmTypeConfig{}
+}
+
 type ResourcePoolConfig struct {
 	Name     string
 	Stemcell StemcellConfig

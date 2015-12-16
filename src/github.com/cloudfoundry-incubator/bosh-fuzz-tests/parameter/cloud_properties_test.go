@@ -26,36 +26,70 @@ var _ = Describe("CloudProperties", func() {
 		}
 	})
 
-	It("Adds random cloud properties to input", func() {
-		rand.Seed(64)
-		fakeReuseDecider := &fakebftdecider.FakeDecider{}
-		cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
+	Context("Adds random cloud properties to input", func() {
+		It("fuzz AvailabilityZones", func() {
+			rand.Seed(64)
+			fakeReuseDecider := &fakebftdecider.FakeDecider{}
+			cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
 
-		input := bftinput.Input{
-			CloudConfig: bftinput.CloudConfig{
-				AvailabilityZones: []bftinput.AvailabilityZone{
-					{
-						Name:            "z1",
-						CloudProperties: map[string]string{},
-					},
-				},
-			},
-		}
-		result := cloudProperties.Apply(input, bftinput.Input{})
-
-		Expect(result).To(Equal(bftinput.Input{
-			CloudConfig: bftinput.CloudConfig{
-				AvailabilityZones: []bftinput.AvailabilityZone{
-					{
-						Name: "z1",
-						CloudProperties: map[string]string{
-							"steve": "alvin",
-							"jack":  "bob",
+			input := bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{
+							Name:            "z1",
+							CloudProperties: map[string]string{},
 						},
 					},
 				},
-			},
-		}))
+			}
+			result := cloudProperties.Apply(input, bftinput.Input{})
+
+			Expect(result).To(Equal(bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: []bftinput.AvailabilityZone{
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"steve": "alvin",
+								"jack":  "bob",
+							},
+						},
+					},
+				},
+			}))
+		})
+
+		It("fuzz VM types", func() {
+			rand.Seed(64)
+			fakeReuseDecider := &fakebftdecider.FakeDecider{}
+			cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
+
+			input := bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
+						{
+							Name:            "vm1",
+							CloudProperties: map[string]string{},
+						},
+					},
+				},
+			}
+			result := cloudProperties.Apply(input, bftinput.Input{})
+
+			Expect(result).To(Equal(bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					VmTypes: []bftinput.VmTypeConfig{
+						{
+							Name: "vm1",
+							CloudProperties: map[string]string{
+								"steve": "alvin",
+								"jack":  "bob",
+							},
+						},
+					},
+				},
+			}))
+		})
 	})
 
 	It("reuses previous cloud properties", func() {

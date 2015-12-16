@@ -29,7 +29,8 @@ compilation:
 
 vm_types:{{ range .CloudConfig.VmTypes }}
 - name: {{ .Name }}
-  cloud_properties: {}{{ end }}{{ end }}{{ if .CloudConfig.ResourcePools }}
+  cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
+    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.ResourcePools }}
 
 resource_pools:{{ range .CloudConfig.ResourcePools }}
 - name: {{ .Name }}

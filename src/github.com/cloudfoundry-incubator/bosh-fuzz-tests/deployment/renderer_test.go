@@ -93,7 +93,13 @@ var _ = Describe("Manifest/Renderer", func() {
 					},
 				},
 				VmTypes: []bftinput.VmTypeConfig{
-					{Name: "default"},
+					{
+						Name: "default",
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
+					},
 				},
 				Networks: []bftinput.NetworkConfig{
 					{
@@ -247,7 +253,9 @@ compilation:
 
 vm_types:
 - name: default
-  cloud_properties: {}
+  cloud_properties:
+    baz: qux
+    foo: bar
 
 disk_pools:
 - name: fast-disks
