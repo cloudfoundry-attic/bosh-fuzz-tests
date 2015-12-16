@@ -67,9 +67,10 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 				input = g.fuzzInput(input, previousInput)
 			} else {
 				migratingInput := g.generateInputWithJobNames(migratingJobNames)
+				migratingInput = g.fuzzInput(migratingInput, previousInput)
+
 				g.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
 
-				migratingInput = g.fuzzInput(migratingInput, previousInput)
 				inputs = append(inputs, migratingInput)
 
 				input = g.fuzzInput(input, migratingInput)
