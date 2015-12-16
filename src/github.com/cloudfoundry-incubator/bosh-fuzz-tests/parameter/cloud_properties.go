@@ -27,30 +27,26 @@ func NewCloudProperties(
 }
 
 func (c *cloudProperties) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
-	for i, az := range input.CloudConfig.AvailabilityZones {
-		foundPrevProperties, prevProperties := c.FindCloudPropertiesByAzName(previousInput.CloudConfig.AvailabilityZones, az.Name)
-		if c.reuseDecider.IsYes() && foundPrevProperties {
-			input.CloudConfig.AvailabilityZones[i].CloudProperties = prevProperties
-		} else {
-			input.CloudConfig.AvailabilityZones[i].CloudProperties = map[string]string{}
-			currentNumOfProperties := c.numOfProperties[rand.Intn(len(c.numOfProperties))]
-			for j := 0; j < currentNumOfProperties; j++ {
-				key := c.nameGenerator.Generate(7)
-				value := c.nameGenerator.Generate(7)
-				input.CloudConfig.AvailabilityZones[i].CloudProperties[key] = value
-			}
-		}
+	for i, subject := range input.CloudConfig.AvailabilityZones {
+		found, prevSubject := subject.FindIn(previousInput.CloudConfig.AvailabilityZones)
+		input.CloudConfig.AvailabilityZones[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
 	return input
 }
 
-func (c *cloudProperties) FindCloudPropertiesByAzName(previousAzs []bftinput.AvailabilityZone, azName string) (bool, map[string]string) {
-	for _, prevAz := range previousAzs {
-		if prevAz.Name == azName {
-			return true, prevAz.CloudProperties
-		}
+func (c *cloudProperties) FuzzCloudProperties(foundPrevProperties bool, prevProperties map[string]string) map[string]string {
+	if c.reuseDecider.IsYes() && foundPrevProperties {
+		return prevProperties
 	}
 
-	return false, map[string]string{}
+	properties := map[string]string{}
+	currentNumOfProperties := c.numOfProperties[rand.Intn(len(c.numOfProperties))]
+	for j := 0; j < currentNumOfProperties; j++ {
+		key := c.nameGenerator.Generate(7)
+		value := c.nameGenerator.Generate(7)
+		properties[key] = value
+	}
+
+	return properties
 }

@@ -112,6 +112,15 @@ func (a AvailabilityZone) IsEqual(other AvailabilityZone) bool {
 	return reflect.DeepEqual(a, other)
 }
 
+func (a AvailabilityZone) FindIn(azs []AvailabilityZone) (bool, AvailabilityZone) {
+	for _, az := range azs {
+		if az.Name == a.Name {
+			return true, az
+		}
+	}
+	return false, AvailabilityZone{}
+}
+
 type VmTypeConfig struct {
 	Name            string
 	CloudProperties map[string]string
