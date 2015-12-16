@@ -95,12 +95,13 @@ type CloudConfig struct {
 }
 
 type DiskConfig struct {
-	Name string
-	Size int
+	Name            string
+	Size            int
+	CloudProperties map[string]string
 }
 
 func (d DiskConfig) IsEqual(other DiskConfig) bool {
-	return d == other
+	return reflect.DeepEqual(d, other)
 }
 
 type AvailabilityZone struct {

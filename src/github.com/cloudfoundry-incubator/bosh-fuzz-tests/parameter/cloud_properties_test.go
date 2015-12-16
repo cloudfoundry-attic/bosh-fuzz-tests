@@ -90,6 +90,38 @@ var _ = Describe("CloudProperties", func() {
 				},
 			}))
 		})
+
+		It("fuzz Disk Pools", func() {
+			rand.Seed(64)
+			fakeReuseDecider := &fakebftdecider.FakeDecider{}
+			cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
+
+			input := bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					PersistentDiskPools: []bftinput.DiskConfig{
+						{
+							Name:            "z1",
+							CloudProperties: map[string]string{},
+						},
+					},
+				},
+			}
+			result := cloudProperties.Apply(input, bftinput.Input{})
+
+			Expect(result).To(Equal(bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					PersistentDiskPools: []bftinput.DiskConfig{
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"steve": "alvin",
+								"jack":  "bob",
+							},
+						},
+					},
+				},
+			}))
+		})
 	})
 
 	It("reuses previous cloud properties", func() {

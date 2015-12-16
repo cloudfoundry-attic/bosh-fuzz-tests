@@ -118,6 +118,10 @@ var _ = Describe("InputGenerator", func() {
 						{
 							Name: "fake-persistent-disk",
 							Size: 1,
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
 						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
@@ -181,7 +185,14 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 					PersistentDiskPools: []bftinput.DiskConfig{
-						{Name: "fake-persistent-disk", Size: 1},
+						{
+							Name: "fake-persistent-disk",
+							Size: 1,
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					Networks: []bftinput.NetworkConfig{
 						{Name: "foo-network"},
@@ -246,6 +257,10 @@ var _ = Describe("InputGenerator", func() {
 						{
 							Name: "fake-persistent-disk",
 							Size: 1,
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
 						},
 					},
 					Networks: []bftinput.NetworkConfig{
@@ -304,6 +319,10 @@ var _ = Describe("InputGenerator", func() {
 						{
 							Name: "fake-persistent-disk",
 							Size: 1,
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
 						},
 					},
 					Networks: []bftinput.NetworkConfig{

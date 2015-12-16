@@ -90,6 +90,10 @@ var _ = Describe("Manifest/Renderer", func() {
 					{
 						Name: "fast-disks",
 						Size: 200,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				VmTypes: []bftinput.VmTypeConfig{
@@ -260,7 +264,9 @@ vm_types:
 disk_pools:
 - name: fast-disks
   disk_size: 200
-  cloud_properties: {}
+  cloud_properties:
+    baz: qux
+    foo: bar
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)

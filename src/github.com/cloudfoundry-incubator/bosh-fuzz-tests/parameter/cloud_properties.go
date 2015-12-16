@@ -37,6 +37,11 @@ func (c *cloudProperties) Apply(input bftinput.Input, previousInput bftinput.Inp
 		input.CloudConfig.VmTypes[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
+	for i, subject := range input.CloudConfig.PersistentDiskPools {
+		prevSubject, found := previousInput.FindDiskPoolByName(subject.Name)
+		input.CloudConfig.PersistentDiskPools[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
+	}
+
 	return input
 }
 
