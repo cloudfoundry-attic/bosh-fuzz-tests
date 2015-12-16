@@ -44,7 +44,6 @@ func (n *assigner) Assign(input bftinput.Input, previousInput bftinput.Input) bf
 	// 4. Aggregate instances to compute static IPs (network with static IPs) (job with static IP)
 
 	n.ipPoolProvider.Reset()
-	n.logger.Debug("networksAssigner", "got input %#v", input)
 
 	ipRangeToStaticIps := NewIpRangeToStaticIps(previousInput)
 
@@ -94,7 +93,7 @@ func (n *assigner) Assign(input bftinput.Input, previousInput bftinput.Input) bf
 	}
 
 	allNetworks := append(networkPoolWithAzs, networkPoolWithoutAzs...)
-	n.assignStaticIps(allNetworks, input.Jobs, ipRangeToStaticIps)
+	n.assignStaticIps(allNetworks, input.Jobs, ipRangeToStaticIps, previousInput)
 
 	nonVipNetworks := []bftinput.NetworkConfig{}
 	input.CloudConfig.Networks = []bftinput.NetworkConfig{}
@@ -222,7 +221,7 @@ func (n *assigner) randomCombination(items []string) []string {
 	return combination
 }
 
-func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bftinput.Job, ipRangeToStaticIps IpRangeToStaticIps) {
+func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bftinput.Job, ipRangeToStaticIps IpRangeToStaticIps, previousInput bftinput.Input) {
 	jobsOnNetworks := n.aggregateNetworkJobs(jobs)
 	vipIpPool := n.ipPoolProvider.NewIpPool(254)
 	ipRangeToStaticIps.ReserveStaticIpsInPool(vipIpPool)
@@ -234,7 +233,6 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 			for s, _ := range network.Subnets {
 				ipPool := n.ipPoolProvider.NewIpPool(jobsOnNetwork.TotalInstances)
 				ipRangeToStaticIps.ReserveStaticIpsInPool(ipPool)
-				n.logger.Debug("networkAssigner", "ipRangeToStaticIps %#v", ipRangeToStaticIps)
 				networks[k].Subnets[s].IpPool = ipPool
 			}
 
@@ -249,12 +247,19 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 					if !hasNetworkWithStaticIps && n.decider.IsYes() { // use static IPs
 						hasNetworkWithStaticIps = true
 
+						ipsToReuseFromPreviousDeploy := n.getJobStaticIpsToReuse(previousInput, job.Name, jobNetwork.Name)
+						n.logger.Debug("networkAssigner", "Reusing IPs from previous deploy %#v for job %s", ipsToReuseFromPreviousDeploy, job.Name)
+
 						for ji := 0; ji < job.Instances; ji++ {
 							subnetIpPool, found := n.findIpPoolWithJobAZ(networks[k].Subnets, job.AvailabilityZones)
-							n.logger.Debug("networkAssigner", "For job %s using subnet pool %#v", job.Name, subnetIpPool)
 							if found {
-								staticIp, _ := subnetIpPool.NextStaticIp()
-								n.logger.Debug("networkAssigner", "For job %s got static ip %s", job.Name, staticIp)
+								var staticIp string
+								if len(ipsToReuseFromPreviousDeploy) > 0 {
+									staticIp, ipsToReuseFromPreviousDeploy = ipsToReuseFromPreviousDeploy[0], ipsToReuseFromPreviousDeploy[1:]
+								} else {
+									staticIp, _ = subnetIpPool.NextStaticIp()
+								}
+
 								if jobNetwork.Name == network.Name {
 									job.Networks[j].StaticIps = append(job.Networks[j].StaticIps, staticIp)
 								}
@@ -276,6 +281,38 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 			}
 		}
 	}
+}
+
+func (n *assigner) getJobStaticIpsToReuse(previousInput bftinput.Input, jobName string, networkName string) []string {
+	staticIps := []string{}
+
+	previousJob, found := previousInput.FindJobByName(jobName)
+	if !found {
+		return staticIps
+	}
+
+	for _, jobNetwork := range previousJob.Networks {
+		if jobNetwork.Name == networkName {
+			for _, ip := range jobNetwork.StaticIps {
+				staticIps = append(staticIps, ip)
+			}
+		}
+	}
+
+	if len(staticIps) == 0 {
+		return staticIps
+	}
+
+	shuffledStaticIPsIdsx := rand.Perm(len(staticIps))
+	ipsToReuse := rand.Intn(len(staticIps))
+
+	shuffledStaticIps := []string{}
+
+	for i := 0; i < ipsToReuse; i++ {
+		shuffledStaticIps = append(shuffledStaticIps, staticIps[shuffledStaticIPsIdsx[i]])
+	}
+
+	return shuffledStaticIps
 }
 
 func (n *assigner) findIpPoolWithJobAZ(subnets []bftinput.SubnetConfig, azs []string) (*bftinput.IpPool, bool) {
