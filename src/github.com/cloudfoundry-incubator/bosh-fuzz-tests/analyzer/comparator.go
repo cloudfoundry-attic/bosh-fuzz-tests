@@ -6,5 +6,5 @@ import (
 )
 
 type Comparator interface {
-	Compare(previousInput bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation
+	Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation
 }

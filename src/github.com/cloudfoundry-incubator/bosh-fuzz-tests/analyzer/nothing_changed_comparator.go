@@ -13,10 +13,10 @@ func NewNothingChangedComparator() Comparator {
 	return &nothingChangedComparator{}
 }
 
-func (n *nothingChangedComparator) Compare(previousInput bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
+func (n *nothingChangedComparator) Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
-		if n.nothingChanged(job, currentInput, previousInput) {
+		if n.nothingChanged(job, currentInput, previousInputs) {
 			expectations = append(expectations, bftexpectation.NewDebugLog(fmt.Sprintf("No instances to update for '%s'", job.Name)))
 		}
 	}
@@ -24,10 +24,27 @@ func (n *nothingChangedComparator) Compare(previousInput bftinput.Input, current
 	return expectations
 }
 
-func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput bftinput.Input, previousInput bftinput.Input) bool {
-	prevJob, found := previousInput.FindJobByName(job.Name)
+func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput bftinput.Input, previousInputs []bftinput.Input) bool {
+	mostRecentInput := previousInputs[len(previousInputs)-1]
+
+	prevJob, found := mostRecentInput.FindJobByName(job.Name)
 	if !found {
 		return false
+	}
+
+	if len(previousInputs) > 1 {
+		inputBeforePrevious := previousInputs[len(previousInputs)-2]
+		jobBeforePrevious, found := inputBeforePrevious.FindJobByName(job.Name)
+		if found && jobBeforePrevious.HasPersistentDisk() && !prevJob.HasPersistentDisk() {
+			return false
+		}
+
+		for _, migratedFromConfig := range prevJob.MigratedFrom {
+			jobBeforePrevious, found := inputBeforePrevious.FindJobByName(migratedFromConfig.Name)
+			if found && jobBeforePrevious.HasPersistentDisk() && !prevJob.HasPersistentDisk() {
+				return false
+			}
+		}
 	}
 
 	if !prevJob.IsEqual(job) {
@@ -36,7 +53,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	for _, azName := range job.AvailabilityZones {
 		currentAz, _ := currentInput.FindAzByName(azName)
-		prevAz, _ := previousInput.FindAzByName(azName)
+		prevAz, _ := mostRecentInput.FindAzByName(azName)
 		if !currentAz.IsEqual(prevAz) {
 			return false
 		}
@@ -44,7 +61,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	if job.PersistentDiskPool != "" {
 		currentPersistentDiskPool, _ := currentInput.FindDiskPoolByName(job.PersistentDiskPool)
-		prevPersistentDiskPool, _ := previousInput.FindDiskPoolByName(job.PersistentDiskPool)
+		prevPersistentDiskPool, _ := mostRecentInput.FindDiskPoolByName(job.PersistentDiskPool)
 		if !currentPersistentDiskPool.IsEqual(prevPersistentDiskPool) {
 			return false
 		}
@@ -52,7 +69,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	if job.PersistentDiskType != "" {
 		currentPersistentDiskType, _ := currentInput.FindDiskTypeByName(job.PersistentDiskType)
-		prevPersistentDiskType, _ := previousInput.FindDiskTypeByName(job.PersistentDiskType)
+		prevPersistentDiskType, _ := mostRecentInput.FindDiskTypeByName(job.PersistentDiskType)
 		if !currentPersistentDiskType.IsEqual(prevPersistentDiskType) {
 			return false
 		}
@@ -60,7 +77,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	if job.ResourcePool != "" {
 		currentResourcePool, _ := currentInput.FindResourcePoolByName(job.ResourcePool)
-		prevResourcePool, _ := previousInput.FindResourcePoolByName(job.ResourcePool)
+		prevResourcePool, _ := mostRecentInput.FindResourcePoolByName(job.ResourcePool)
 		if !currentResourcePool.IsEqual(prevResourcePool) {
 			return false
 		}
@@ -68,7 +85,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	if job.VmType != "" {
 		currentVmType, _ := currentInput.FindVmTypeByName(job.VmType)
-		prevVmType, _ := previousInput.FindVmTypeByName(job.VmType)
+		prevVmType, _ := mostRecentInput.FindVmTypeByName(job.VmType)
 		if !currentVmType.IsEqual(prevVmType) {
 			return false
 		}
@@ -76,7 +93,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	if job.Stemcell != "" {
 		currentStemcell, _ := currentInput.FindStemcellByName(job.Stemcell)
-		prevStemcell, _ := previousInput.FindStemcellByName(job.Stemcell)
+		prevStemcell, _ := mostRecentInput.FindStemcellByName(job.Stemcell)
 		if !currentStemcell.IsEqual(prevStemcell) {
 			return false
 		}
@@ -84,7 +101,7 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 
 	for _, jobNetwork := range job.Networks {
 		currentNetwork, _ := currentInput.FindNetworkByName(jobNetwork.Name)
-		prevNetwork, _ := previousInput.FindNetworkByName(jobNetwork.Name)
+		prevNetwork, _ := mostRecentInput.FindNetworkByName(jobNetwork.Name)
 		if !currentNetwork.IsEqual(prevNetwork) {
 			return false
 		}

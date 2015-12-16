@@ -16,10 +16,11 @@ func NewStemcellComparator(logger boshlog.Logger) Comparator {
 	}
 }
 
-func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
+func (s *stemcellComparator) Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
+	mostRecentInput := previousInputs[len(previousInputs)-1]
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
-		if s.jobStemcellChanged(job, currentInput, previousInput) {
+		if s.jobStemcellChanged(job, currentInput, mostRecentInput) {
 			expectations = append(expectations, bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", job.Name))
 		}
 	}
@@ -27,8 +28,8 @@ func (s *stemcellComparator) Compare(previousInput bftinput.Input, currentInput 
 	return expectations
 }
 
-func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput bftinput.Input, previousInput bftinput.Input) bool {
-	prevJob, found := previousInput.FindJobByName(job.Name)
+func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput bftinput.Input, mostRecentInput bftinput.Input) bool {
+	prevJob, found := mostRecentInput.FindJobByName(job.Name)
 	if !found {
 		return false
 	}
@@ -41,15 +42,15 @@ func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput b
 	}
 
 	if prevJob.Stemcell != "" {
-		prevStemcell := s.findStemcellByAlias(prevJob.Stemcell, previousInput)
+		prevStemcell := s.findStemcellByAlias(prevJob.Stemcell, mostRecentInput)
 		if prevStemcell.Version != currentStemcell.Version {
-			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", previousInput, currentInput)
+			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", mostRecentInput, currentInput)
 			return true
 		}
 	} else {
-		prevStemcell := s.findResourcePoolStemcell(prevJob.ResourcePool, previousInput)
+		prevStemcell := s.findResourcePoolStemcell(prevJob.ResourcePool, mostRecentInput)
 		if prevStemcell.Version != currentStemcell.Version {
-			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", previousInput, currentInput)
+			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", mostRecentInput, currentInput)
 			return true
 		}
 	}

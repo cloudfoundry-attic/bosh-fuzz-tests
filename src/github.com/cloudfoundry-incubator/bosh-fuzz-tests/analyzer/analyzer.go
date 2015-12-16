@@ -33,8 +33,8 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 		expectations := []bftexpectation.Expectation{}
 
 		if i != 0 {
-			expectations = append(expectations, a.stemcellComparator.Compare(inputs[i-1], inputs[i])...)
-			expectations = append(expectations, a.nothingChangedComparator.Compare(inputs[i-1], inputs[i])...)
+			expectations = append(expectations, a.stemcellComparator.Compare(inputs[:i], inputs[i])...)
+			expectations = append(expectations, a.nothingChangedComparator.Compare(inputs[:i], inputs[i])...)
 		}
 
 		cases = append(cases, Case{

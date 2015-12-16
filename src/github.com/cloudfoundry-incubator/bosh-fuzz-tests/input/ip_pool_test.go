@@ -9,7 +9,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("IpPool", func() {
+var _ = Describe("IpPool", func() {
 	var (
 		ipPool *IpPool
 	)

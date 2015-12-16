@@ -13,7 +13,7 @@ import (
 var _ = Describe("NothingChangedComparator", func() {
 	var (
 		nothingChangedComparator Comparator
-		previousInput            bftinput.Input
+		previousInputs           []bftinput.Input
 		currentInput             bftinput.Input
 	)
 
@@ -23,13 +23,15 @@ var _ = Describe("NothingChangedComparator", func() {
 
 	Context("when there are same jobs", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name: "foo-job",
-						Networks: []bftinput.JobNetworkConfig{
-							{
-								Name: "network-1",
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name: "foo-job",
+							Networks: []bftinput.JobNetworkConfig{
+								{
+									Name: "network-1",
+								},
 							},
 						},
 					},
@@ -51,7 +53,7 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns debug log expectation", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			expectedDebugLogExpectation := bftexpectation.NewDebugLog("No instances to update for 'foo-job'")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
@@ -59,13 +61,15 @@ var _ = Describe("NothingChangedComparator", func() {
 
 	Context("when there are jobs that have different properties", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name: "foo-job",
-						Networks: []bftinput.JobNetworkConfig{
-							{
-								Name: "network-1",
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name: "foo-job",
+							Networks: []bftinput.JobNetworkConfig{
+								{
+									Name: "network-1",
+								},
 							},
 						},
 					},
@@ -87,24 +91,26 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when az properties was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name:              "foo-job",
-						AvailabilityZones: []string{"z1", "z2"},
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:              "foo-job",
+							AvailabilityZones: []string{"z1", "z2"},
+						},
 					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
-						{Name: "z2"},
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: []bftinput.AvailabilityZone{
+							{Name: "z1"},
+							{Name: "z2"},
+						},
 					},
 				},
 			}
@@ -131,23 +137,25 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when PersistentDiskPool properties was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name:               "foo-job",
-						PersistentDiskPool: "foo-disk-pool",
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:               "foo-job",
+							PersistentDiskPool: "foo-disk-pool",
+						},
 					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					PersistentDiskPools: []bftinput.DiskConfig{
-						{Name: "foo-disk-pool", Size: 200},
+					CloudConfig: bftinput.CloudConfig{
+						PersistentDiskPools: []bftinput.DiskConfig{
+							{Name: "foo-disk-pool", Size: 200},
+						},
 					},
 				},
 			}
@@ -168,23 +176,25 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when PersistentDiskType properties was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name:               "foo-job",
-						PersistentDiskType: "foo-disk-type",
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:               "foo-job",
+							PersistentDiskType: "foo-disk-type",
+						},
 					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					PersistentDiskTypes: []bftinput.DiskConfig{
-						{Name: "foo-disk-type", Size: 200},
+					CloudConfig: bftinput.CloudConfig{
+						PersistentDiskTypes: []bftinput.DiskConfig{
+							{Name: "foo-disk-type", Size: 200},
+						},
 					},
 				},
 			}
@@ -205,32 +215,34 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when Networks properties was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name: "foo-job",
-						Networks: []bftinput.JobNetworkConfig{
-							{
-								Name: "foo-network",
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name: "foo-job",
+							Networks: []bftinput.JobNetworkConfig{
+								{
+									Name: "foo-network",
+								},
 							},
 						},
 					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					Networks: []bftinput.NetworkConfig{
-						{
-							Name: "foo-network",
-							Subnets: []bftinput.SubnetConfig{
-								{
-									IpPool: &bftinput.IpPool{
-										IpRange: "192.168.0.0/24",
+					CloudConfig: bftinput.CloudConfig{
+						Networks: []bftinput.NetworkConfig{
+							{
+								Name: "foo-network",
+								Subnets: []bftinput.SubnetConfig{
+									{
+										IpPool: &bftinput.IpPool{
+											IpRange: "192.168.0.0/24",
+										},
 									},
 								},
 							},
@@ -268,26 +280,28 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when ResourcePool property was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name:         "foo-job",
-						ResourcePool: "foo-resource-pool",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
 						{
-							Name: "foo-resource-pool",
-							Stemcell: bftinput.StemcellConfig{
-								Name: "foo-name-one",
+							Name:         "foo-job",
+							ResourcePool: "foo-resource-pool",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						ResourcePools: []bftinput.ResourcePoolConfig{
+							{
+								Name: "foo-resource-pool",
+								Stemcell: bftinput.StemcellConfig{
+									Name: "foo-name-one",
+								},
 							},
 						},
 					},
@@ -315,26 +329,28 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when VmType property was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name:   "foo-job",
-						VmType: "foo-vm-type",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					VmTypes: []bftinput.VmTypeConfig{
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
 						{
-							Name: "foo-vm-type",
-							CloudProperties: map[string]string{
-								"fake-key": "fake-property",
+							Name:   "foo-job",
+							VmType: "foo-vm-type",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						VmTypes: []bftinput.VmTypeConfig{
+							{
+								Name: "foo-vm-type",
+								CloudProperties: map[string]string{
+									"fake-key": "fake-property",
+								},
 							},
 						},
 					},
@@ -362,24 +378,26 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
 
 	Context("when Stemcell property was changed", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Jobs: []bftinput.Job{
-					{
-						Name:     "foo-job",
-						Stemcell: "foo-stemcell",
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:     "foo-job",
+							Stemcell: "foo-stemcell",
+						},
 					},
-				},
-				Stemcells: []bftinput.StemcellConfig{
-					{
-						Name:    "foo-stemcell",
-						Version: "1",
+					Stemcells: []bftinput.StemcellConfig{
+						{
+							Name:    "foo-stemcell",
+							Version: "1",
+						},
 					},
 				},
 			}
@@ -401,7 +419,103 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 
 		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInput, currentInput)
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
+
+	Context("when persistent disk was removed in previous input", func() {
+		BeforeEach(func() {
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:               "foo-job",
+							PersistentDiskPool: "foo-disk-pool",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						PersistentDiskPools: []bftinput.DiskConfig{
+							{
+								Name: "foo-disk-pool",
+								Size: 100,
+							},
+						},
+					},
+				},
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name: "foo-job",
+						},
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name: "foo-job",
+					},
+				},
+			}
+		})
+
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
+
+	Context("when persistent disk was removed and job was migrated in previous input", func() {
+		BeforeEach(func() {
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:               "bar-job",
+							PersistentDiskPool: "foo-disk-pool",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						PersistentDiskPools: []bftinput.DiskConfig{
+							{
+								Name: "foo-disk-pool",
+								Size: 100,
+							},
+						},
+					},
+				},
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name: "foo-job",
+							MigratedFrom: []bftinput.MigratedFromConfig{
+								{
+									Name: "bar-job",
+								},
+							},
+						},
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name: "foo-job",
+						MigratedFrom: []bftinput.MigratedFromConfig{
+							{
+								Name: "bar-job",
+							},
+						},
+					},
+				},
+			}
+		})
+
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})

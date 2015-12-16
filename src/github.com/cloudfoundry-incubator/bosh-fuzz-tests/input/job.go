@@ -21,6 +21,10 @@ func (j Job) IsEqual(other Job) bool {
 	return reflect.DeepEqual(j, other)
 }
 
+func (j Job) HasPersistentDisk() bool {
+	return j.PersistentDiskSize != 0 || j.PersistentDiskPool != "" || j.PersistentDiskType != ""
+}
+
 type Template struct {
 	Name string
 }

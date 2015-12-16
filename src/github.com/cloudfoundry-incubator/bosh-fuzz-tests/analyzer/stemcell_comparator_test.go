@@ -14,7 +14,7 @@ import (
 var _ = Describe("StemcellComparator", func() {
 	var (
 		stemcellComparator Comparator
-		previousInput      bftinput.Input
+		previousInputs     []bftinput.Input
 		currentInput       bftinput.Input
 	)
 
@@ -25,17 +25,19 @@ var _ = Describe("StemcellComparator", func() {
 
 	Context("when there are same jobs that have different stemcell versions using vm types", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Stemcells: []bftinput.StemcellConfig{
-					{
-						Alias:   "fake-stemcell",
-						Version: "1",
+			previousInputs = []bftinput.Input{
+				{
+					Stemcells: []bftinput.StemcellConfig{
+						{
+							Alias:   "fake-stemcell",
+							Version: "1",
+						},
 					},
-				},
-				Jobs: []bftinput.Job{
-					{
-						Name:     "foo-job",
-						Stemcell: "fake-stemcell",
+					Jobs: []bftinput.Job{
+						{
+							Name:     "foo-job",
+							Stemcell: "fake-stemcell",
+						},
 					},
 				},
 			}
@@ -57,7 +59,7 @@ var _ = Describe("StemcellComparator", func() {
 		})
 
 		It("returns debug log expectation", func() {
-			expectations := stemcellComparator.Compare(previousInput, currentInput)
+			expectations := stemcellComparator.Compare(previousInputs, currentInput)
 			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-job")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
@@ -65,33 +67,35 @@ var _ = Describe("StemcellComparator", func() {
 
 	Context("when there are same jobs that have different stemcell versions using resource pools", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
-						{
-							Name: "fake-resource-pool",
-							Stemcell: bftinput.StemcellConfig{
-								Name:    "fake-stemcell",
-								Version: "1",
+			previousInputs = []bftinput.Input{
+				{
+					CloudConfig: bftinput.CloudConfig{
+						ResourcePools: []bftinput.ResourcePoolConfig{
+							{
+								Name: "fake-resource-pool",
+								Stemcell: bftinput.StemcellConfig{
+									Name:    "fake-stemcell",
+									Version: "1",
+								},
 							},
-						},
-						{
-							Name: "fake-same-pool",
-							Stemcell: bftinput.StemcellConfig{
-								Name:    "fake-stemcell",
-								Version: "1",
+							{
+								Name: "fake-same-pool",
+								Stemcell: bftinput.StemcellConfig{
+									Name:    "fake-stemcell",
+									Version: "1",
+								},
 							},
 						},
 					},
-				},
-				Jobs: []bftinput.Job{
-					{
-						Name:         "foo-job",
-						ResourcePool: "fake-resource-pool",
-					},
-					{
-						Name:         "another-job",
-						ResourcePool: "fake-same-pool",
+					Jobs: []bftinput.Job{
+						{
+							Name:         "foo-job",
+							ResourcePool: "fake-resource-pool",
+						},
+						{
+							Name:         "another-job",
+							ResourcePool: "fake-same-pool",
+						},
 					},
 				},
 			}
@@ -129,7 +133,7 @@ var _ = Describe("StemcellComparator", func() {
 		})
 
 		It("returns debug log expectation", func() {
-			expectations := stemcellComparator.Compare(previousInput, currentInput)
+			expectations := stemcellComparator.Compare(previousInputs, currentInput)
 			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-job")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
@@ -137,17 +141,19 @@ var _ = Describe("StemcellComparator", func() {
 
 	Context("when switching from vm type (stemcell on Job) to resource pool", func() {
 		BeforeEach(func() {
-			previousInput = bftinput.Input{
-				Stemcells: []bftinput.StemcellConfig{
-					{
-						Alias:   "fake-stemcell",
-						Version: "1",
+			previousInputs = []bftinput.Input{
+				{
+					Stemcells: []bftinput.StemcellConfig{
+						{
+							Alias:   "fake-stemcell",
+							Version: "1",
+						},
 					},
-				},
-				Jobs: []bftinput.Job{
-					{
-						Name:     "foo-job",
-						Stemcell: "fake-stemcell",
+					Jobs: []bftinput.Job{
+						{
+							Name:     "foo-job",
+							Stemcell: "fake-stemcell",
+						},
 					},
 				},
 			}
@@ -174,7 +180,7 @@ var _ = Describe("StemcellComparator", func() {
 		})
 
 		It("returns debug log expectation", func() {
-			expectations := stemcellComparator.Compare(previousInput, currentInput)
+			expectations := stemcellComparator.Compare(previousInputs, currentInput)
 			Expect(expectations).To(BeEmpty())
 		})
 	})
