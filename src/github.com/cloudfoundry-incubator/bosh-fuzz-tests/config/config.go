@@ -31,6 +31,7 @@ type Parameters struct {
 	Canaries                   []int      `json:"canaries"`
 	MaxInFlight                []int      `json:"max_in_flight"`
 	Serial                     []string   `json:"serial"`
+	NumOfCloudProperties       []int      `json:"num_of_cloud_properties"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

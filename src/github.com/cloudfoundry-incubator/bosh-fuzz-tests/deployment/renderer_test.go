@@ -75,7 +75,13 @@ var _ = Describe("Manifest/Renderer", func() {
 			},
 			CloudConfig: bftinput.CloudConfig{
 				AvailabilityZones: []bftinput.AvailabilityZone{
-					{Name: "z1"},
+					{
+						Name: "z1",
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
+					},
 					{Name: "z2"},
 					{Name: "z3"},
 					{Name: "z4"},
@@ -198,7 +204,9 @@ jobs:
 		expectedCloudConfigContents := `---
 azs:
 - name: z1
-  cloud_properties: {}
+  cloud_properties:
+    baz: qux
+    foo: bar
 - name: z2
   cloud_properties: {}
 - name: z3

@@ -43,6 +43,7 @@ var _ = Describe("InputGenerator", func() {
 			Canaries:                   []int{5},
 			MaxInFlight:                []int{3},
 			Serial:                     []string{"true"},
+			NumOfCloudProperties:       []int{2},
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
@@ -52,18 +53,12 @@ var _ = Describe("InputGenerator", func() {
 
 	It("generates requested number of inputs", func() {
 		parameters = bftconfig.Parameters{
-			NameLength:                 []int{5},
-			Instances:                  []int{2},
-			AvailabilityZones:          [][]string{[]string{"z1"}, []string{"z1", "z2"}},
-			PersistentDiskDefinition:   []string{"disk_pool"},
-			PersistentDiskSize:         []int{100},
-			NumberOfJobs:               []int{2},
-			MigratedFromCount:          []int{0},
-			VmTypeDefinition:           []string{"vm_type"},
-			StemcellDefinition:         []string{"os"},
-			Templates:                  [][]string{[]string{"simple"}},
-			NumberOfCompilationWorkers: []int{3},
+			NameLength:        []int{5},
+			Instances:         []int{2},
+			NumberOfJobs:      []int{2},
+			MigratedFromCount: []int{0},
 		}
+
 		rand.Seed(64)
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, decider, logger)
 
@@ -110,7 +105,13 @@ var _ = Describe("InputGenerator", func() {
 						{Name: "foo-network"},
 					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{
@@ -164,7 +165,13 @@ var _ = Describe("InputGenerator", func() {
 				CloudConfig: bftinput.CloudConfig{
 					NumberOfCompilationWorkers: 3,
 					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{Name: "fake-persistent-disk", Size: 1},
@@ -214,7 +221,13 @@ var _ = Describe("InputGenerator", func() {
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{
@@ -260,7 +273,13 @@ var _ = Describe("InputGenerator", func() {
 				},
 				CloudConfig: bftinput.CloudConfig{
 					AvailabilityZones: []bftinput.AvailabilityZone{
-						{Name: "z1"},
+						{
+							Name: "z1",
+							CloudProperties: map[string]string{
+								"foo": "bar",
+								"baz": "qux",
+							},
+						},
 					},
 					PersistentDiskPools: []bftinput.DiskConfig{
 						{

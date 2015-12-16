@@ -13,6 +13,7 @@ type FakeParameterProvider struct {
 	Template         *FakeTemplate
 	Compilation      *FakeCompilation
 	Update           *FakeUpdate
+	CloudProperties  *FakeCloudProperties
 }
 
 func NewFakeParameterProvider() *FakeParameterProvider {
@@ -24,6 +25,7 @@ func NewFakeParameterProvider() *FakeParameterProvider {
 		Template:         NewFakeTemplate(),
 		Compilation:      NewFakeCompilation(),
 		Update:           NewFakeUpdate(),
+		CloudProperties:  NewFakeCloudProperties(),
 	}
 }
 
@@ -44,6 +46,8 @@ func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
 		return p.Compilation
 	} else if name == "update" {
 		return p.Update
+	} else if name == "cloud_properties" {
+		return p.CloudProperties
 	}
 
 	return nil

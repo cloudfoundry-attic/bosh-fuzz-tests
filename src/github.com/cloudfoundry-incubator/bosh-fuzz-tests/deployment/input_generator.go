@@ -81,8 +81,6 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 		previousInput = input
 	}
 
-	// g.logger.Debug("input_generator", fmt.Sprintf("Generated inputs: %#v", inputs))
-
 	return inputs, nil
 }
 
@@ -121,6 +119,7 @@ func (g *inputGenerator) fuzzInput(input bftinput.Input, previousInput bftinput.
 	input = g.parameterProvider.Get("template").Apply(input, previousInput)
 	input = g.parameterProvider.Get("compilation").Apply(input, previousInput)
 	input = g.parameterProvider.Get("update").Apply(input, previousInput)
+	input = g.parameterProvider.Get("cloud_properties").Apply(input, previousInput)
 
 	return input
 }

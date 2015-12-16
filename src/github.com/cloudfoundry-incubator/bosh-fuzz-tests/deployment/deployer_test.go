@@ -67,6 +67,7 @@ var _ = Describe("Deployer", func() {
 			Canaries:                   []int{3},
 			MaxInFlight:                []int{3},
 			Serial:                     []string{"true"},
+			NumOfCloudProperties:       []int{2},
 		}
 
 		networks := [][]string{[]string{"manual_with_static", "manual_with_auto"}}

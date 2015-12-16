@@ -58,6 +58,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewCompilation(p.parameters.NumberOfCompilationWorkers)
 	} else if name == "update" {
 		return NewUpdate(p.parameters.Canaries, p.parameters.MaxInFlight, p.parameters.Serial)
+	} else if name == "cloud_properties" {
+		return NewCloudProperties(p.parameters.NumOfCloudProperties, p.nameGenerator, p.reuseDecider)
 	}
 
 	return nil
