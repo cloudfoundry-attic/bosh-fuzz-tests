@@ -47,7 +47,7 @@ var _ = Describe("InputGenerator", func() {
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()
-		fakeParameterProvider = fakebftparam.NewFakeParameterProvider()
+		fakeParameterProvider = fakebftparam.NewFakeParameterProvider("disk_pool")
 		decider = &fakebftdecider.FakeDecider{}
 	})
 
