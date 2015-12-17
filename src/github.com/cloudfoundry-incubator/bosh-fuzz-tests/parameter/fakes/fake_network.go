@@ -14,6 +14,13 @@ func (s *FakeNetwork) Apply(input bftinput.Input, previousInput bftinput.Input) 
 	input.CloudConfig.Networks = []bftinput.NetworkConfig{
 		{
 			Name: "foo-network",
+			Subnets: []bftinput.SubnetConfig{
+				{
+					IpPool: &bftinput.IpPool{
+						IpRange: "10.0.0.0/24",
+					},
+				},
+			},
 		},
 	}
 	for j, _ := range input.Jobs {

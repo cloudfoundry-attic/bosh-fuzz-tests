@@ -124,6 +124,10 @@ var _ = Describe("Manifest/Renderer", func() {
 									},
 								},
 								AvailabilityZones: []string{"z1", "z2", "z3", "z4"},
+								CloudProperties: map[string]string{
+									"foo": "bar",
+									"baz": "qux",
+								},
 							},
 						},
 					},
@@ -234,7 +238,9 @@ networks:
 - name: default
   type: manual
   subnets:
-  - cloud_properties: {}
+  - cloud_properties:
+      baz: qux
+      foo: bar
     dns: ["8.8.8.8"]
     range: 192.168.1.0/24
     gateway: 192.168.1.254

@@ -8,9 +8,12 @@ azs:{{ range .CloudConfig.AvailabilityZones }}
 
 networks:{{ range .CloudConfig.Networks }}
 - name: {{ .Name }}
-  type: {{ .Type }}{{ if .Subnets }}
+  type: {{ .Type }}{{ if .CloudProperties }}
+  cloud_properties:{{ range $key, $value := .CloudProperties }}
+    {{ $key }}: {{ $value }}{{ end }}{{ end }}{{ if .Subnets }}
   subnets:{{ range .Subnets }}
-  - cloud_properties: {}
+  - cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
+      {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}
     dns: ["8.8.8.8"]{{ with .IpPool }}{{ if .IpRange }}
     range: {{ .IpRange }}{{ end }}{{ if .Gateway }}
     gateway: {{ .Gateway }}{{ end }}{{ if .Static }}

@@ -39,5 +39,11 @@ func (s *FakeCloudProperties) Apply(input bftinput.Input, previousInput bftinput
 
 	input.CloudConfig.Compilation.CloudProperties = properties
 
+	for i, network := range input.CloudConfig.Networks {
+		for j, _ := range network.Subnets {
+			input.CloudConfig.Networks[i].Subnets[j].CloudProperties = properties
+		}
+	}
+
 	return input
 }

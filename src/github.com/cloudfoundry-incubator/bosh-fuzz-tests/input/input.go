@@ -73,6 +73,18 @@ func (i Input) FindVmTypeByName(vmTypeName string) (VmTypeConfig, bool) {
 	return VmTypeConfig{}, false
 }
 
+func (i Input) FindSubnetByIpRange(ipRange string) (SubnetConfig, bool) {
+	for _, network := range i.CloudConfig.Networks {
+		for _, subnet := range network.Subnets {
+			if subnet.IpPool != nil && subnet.IpPool.IpRange == ipRange {
+				return subnet, true
+			}
+		}
+	}
+
+	return SubnetConfig{}, false
+}
+
 func (i Input) FindStemcellByName(stemcellName string) (StemcellConfig, bool) {
 	for _, stemcell := range i.Stemcells {
 		if stemcell.Name == stemcellName {
@@ -155,9 +167,10 @@ func (s StemcellConfig) IsEqual(other StemcellConfig) bool {
 }
 
 type NetworkConfig struct {
-	Name    string
-	Type    string
-	Subnets []SubnetConfig
+	Name            string
+	Type            string
+	Subnets         []SubnetConfig
+	CloudProperties map[string]string
 }
 
 func (n NetworkConfig) IsEqual(other NetworkConfig) bool {
@@ -167,4 +180,5 @@ func (n NetworkConfig) IsEqual(other NetworkConfig) bool {
 type SubnetConfig struct {
 	AvailabilityZones []string
 	IpPool            *IpPool
+	CloudProperties   map[string]string
 }

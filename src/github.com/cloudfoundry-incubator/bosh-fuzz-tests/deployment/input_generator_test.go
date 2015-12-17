@@ -103,7 +103,20 @@ var _ = Describe("InputGenerator", func() {
 				},
 				CloudConfig: bftinput.CloudConfig{
 					Networks: []bftinput.NetworkConfig{
-						{Name: "foo-network"},
+						{
+							Name: "foo-network",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: &bftinput.IpPool{
+										IpRange: "10.0.0.0/24",
+									},
+									CloudProperties: map[string]string{
+										"foo": "bar",
+										"baz": "qux",
+									},
+								},
+							},
+						},
 					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{
@@ -207,7 +220,20 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 					Networks: []bftinput.NetworkConfig{
-						{Name: "foo-network"},
+						{
+							Name: "foo-network",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: &bftinput.IpPool{
+										IpRange: "10.0.0.0/24",
+									},
+									CloudProperties: map[string]string{
+										"foo": "bar",
+										"baz": "qux",
+									},
+								},
+							},
+						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{
@@ -266,7 +292,20 @@ var _ = Describe("InputGenerator", func() {
 				},
 				CloudConfig: bftinput.CloudConfig{
 					Networks: []bftinput.NetworkConfig{
-						{Name: "foo-network"},
+						{
+							Name: "foo-network",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: &bftinput.IpPool{
+										IpRange: "10.0.0.0/24",
+									},
+									CloudProperties: map[string]string{
+										"foo": "bar",
+										"baz": "qux",
+									},
+								},
+							},
+						},
 					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{
@@ -351,7 +390,20 @@ var _ = Describe("InputGenerator", func() {
 				},
 				CloudConfig: bftinput.CloudConfig{
 					Networks: []bftinput.NetworkConfig{
-						{Name: "foo-network"},
+						{
+							Name: "foo-network",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: &bftinput.IpPool{
+										IpRange: "10.0.0.0/24",
+									},
+									CloudProperties: map[string]string{
+										"foo": "bar",
+										"baz": "qux",
+									},
+								},
+							},
+						},
 					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{
@@ -450,7 +502,20 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 					Networks: []bftinput.NetworkConfig{
-						{Name: "foo-network"},
+						{
+							Name: "foo-network",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: &bftinput.IpPool{
+										IpRange: "10.0.0.0/24",
+									},
+									CloudProperties: map[string]string{
+										"foo": "bar",
+										"baz": "qux",
+									},
+								},
+							},
+						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{
@@ -518,7 +583,20 @@ var _ = Describe("InputGenerator", func() {
 						},
 					},
 					Networks: []bftinput.NetworkConfig{
-						{Name: "foo-network"},
+						{
+							Name: "foo-network",
+							Subnets: []bftinput.SubnetConfig{
+								{
+									IpPool: &bftinput.IpPool{
+										IpRange: "10.0.0.0/24",
+									},
+									CloudProperties: map[string]string{
+										"foo": "bar",
+										"baz": "qux",
+									},
+								},
+							},
+						},
 					},
 					VmTypes: []bftinput.VmTypeConfig{
 						{
