@@ -3,6 +3,7 @@ package expectation
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
@@ -29,7 +30,8 @@ func (d *existingInstanceDebugLog) Run(debugLog string) error {
 	for _, match := range matches {
 		if len(match) > 1 {
 			instanceName := match[1]
-			expectedRe := regexp.MustCompile(fmt.Sprintf("%s.* %s", d.expectedString, instanceName))
+			instanceNameParts := strings.Split(instanceName, "/")
+			expectedRe := regexp.MustCompile(fmt.Sprintf("%s.* %s\\/.* \\(%s\\)", d.expectedString, instanceNameParts[0], instanceNameParts[1]))
 			expectedMatches := expectedRe.FindAllStringSubmatch(debugLog, -1)
 
 			if len(expectedMatches) == 0 {
