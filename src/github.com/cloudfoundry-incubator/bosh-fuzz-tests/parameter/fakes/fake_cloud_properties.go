@@ -37,5 +37,7 @@ func (s *FakeCloudProperties) Apply(input bftinput.Input, previousInput bftinput
 		input.CloudConfig.ResourcePools[i].CloudProperties = properties
 	}
 
+	input.CloudConfig.Compilation.CloudProperties = properties
+
 	return input
 }

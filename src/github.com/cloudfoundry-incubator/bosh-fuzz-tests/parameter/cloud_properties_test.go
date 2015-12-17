@@ -22,7 +22,7 @@ var _ = Describe("CloudProperties", func() {
 
 	BeforeEach(func() {
 		fakeNameGenerator = fakebftnamegen.FakeNameGenerator{
-			Names: []string{"steve", "alvin", "jack", "bob"},
+			Names: []string{"steve", "alvin", "jack", "bob", "anderson", "robinson", "hook", "molimo"},
 		}
 	})
 
@@ -53,6 +53,12 @@ var _ = Describe("CloudProperties", func() {
 								"steve": "alvin",
 								"jack":  "bob",
 							},
+						},
+					},
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{
+							"anderson": "robinson",
+							"hook":     "molimo",
 						},
 					},
 				},
@@ -87,6 +93,12 @@ var _ = Describe("CloudProperties", func() {
 							},
 						},
 					},
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{
+							"anderson": "robinson",
+							"hook":     "molimo",
+						},
+					},
 				},
 			}))
 		})
@@ -117,6 +129,12 @@ var _ = Describe("CloudProperties", func() {
 								"steve": "alvin",
 								"jack":  "bob",
 							},
+						},
+					},
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{
+							"anderson": "robinson",
+							"hook":     "molimo",
 						},
 					},
 				},
@@ -151,6 +169,12 @@ var _ = Describe("CloudProperties", func() {
 							},
 						},
 					},
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{
+							"anderson": "robinson",
+							"hook":     "molimo",
+						},
+					},
 				},
 			}))
 		})
@@ -181,6 +205,38 @@ var _ = Describe("CloudProperties", func() {
 								"steve": "alvin",
 								"jack":  "bob",
 							},
+						},
+					},
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{
+							"anderson": "robinson",
+							"hook":     "molimo",
+						},
+					},
+				},
+			}))
+		})
+
+		It("fuzz Compilation", func() {
+			rand.Seed(64)
+			fakeReuseDecider := &fakebftdecider.FakeDecider{}
+			cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
+
+			input := bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{},
+					},
+				},
+			}
+			result := cloudProperties.Apply(input, bftinput.Input{})
+
+			Expect(result).To(Equal(bftinput.Input{
+				CloudConfig: bftinput.CloudConfig{
+					Compilation: bftinput.CompilationConfig{
+						CloudProperties: map[string]string{
+							"steve": "alvin",
+							"jack":  "bob",
 						},
 					},
 				},

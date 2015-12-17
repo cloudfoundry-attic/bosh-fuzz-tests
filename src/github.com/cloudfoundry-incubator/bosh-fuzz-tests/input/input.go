@@ -106,6 +106,7 @@ type CompilationConfig struct {
 	Network          string
 	AvailabilityZone string
 	NumberOfWorkers  int
+	CloudProperties  map[string]string
 }
 
 type AvailabilityZone struct {

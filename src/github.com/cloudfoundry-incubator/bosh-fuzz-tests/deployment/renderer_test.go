@@ -139,6 +139,10 @@ var _ = Describe("Manifest/Renderer", func() {
 					Network:          "default",
 					AvailabilityZone: "z1",
 					NumberOfWorkers:  3,
+					CloudProperties: map[string]string{
+						"foo": "bar",
+						"baz": "qux",
+					},
 				},
 			},
 			Stemcells: []bftinput.StemcellConfig{
@@ -254,7 +258,9 @@ networks:
 compilation:
   workers: 3
   network: default
-  cloud_properties: {}
+  cloud_properties:
+    baz: qux
+    foo: bar
   az: z1
 
 vm_types:

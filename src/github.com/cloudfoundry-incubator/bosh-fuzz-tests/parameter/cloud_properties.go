@@ -52,6 +52,10 @@ func (c *cloudProperties) Apply(input bftinput.Input, previousInput bftinput.Inp
 		input.CloudConfig.ResourcePools[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
+	// we can't really detect when a previous input has used cloud properties since we could
+	// validly used 0 properties
+	input.CloudConfig.Compilation.CloudProperties = c.FuzzCloudProperties(true, previousInput.CloudConfig.Compilation.CloudProperties)
+
 	return input
 }
 

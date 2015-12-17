@@ -24,7 +24,8 @@ networks:{{ range .CloudConfig.Networks }}
 compilation:
   workers: {{ .CloudConfig.Compilation.NumberOfWorkers }}
   network: {{ .CloudConfig.Compilation.Network }}
-  cloud_properties: {}{{ if .CloudConfig.Compilation.AvailabilityZone }}
+  cloud_properties:{{ if .CloudConfig.Compilation.CloudProperties }}{{ range $key, $value := .CloudConfig.Compilation.CloudProperties }}
+    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ if .CloudConfig.Compilation.AvailabilityZone }}
   az: {{ .CloudConfig.Compilation.AvailabilityZone }}{{ end }}{{ if .CloudConfig.VmTypes }}
 
 vm_types:{{ range .CloudConfig.VmTypes }}

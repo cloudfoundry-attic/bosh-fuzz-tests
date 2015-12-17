@@ -135,6 +135,10 @@ var _ = Describe("InputGenerator", func() {
 					},
 					Compilation: bftinput.CompilationConfig{
 						NumberOfWorkers: 3,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -178,6 +182,10 @@ var _ = Describe("InputGenerator", func() {
 				CloudConfig: bftinput.CloudConfig{
 					Compilation: bftinput.CompilationConfig{
 						NumberOfWorkers: 3,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{
@@ -290,6 +298,10 @@ var _ = Describe("InputGenerator", func() {
 					},
 					Compilation: bftinput.CompilationConfig{
 						NumberOfWorkers: 3,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -375,6 +387,10 @@ var _ = Describe("InputGenerator", func() {
 					},
 					Compilation: bftinput.CompilationConfig{
 						NumberOfWorkers: 3,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -447,6 +463,10 @@ var _ = Describe("InputGenerator", func() {
 					},
 					Compilation: bftinput.CompilationConfig{
 						NumberOfWorkers: 3,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
@@ -511,6 +531,10 @@ var _ = Describe("InputGenerator", func() {
 					},
 					Compilation: bftinput.CompilationConfig{
 						NumberOfWorkers: 3,
+						CloudProperties: map[string]string{
+							"foo": "bar",
+							"baz": "qux",
+						},
 					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
