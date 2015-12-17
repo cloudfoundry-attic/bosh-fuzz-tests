@@ -135,9 +135,11 @@ var _ = Describe("Manifest/Renderer", func() {
 						},
 					},
 				},
-				CompilationNetwork:          "default",
-				CompilationAvailabilityZone: "z1",
-				NumberOfCompilationWorkers:  3,
+				Compilation: bftinput.CompilationConfig{
+					Network:          "default",
+					AvailabilityZone: "z1",
+					NumberOfWorkers:  3,
+				},
 			},
 			Stemcells: []bftinput.StemcellConfig{
 				{
@@ -310,8 +312,10 @@ disk_pools:
 							},
 						},
 					},
-					CompilationNetwork:         "default",
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						Network:         "default",
+						NumberOfWorkers: 3,
+					},
 				},
 			}
 
@@ -414,8 +418,10 @@ compilation:
 						},
 					},
 				},
-				CompilationNetwork:         "default",
-				NumberOfCompilationWorkers: 3,
+				Compilation: bftinput.CompilationConfig{
+					Network:         "default",
+					NumberOfWorkers: 3,
+				},
 			},
 		}
 
@@ -528,8 +534,10 @@ disk_pools:
 						},
 					},
 				},
-				CompilationNetwork:         "default",
-				NumberOfCompilationWorkers: 3,
+				Compilation: bftinput.CompilationConfig{
+					Network:         "default",
+					NumberOfWorkers: 3,
+				},
 			},
 		}
 
@@ -654,8 +662,10 @@ disk_types:
 						},
 					},
 				},
-				CompilationNetwork:         "default",
-				NumberOfCompilationWorkers: 3,
+				Compilation: bftinput.CompilationConfig{
+					Network:         "default",
+					NumberOfWorkers: 3,
+				},
 			},
 		}
 

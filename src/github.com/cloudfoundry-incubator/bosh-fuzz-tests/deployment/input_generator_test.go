@@ -133,7 +133,9 @@ var _ = Describe("InputGenerator", func() {
 							},
 						},
 					},
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						NumberOfWorkers: 3,
+					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
@@ -174,7 +176,9 @@ var _ = Describe("InputGenerator", func() {
 					Serial:      "true",
 				},
 				CloudConfig: bftinput.CloudConfig{
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						NumberOfWorkers: 3,
+					},
 					AvailabilityZones: []bftinput.AvailabilityZone{
 						{
 							Name: "z1",
@@ -284,7 +288,9 @@ var _ = Describe("InputGenerator", func() {
 							},
 						},
 					},
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						NumberOfWorkers: 3,
+					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
@@ -367,7 +373,9 @@ var _ = Describe("InputGenerator", func() {
 							},
 						},
 					},
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						NumberOfWorkers: 3,
+					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
@@ -437,7 +445,9 @@ var _ = Describe("InputGenerator", func() {
 							},
 						},
 					},
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						NumberOfWorkers: 3,
+					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},
@@ -499,7 +509,9 @@ var _ = Describe("InputGenerator", func() {
 							},
 						},
 					},
-					NumberOfCompilationWorkers: 3,
+					Compilation: bftinput.CompilationConfig{
+						NumberOfWorkers: 3,
+					},
 				},
 				Stemcells: []bftinput.StemcellConfig{
 					{Name: "fake-stemcell"},

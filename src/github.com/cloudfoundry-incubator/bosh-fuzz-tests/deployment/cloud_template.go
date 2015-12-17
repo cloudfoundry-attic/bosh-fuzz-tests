@@ -22,10 +22,10 @@ networks:{{ range .CloudConfig.Networks }}
     - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}
 
 compilation:
-  workers: {{ .CloudConfig.NumberOfCompilationWorkers }}
-  network: {{ .CloudConfig.CompilationNetwork }}
-  cloud_properties: {}{{ if .CloudConfig.CompilationAvailabilityZone }}
-  az: {{ .CloudConfig.CompilationAvailabilityZone }}{{ end }}{{ if .CloudConfig.VmTypes }}
+  workers: {{ .CloudConfig.Compilation.NumberOfWorkers }}
+  network: {{ .CloudConfig.Compilation.Network }}
+  cloud_properties: {}{{ if .CloudConfig.Compilation.AvailabilityZone }}
+  az: {{ .CloudConfig.Compilation.AvailabilityZone }}{{ end }}{{ if .CloudConfig.VmTypes }}
 
 vm_types:{{ range .CloudConfig.VmTypes }}
 - name: {{ .Name }}

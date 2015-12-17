@@ -28,7 +28,9 @@ var _ = Describe("Compilation", func() {
 
 		Expect(result).To(Equal(bftinput.Input{
 			CloudConfig: bftinput.CloudConfig{
-				NumberOfCompilationWorkers: 3,
+				Compilation: bftinput.CompilationConfig{
+					NumberOfWorkers: 3,
+				},
 			},
 		}))
 	})

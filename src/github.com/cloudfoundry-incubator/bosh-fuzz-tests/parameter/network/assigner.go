@@ -107,15 +107,15 @@ func (n *assigner) Assign(input bftinput.Input, previousInput bftinput.Input) bf
 	}
 
 	compilationNetwork := nonVipNetworks[rand.Intn(len(nonVipNetworks))]
-	input.CloudConfig.CompilationNetwork = compilationNetwork.Name
+	input.CloudConfig.Compilation.Network = compilationNetwork.Name
 	azs := []string{}
 	for _, s := range compilationNetwork.Subnets {
 		azs = append(azs, s.AvailabilityZones...)
 	}
 	if len(azs) > 0 {
-		input.CloudConfig.CompilationAvailabilityZone = azs[rand.Intn(len(azs))]
+		input.CloudConfig.Compilation.AvailabilityZone = azs[rand.Intn(len(azs))]
 	} else {
-		input.CloudConfig.CompilationAvailabilityZone = ""
+		input.CloudConfig.Compilation.AvailabilityZone = ""
 	}
 
 	return input

@@ -124,8 +124,10 @@ var _ = Describe("NetworksAssigner", func() {
 						Type: "vip",
 					},
 				},
-				CompilationNetwork:          "foo-net",
-				CompilationAvailabilityZone: "z1",
+				Compilation: bftinput.CompilationConfig{
+					Network:          "foo-net",
+					AvailabilityZone: "z1",
+				},
 			},
 		},
 		))
@@ -211,8 +213,10 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "vip",
 						},
 					},
-					CompilationNetwork:          "prev-net",
-					CompilationAvailabilityZone: "z1",
+					Compilation: bftinput.CompilationConfig{
+						Network:          "prev-net",
+						AvailabilityZone: "z1",
+					},
 				},
 			},
 			))
@@ -315,7 +319,9 @@ var _ = Describe("NetworksAssigner", func() {
 							Type: "vip",
 						},
 					},
-					CompilationNetwork: "prev-net",
+					Compilation: bftinput.CompilationConfig{
+						Network: "prev-net",
+					},
 				},
 			},
 			))

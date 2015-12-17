@@ -83,15 +83,13 @@ func (i Input) FindStemcellByName(stemcellName string) (StemcellConfig, bool) {
 }
 
 type CloudConfig struct {
-	AvailabilityZones           []AvailabilityZone
-	PersistentDiskPools         []DiskConfig
-	PersistentDiskTypes         []DiskConfig
-	Networks                    []NetworkConfig
-	CompilationNetwork          string
-	CompilationAvailabilityZone string
-	VmTypes                     []VmTypeConfig
-	ResourcePools               []ResourcePoolConfig
-	NumberOfCompilationWorkers  int
+	AvailabilityZones   []AvailabilityZone
+	PersistentDiskPools []DiskConfig
+	PersistentDiskTypes []DiskConfig
+	Networks            []NetworkConfig
+	Compilation         CompilationConfig
+	VmTypes             []VmTypeConfig
+	ResourcePools       []ResourcePoolConfig
 }
 
 type DiskConfig struct {
@@ -102,6 +100,12 @@ type DiskConfig struct {
 
 func (d DiskConfig) IsEqual(other DiskConfig) bool {
 	return reflect.DeepEqual(d, other)
+}
+
+type CompilationConfig struct {
+	Network          string
+	AvailabilityZone string
+	NumberOfWorkers  int
 }
 
 type AvailabilityZone struct {
