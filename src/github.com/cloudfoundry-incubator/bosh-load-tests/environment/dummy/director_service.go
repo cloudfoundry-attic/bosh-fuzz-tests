@@ -21,7 +21,6 @@ type DirectorService struct {
 	cmdRunner                boshsys.CmdRunner
 	directorProcess          boshsys.Process
 	workerProcesses          []boshsys.Process
-	redisProcess             boshsys.Process
 	portWaiter               PortWaiter
 	numWorkers               int
 }
@@ -75,29 +74,10 @@ func (s *DirectorService) Start() error {
 		return bosherr.WrapError(err, "Waiting for director to start up")
 	}
 
-	redisConfigPath, err := s.assetsProvider.FullPath("redis.conf")
-	if err != nil {
-		return bosherr.WrapError(err, "Getting redis config path")
-	}
-	redisCommand := boshsys.Command{
-		Name: "redis-server",
-		Args: []string{redisConfigPath},
-	}
-	s.redisProcess, err = s.cmdRunner.RunComplexCommandAsync(redisCommand)
-	if err != nil {
-		return bosherr.WrapError(err, "starting redis")
-	}
-
-	s.redisProcess.Wait()
-	err = s.portWaiter.Wait("RedisService", "127.0.0.1", 63791)
-	if err != nil {
-		return bosherr.WrapError(err, "Waiting for redis to start up")
-	}
-
 	for i := 1; i <= s.numWorkers; i++ {
 		workerStartCommand := bltcom.CreateCommand(s.workerStartCommand)
-		workerStartCommand.Env["QUEUE"] = "*"
-		workerStartCommand.Args = append(workerStartCommand.Args, "-c", s.directorConfig.WorkerConfigPath(i))
+		workerStartCommand.Env["QUEUE"] = "normal"
+		workerStartCommand.Args = append(workerStartCommand.Args, "-c", s.directorConfig.WorkerConfigPath(i), "-i", strconv.Itoa(i))
 
 		workerProcess, err := s.cmdRunner.RunComplexCommandAsync(workerStartCommand)
 		if err != nil {
@@ -111,7 +91,7 @@ func (s *DirectorService) Start() error {
 		}
 	}
 
-	return s.waitForResqueToStart()
+	return s.waitForWorkersToStart()
 }
 
 func (s *DirectorService) Stop() {
@@ -119,13 +99,16 @@ func (s *DirectorService) Stop() {
 		process.TerminateNicely(5 * time.Second)
 	}
 	s.directorProcess.TerminateNicely(5 * time.Second)
-	s.redisProcess.TerminateNicely(5 * time.Second)
+
+	for _, worker := range s.workerProcesses {
+		worker.TerminateNicely(5 * time.Second)
+	}
 }
 
-func (s *DirectorService) waitForResqueToStart() error {
+func (s *DirectorService) waitForWorkersToStart() error {
 	cmd := boshsys.Command{
 		Name: "bash",
-		Args: []string{"-c", "ps ax | grep resque | grep -v grep | wc -l"},
+		Args: []string{"-c", "ps ax | grep bosh-director/bin/bosh-director-worker | grep -v grep | wc -l"},
 	}
 
 	for i := 0; i < 30; i++ {
