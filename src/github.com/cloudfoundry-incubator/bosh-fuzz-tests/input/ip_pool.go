@@ -64,3 +64,8 @@ func (i *IpPool) NextStaticIp() (string, error) {
 func (i *IpPool) ReserveStaticIp(ip string) {
 	i.reservedStaticIps[ip] = true
 }
+
+func (i *IpPool) Contains(ip string) bool {
+	substring := ip[0:len(i.prefix)+1]
+	return substring == (i.prefix + ".")
+}

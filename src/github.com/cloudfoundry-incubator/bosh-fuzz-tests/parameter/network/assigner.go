@@ -255,8 +255,14 @@ func (n *assigner) assignStaticIps(networks []bftinput.NetworkConfig, jobs []bft
 							if found {
 								var staticIp string
 								if len(ipsToReuseFromPreviousDeploy) > 0 {
-									staticIp, ipsToReuseFromPreviousDeploy = ipsToReuseFromPreviousDeploy[0], ipsToReuseFromPreviousDeploy[1:]
-								} else {
+									var ipToReuse string
+									ipToReuse, ipsToReuseFromPreviousDeploy = ipsToReuseFromPreviousDeploy[0], ipsToReuseFromPreviousDeploy[1:]
+									if subnetIpPool.Contains(ipToReuse) {
+										staticIp = ipToReuse
+									}
+								}
+
+								if staticIp == "" {
 									staticIp, _ = subnetIpPool.NextStaticIp()
 								}
 

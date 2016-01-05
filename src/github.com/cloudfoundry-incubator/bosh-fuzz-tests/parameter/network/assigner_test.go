@@ -223,6 +223,68 @@ var _ = Describe("NetworksAssigner", func() {
 		})
 	})
 
+	It("does not reuse IP if IP does not belong to network subnet", func() {
+		input := bftinput.Input{
+			Jobs: []bftinput.Job{
+				{
+					Name:      "foo",
+					Instances: 2,
+					Networks: []bftinput.JobNetworkConfig{
+						{
+							Name: "default",
+						},
+					},
+				},
+			},
+			CloudConfig: bftinput.CloudConfig{
+				Networks: []bftinput.NetworkConfig{
+					{
+						Name: "default",
+						Type: "manual",
+						Subnets: []bftinput.SubnetConfig{
+							{
+								IpPool: bftinput.NewIpPool("192.168.0", 1, []string{}),
+							},
+						},
+					},
+				},
+			},
+		}
+
+		previousInput := bftinput.Input{
+			Jobs: []bftinput.Job{
+				{
+					Name:      "foo",
+					Instances: 2,
+					Networks: []bftinput.JobNetworkConfig{
+						{
+							Name:      "default",
+							StaticIps: []string{"192.168.4.209", "192.168.4.254"},
+						},
+					},
+				},
+			},
+			CloudConfig: bftinput.CloudConfig{
+				Networks: []bftinput.NetworkConfig{
+					{
+						Name: "default",
+						Type: "manual",
+						Subnets: []bftinput.SubnetConfig{
+							{
+								IpPool: bftinput.NewIpPool("192.168.4", 1, []string{}),
+							},
+						},
+					},
+				},
+			},
+		}
+
+		result := networksAssigner.Assign(input, previousInput)
+		Expect(len(result.Jobs[0].Networks[0].StaticIps)).To(Equal(2))
+		Expect(result.Jobs[0].Networks[0].StaticIps).ToNot(ContainElement("192.168.4.209"))
+		Expect(result.Jobs[0].Networks[0].StaticIps).ToNot(ContainElement("192.168.4.254"))
+	})
+
 	Context("when previous input has static IPs", func() {
 		BeforeEach(func() {
 			decider.IsYesYes = true

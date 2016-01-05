@@ -45,4 +45,26 @@ var _ = Describe("IpPool", func() {
 			Expect(staticIp).To(Equal("10.10.0.249"))
 		})
 	})
+
+	Describe("Contains", func() {
+		BeforeEach(func() {
+			ipPool = NewIpPool(
+				"10.10.2",
+				1,
+				[]string{},
+			)
+		})
+		It("can tell when an IP address is within a subnet", func() {
+			Expect(ipPool.Contains("10.10.2.10")).To(BeTrue())
+			Expect(ipPool.Contains("10.10.2.1")).To(BeTrue())
+			Expect(ipPool.Contains("10.10.2.254")).To(BeTrue())
+		})
+		It("can tell when an IP address is NOT within a subnet", func() {
+			Expect(ipPool.Contains("10.10.20.20")).To(BeFalse())
+			Expect(ipPool.Contains("10.10.255.10")).To(BeFalse())
+			Expect(ipPool.Contains("10.10.30.20")).To(BeFalse())
+			Expect(ipPool.Contains("192.168.2.254")).To(BeFalse())
+			Expect(ipPool.Contains("224.10.20.20")).To(BeFalse())
+		})
+	})
 })
