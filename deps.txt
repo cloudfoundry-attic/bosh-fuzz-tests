@@ -1,4 +1,4 @@
-8cb9faa github.com/cloudfoundry/bosh-utils/.git
-5f9f81b github.com/cloudfoundry-incubator/bosh-load-tests/.git
-7f8ab55 github.com/onsi/ginkgo/.git
-2152b45 github.com/onsi/gomega/.git
+af9fd95 github.com/cloudfoundry/bosh-utils/.git
+8b700fa github.com/cloudfoundry-incubator/bosh-load-tests/.git
+e43390e github.com/onsi/ginkgo/.git
+0fe2044 github.com/onsi/gomega/.git

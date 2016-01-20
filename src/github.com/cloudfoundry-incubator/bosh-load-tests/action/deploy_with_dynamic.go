@@ -15,6 +15,7 @@ type deployWithDynamic struct {
 	cliRunner      bltclirunner.Runner
 	fs             boshsys.FileSystem
 	assetsProvider bltassets.Provider
+	usingLegacyManifest bool
 }
 
 func NewDeployWithDynamic(
@@ -23,6 +24,7 @@ func NewDeployWithDynamic(
 	cliRunner bltclirunner.Runner,
 	fs boshsys.FileSystem,
 	assetsProvider bltassets.Provider,
+	usingLegacyManifest	bool,
 ) *deployWithDynamic {
 	return &deployWithDynamic{
 		directorInfo:   directorInfo,
@@ -30,6 +32,7 @@ func NewDeployWithDynamic(
 		cliRunner:      cliRunner,
 		fs:             fs,
 		assetsProvider: assetsProvider,
+		usingLegacyManifest: usingLegacyManifest,
 	}
 }
 
@@ -39,7 +42,12 @@ func (d *deployWithDynamic) Execute() error {
 		return err
 	}
 
-	manifestTemplatePath, err := d.assetsProvider.FullPath("manifest.yml")
+	manifestFilename := "manifest.yml"
+	if d.usingLegacyManifest == true {
+		manifestFilename = "legacy_manifest.yml"
+	}
+
+	manifestTemplatePath, err := d.assetsProvider.FullPath(manifestFilename)
 	if err != nil {
 		return err
 	}

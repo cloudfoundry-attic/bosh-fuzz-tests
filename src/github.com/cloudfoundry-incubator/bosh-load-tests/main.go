@@ -62,35 +62,42 @@ func main() {
 
 	actionFactory := bltaction.NewFactory(directorInfo, fs, assetsProvider)
 
-	actionsFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare"}}, actionFactory, cliRunnerFactory)
-	err = actionsFlow.Run()
+	prepareActionFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare"}}, actionFactory, cliRunnerFactory)
+	err = prepareActionFlow.Run(false)
 	if err != nil {
 		panic(err)
 	}
 
-	doneCh := make(chan error)
+	if !config.UsingLegacyManifest {
+		uploadCloudConfigActionFlow := bltflow.NewFlow(2, []bltflow.ActionInfo{{Name: "upload_cloud_config"}}, actionFactory, cliRunnerFactory)
+		err := uploadCloudConfigActionFlow.Run(false)
+		if err != nil {
+			panic(err)
+		}
+	}
 
 	randomizer := bltflow.NewRandomizer(actionFactory, cliRunnerFactory, fs, logger)
 	if len(os.Args) == 3 {
-		err = randomizer.Configure(os.Args[2])
+		err := randomizer.Configure(os.Args[2])
 		if err != nil {
 			panic(err)
 		}
 	} else {
-		err = randomizer.Prepare(config.Flows, config.NumberOfDeployments)
+		err := randomizer.Prepare(config.Flows, config.NumberOfDeployments)
 		if err != nil {
 			panic(err)
 		}
 	}
 
-	for i := 0; i < len(config.Flows); i++ {
+	doneCh := make(chan error)
+	for i := 0; i < config.NumberOfDeployments; i++ {
 		go func(i int) {
-			doneCh <- randomizer.RunFlow(i)
+			doneCh <- randomizer.RunFlow(i, config.UsingLegacyManifest)
 		}(i)
 	}
 
-	for i := 0; i < len(config.Flows); i++ {
-		err = <-doneCh
+	for i := 0; i < config.NumberOfDeployments; i++ {
+		err := <-doneCh
 		if err != nil {
 			panic(err)
 		}

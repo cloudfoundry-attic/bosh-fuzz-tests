@@ -30,7 +30,7 @@ func NewFlow(
 	}
 }
 
-func (f *actionsFlow) Run() error {
+func (f *actionsFlow) Run(usingLegacyManifest bool) error {
 	uuid, err := boshuuid.NewGenerator().Generate()
 	if err != nil {
 		return err
@@ -42,7 +42,7 @@ func (f *actionsFlow) Run() error {
 	defer cliRunner.Clean()
 
 	for i, actionInfo := range f.actionInfos {
-		action, err := f.actionFactory.Create(actionInfo.Name, f.flowNumber, deploymentName, cliRunner)
+		action, err := f.actionFactory.Create(actionInfo.Name, f.flowNumber, deploymentName, cliRunner, usingLegacyManifest)
 		if err != nil {
 			return err
 		}

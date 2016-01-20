@@ -17,6 +17,7 @@ type Config struct {
 	Flows                    [][]string `json:"flows"`
 	NumberOfWorkers          int        `json:"number_of_workers"`
 	NumberOfDeployments      int        `json:"number_of_deployments"`
+	UsingLegacyManifest      bool       `json:"using_legacy_manifest"`
 
 	fs boshsys.FileSystem
 }

@@ -27,7 +27,7 @@ type randomizer struct {
 type Randomizer interface {
 	Configure(filePath string) error
 	Prepare(flows [][]string, numberOfDeployments int) error
-	RunFlow(flowNumber int) error
+	RunFlow(flowNumber int, usingLegacyManifest bool) error
 }
 
 func NewRandomizer(
@@ -87,11 +87,11 @@ func (r *randomizer) Prepare(flows [][]string, numberOfDeployments int) error {
 	return nil
 }
 
-func (r *randomizer) RunFlow(flowNumber int) error {
+func (r *randomizer) RunFlow(flowNumber int, usingLegacyManifest bool) error {
 	actionNames := r.state[flowNumber]
 	r.logger.Debug("randomizer", "Creating flow with %#v", actionNames)
 
 	flow := NewFlow(flowNumber, actionNames, r.actionFactory, r.cliRunnerFactory)
 
-	return flow.Run()
+	return flow.Run(usingLegacyManifest)
 }

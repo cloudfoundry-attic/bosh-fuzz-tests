@@ -34,16 +34,6 @@ func (p *prepare) Execute() error {
 		return err
 	}
 
-	cloudConfigPath, err := p.assetsProvider.FullPath("cloud_config.yml")
-	if err != nil {
-		return err
-	}
-
-	err = p.cliRunner.RunWithArgs("update", "cloud-config", cloudConfigPath)
-	if err != nil {
-		return err
-	}
-
 	stemcellPath, err := p.assetsProvider.FullPath("stemcell.tgz")
 	if err != nil {
 		return err

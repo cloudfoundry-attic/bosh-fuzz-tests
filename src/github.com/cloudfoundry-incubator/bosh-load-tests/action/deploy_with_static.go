@@ -18,6 +18,7 @@ type deployWithStatic struct {
 	cliRunner      bltclirunner.Runner
 	fs             boshsys.FileSystem
 	assetsProvider bltassets.Provider
+	usingLegacyManifest bool
 }
 
 func NewDeployWithStatic(
@@ -27,6 +28,7 @@ func NewDeployWithStatic(
 	cliRunner bltclirunner.Runner,
 	fs boshsys.FileSystem,
 	assetsProvider bltassets.Provider,
+	usingLegacyManifest bool,
 ) *deployWithStatic {
 	return &deployWithStatic{
 		directorInfo:   directorInfo,
@@ -35,6 +37,7 @@ func NewDeployWithStatic(
 		cliRunner:      cliRunner,
 		fs:             fs,
 		assetsProvider: assetsProvider,
+		usingLegacyManifest: usingLegacyManifest,
 	}
 }
 
@@ -44,7 +47,12 @@ func (d *deployWithStatic) Execute() error {
 		return err
 	}
 
-	manifestTemplatePath, err := d.assetsProvider.FullPath("manifest_with_static.yml")
+	manifestFilename := "manifest_with_static.yml"
+	if d.usingLegacyManifest == true {
+		manifestFilename = "legacy_manifest_with_static.yml"
+	}
+
+	manifestTemplatePath, err := d.assetsProvider.FullPath(manifestFilename)
 	if err != nil {
 		return err
 	}
