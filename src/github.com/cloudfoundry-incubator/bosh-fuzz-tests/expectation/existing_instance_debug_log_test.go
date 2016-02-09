@@ -20,7 +20,7 @@ var _ = Describe("ExistingInstanceDebugLog", func() {
 		It("does not return an error", func() {
 			debugLog := `
 			Existing desired instance 'etcd/0' in az 'z1'
-			stemcell_changed? changed FROM: version: 1 TO: version: 2 on etcd/c42ab873-6f46-4273-be13-1286ba96464c (0)
+			stemcell_changed? changed FROM: version: 1 TO: version: 2 on etcd/0 (c42ab873-6f46-4273-be13-1286ba96464c)
 			`
 			err := existingInstanceDebugLog.Run(debugLog)
 			Expect(err).ToNot(HaveOccurred())

@@ -63,12 +63,6 @@ func (p *ipPoolProvider) NewIpPool(numOfNeededIPs int) *bftinput.IpPool {
 	reservedRangeGenerator := NewReservedRangeGenerator(prefix, decider)
 	reservedRanges := reservedRangeGenerator.Generate(usedIps, reservedBorders)
 
-	availableIps := []string{}
-	shuffledUsedIpsIndeces := rand.Perm(len(usedIps))
-	for _, ipIndex := range shuffledUsedIpsIndeces {
-		availableIps = append(availableIps, fmt.Sprintf("%s.%d", prefix, usedIps[ipIndex]))
-	}
-
 	return bftinput.NewIpPool(
 		prefix,
 		p.gatewayFourthOctet,
