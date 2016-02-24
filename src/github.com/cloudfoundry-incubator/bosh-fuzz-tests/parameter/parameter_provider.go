@@ -60,6 +60,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewUpdate(p.parameters.Canaries, p.parameters.MaxInFlight, p.parameters.Serial)
 	} else if name == "cloud_properties" {
 		return NewCloudProperties(p.parameters.NumOfCloudProperties, p.nameGenerator, p.reuseDecider)
+	} else if name == "fixed_migrated_from" {
+		return NewFixedMigratedFrom()
 	}
 
 	return nil

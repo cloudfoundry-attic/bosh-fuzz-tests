@@ -5,27 +5,29 @@ import (
 )
 
 type FakeParameterProvider struct {
-	Stemcell         *FakeStemcell
-	PersistentDisk   *FakePersistentDisk
-	VmType           *FakeVmType
-	AvailabilityZone *FakeAvailabilityZone
-	Network          *FakeNetwork
-	Template         *FakeTemplate
-	Compilation      *FakeCompilation
-	Update           *FakeUpdate
-	CloudProperties  *FakeCloudProperties
+	Stemcell          *FakeStemcell
+	PersistentDisk    *FakePersistentDisk
+	VmType            *FakeVmType
+	AvailabilityZone  *FakeAvailabilityZone
+	Network           *FakeNetwork
+	Template          *FakeTemplate
+	Compilation       *FakeCompilation
+	Update            *FakeUpdate
+	CloudProperties   *FakeCloudProperties
+	FixedMigratedFrom *FakeFixedMigratedFrom
 }
 
 func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeParameterProvider {
 	return &FakeParameterProvider{
-		Stemcell:         NewFakeStemcell(),
-		PersistentDisk:   NewFakePersistentDisk(persistentDiskDef),
-		VmType:           NewFakeVmType(vmTypeDef),
-		AvailabilityZone: NewFakeAvailabilityZone(),
-		Template:         NewFakeTemplate(),
-		Compilation:      NewFakeCompilation(),
-		Update:           NewFakeUpdate(),
-		CloudProperties:  NewFakeCloudProperties(),
+		Stemcell:          NewFakeStemcell(),
+		PersistentDisk:    NewFakePersistentDisk(persistentDiskDef),
+		VmType:            NewFakeVmType(vmTypeDef),
+		AvailabilityZone:  NewFakeAvailabilityZone(),
+		Template:          NewFakeTemplate(),
+		Compilation:       NewFakeCompilation(),
+		Update:            NewFakeUpdate(),
+		CloudProperties:   NewFakeCloudProperties(),
+		FixedMigratedFrom: NewFakeFixedMigratedFrom(),
 	}
 }
 
@@ -48,6 +50,8 @@ func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
 		return p.Update
 	} else if name == "cloud_properties" {
 		return p.CloudProperties
+	} else if name == "fixed_migrated_from" {
+		return p.FixedMigratedFrom
 	}
 
 	return nil
