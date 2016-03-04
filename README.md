@@ -23,7 +23,7 @@ as defined in `config.json`):
 bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
 ```
 
-To rerurn fuzz tests with the same input:
+To re-run fuzz tests with the same input:
 
 * Search for `Seeding with` and copy the seed number
 * Run
