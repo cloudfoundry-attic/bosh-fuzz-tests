@@ -90,7 +90,13 @@ func (d *deployer) RunDeploys() error {
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
 			taskId, err := deployWrapper.RunWithDebug("deploy")
 			if err != nil {
-				return bosherr.WrapError(err, "Running deploy")
+				errorPrefix := ""
+				if testCase.DeploymentWillFail {
+					errorPrefix += "\n==========================================================\n"
+					errorPrefix += "DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO\n"
+					errorPrefix += "==========================================================\n"
+				}
+				return bosherr.WrapError(err, errorPrefix + "Running deploy")
 			}
 
 			debugLog, err := d.cliRunner.RunWithOutput("task", taskId, "--debug")

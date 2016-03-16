@@ -18,8 +18,8 @@ var _ = Describe("FixedMigratedFrom", func() {
 	})
 
 	Context("when previous input does not have azs and current input has azs", func() {
-		Context("when they have same job that is using same static IP", func() {
-			It("specifies migrated_from on a job with az to which that static IP belongs", func() {
+		Context("when they have the same job that is using the same static IP", func() {
+			It("specifies migrated_from on a job with an az to which that static IP belongs", func() {
 				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						AvailabilityZones: []bftinput.AvailabilityZone{
