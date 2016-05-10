@@ -23,13 +23,12 @@ as defined in `config.json`):
 bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
 ```
 
-To re-run fuzz tests with the same input:
+To re-create failures seen on Concourse:
 
 * Search for `Seeding with` and copy the seed number
-* Run
+* Copy the `parameters` section from `ci/concourse-config.json` to `config.json`
+* Run the following command:
 
 ```
 bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json <SEED_NUMBER>
 ```
-
-To run fuzz tests 
