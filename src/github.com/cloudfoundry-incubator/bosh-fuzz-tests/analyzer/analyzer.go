@@ -11,9 +11,9 @@ type Analyzer interface {
 }
 
 type Case struct {
-	Input        		bftinput.Input
-	Expectations 		[]bftexpectation.Expectation
-	DeploymentWillFail	bool
+	Input              bftinput.Input
+	Expectations       []bftexpectation.Expectation
+	DeploymentWillFail bool
 }
 
 type analyzer struct {
@@ -30,6 +30,7 @@ func NewAnalyzer(logger boshlog.Logger) Analyzer {
 
 func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 	cases := []Case{}
+
 	for i := range inputs {
 		expectations := []bftexpectation.Expectation{}
 		deploymentWillFail := false
@@ -38,12 +39,13 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 			expectations = append(expectations, a.stemcellComparator.Compare(inputs[:i], inputs[i])...)
 			expectations = append(expectations, a.nothingChangedComparator.Compare(inputs[:i], inputs[i])...)
 
-			deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(inputs[i - 1], inputs[i])
+			deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(inputs[i-1], inputs[i])
+			deploymentWillFail = deploymentWillFail || a.isMovingInstancesStaticIPToAnotherAZ(inputs[i-1], inputs[i])
 		}
 
 		cases = append(cases, Case{
-			Input:				inputs[i],
-			Expectations: 		expectations,
+			Input:              inputs[i],
+			Expectations:       expectations,
 			DeploymentWillFail: deploymentWillFail,
 		})
 	}
@@ -68,6 +70,44 @@ func (a *analyzer) isMigratingFromAzsToNoAzsAndReusingStaticIps(previousInput bf
 				}
 			}
 		}
+	}
+
+	return false
+}
+
+func (a *analyzer) isMovingInstancesStaticIPToAnotherAZ(previousInput bftinput.Input, currentInput bftinput.Input) bool {
+	var previouslyUsedAZs []string
+
+	for _, job := range previousInput.Jobs {
+		for _, az := range job.AvailabilityZones {
+			previouslyUsedAZs = append(previouslyUsedAZs, az)
+		}
+	}
+
+	var currentlyAllowedAZs []string
+
+	for _, az := range currentInput.CloudConfig.AvailabilityZones {
+		currentlyAllowedAZs = append(currentlyAllowedAZs, az.Name)
+	}
+
+	var missingAZs []string
+
+	for _, previouslyUsedAZ := range previouslyUsedAZs {
+		previouslyUsedAZMissing := true
+
+		for _, allowedAz := range currentlyAllowedAZs {
+			if previouslyUsedAZ == allowedAz {
+				previouslyUsedAZMissing = false
+			}
+		}
+
+		if previouslyUsedAZMissing {
+			missingAZs = append(missingAZs, previouslyUsedAZ)
+		}
+	}
+
+	if len(missingAZs) > 0 {
+		return true
 	}
 
 	return false
