@@ -7,6 +7,7 @@
   "nginx_start_cmd": "BOSH_SRC_PATH/tmp/integration-nginx/sbin/nginx",
   "nats_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec nats-server",
   "cli_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec bosh",
+  "dummy_cpi_path": "BOSH_SRC_PATH/bosh-director/bin/dummy_cpi",
   "number_of_workers": 3,
   "parameters" : {
     "NOTE" : "name_length is 253 - 65 (DNS name limit - BOSH UUID domain name)",
