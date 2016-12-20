@@ -16,4 +16,4 @@ run:
 params:
   RUBY_VERSION: 2.3
   SEED: ~
-  BOSH_SRC_PATH: bosh-src
+  BOSH_SRC_PATH: bosh-src/src

@@ -1,5 +1,8 @@
-#!/usr/bin/env bash
+#!/bin/bash
+
+source /etc/profile.d/chruby.sh
+chruby ruby-2.3.1
 
 read INPUT
 
-echo $INPUT | /Users/pivotal/workspace/bosh/src/bosh-director/bin/dummy_cpi {{ .DirectorConfigPath }}
+echo $INPUT | {{ .DummyCPIPath }} {{ .BaseDir }}/director.yml

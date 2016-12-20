@@ -3,6 +3,7 @@
 set -e
 
 export PATH=/usr/local/ruby/bin:/usr/local/go/bin:$PATH
+export DB='postgresql'
 
 echo 'Starting DB...'
 su postgres -c '
