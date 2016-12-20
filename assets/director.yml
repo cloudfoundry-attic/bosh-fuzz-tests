@@ -57,7 +57,9 @@ snapshots:
   enabled: true
 
 cloud:
-  plugin: dummy
+  provider:
+      name: test-cpi
+      path: {{ .BaseDir }}/cpi
   properties:
     nats: nats://localhost:65010
     dir: {{ .BaseDir }}/boshcloud

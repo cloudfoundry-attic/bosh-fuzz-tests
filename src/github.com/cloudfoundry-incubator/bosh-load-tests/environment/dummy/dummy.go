@@ -6,12 +6,14 @@ import (
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 
+	"errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
+	"os"
 )
 
 type dummy struct {
 	workingDir      string
-	database        *Database
+	database        Database
 	directorService *DirectorService
 	nginxService    *NginxService
 	natsService     *NatsService
@@ -42,7 +44,14 @@ func (d *dummy) Setup() error {
 		return err
 	}
 
-	d.database = NewDatabase("test", d.cmdRunner)
+	if "mysql" == os.Getenv("DB") {
+		d.database = NewMysqlDatabase("test", d.cmdRunner)
+	} else if "postgresql" == os.Getenv("DB") {
+		d.database = NewPostgresqlDatabase("test", d.cmdRunner)
+	} else {
+		return errors.New("Unrecognized database server. Please use the DB environment variable to set database server to postgresql or mysql.")
+	}
+
 	err = d.database.Create()
 	if err != nil {
 		return err
@@ -63,11 +72,15 @@ func (d *dummy) Setup() error {
 	}
 
 	directorOptions := DirectorOptions{
-		Port:         65001,
-		DatabaseName: d.database.Name(),
+		Port:             65001,
+		DatabaseName:     d.database.Name(),
+		DatabaseServer:   d.database.Server(),
+		DatabaseUser:     d.database.User(),
+		DatabasePassword: d.database.Password(),
+		DatabasePort:     d.database.Port(),
 	}
 
-	directorConfig := NewDirectorConfig(directorOptions, d.workingDir, d.fs, d.assetsProvider, d.config.NumberOfWorkers)
+	directorConfig := NewDirectorConfig(directorOptions, d.workingDir, d.fs, d.assetsProvider, d.config.NumberOfWorkers, d.config.DummyCPIPath)
 	d.directorService = NewDirectorService(
 		d.config.DirectorMigrationCommand,
 		d.config.DirectorStartCommand,
@@ -88,12 +101,6 @@ func (d *dummy) Setup() error {
 }
 
 func (d *dummy) Shutdown() error {
-	d.nginxService.Stop()
-	d.directorService.Stop()
-	d.natsService.Stop()
-	d.database.Drop()
-	d.fs.RemoveAll(d.workingDir)
-
 	return nil
 }
 

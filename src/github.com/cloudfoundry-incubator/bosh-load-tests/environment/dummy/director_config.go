@@ -8,12 +8,18 @@ import (
 
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
+	"os"
 )
 
 type DirectorOptions struct {
-	Port         int
-	DatabaseName string
-	BaseDir      string
+	Port             int
+	DatabaseName     string
+	DatabaseServer   string
+	DatabaseUser     string
+	DatabasePassword string
+	DatabasePort     int
+	BaseDir          string
+	DummyCPIPath     string
 }
 
 type DirectorConfig struct {
@@ -22,6 +28,7 @@ type DirectorConfig struct {
 	baseDir        string
 	fs             boshsys.FileSystem
 	assetsProvider bltassets.Provider
+	dummyCPIPath   string
 }
 
 func NewDirectorConfig(
@@ -30,6 +37,7 @@ func NewDirectorConfig(
 	fs boshsys.FileSystem,
 	assetsProvider bltassets.Provider,
 	numWorkers int,
+	dummyCPIPath string,
 ) *DirectorConfig {
 	return &DirectorConfig{
 		options:        options,
@@ -37,11 +45,16 @@ func NewDirectorConfig(
 		baseDir:        baseDir,
 		fs:             fs,
 		assetsProvider: assetsProvider,
+		dummyCPIPath:   dummyCPIPath,
 	}
 }
 
 func (c *DirectorConfig) DirectorConfigPath() string {
 	return filepath.Join(c.baseDir, "director.yml")
+}
+
+func (c *DirectorConfig) CPIPath() string {
+	return filepath.Join(c.baseDir, "cpi")
 }
 
 func (c *DirectorConfig) WorkerConfigPath(index int) string {
@@ -60,6 +73,20 @@ func (c *DirectorConfig) Write() error {
 
 	t := template.Must(template.ParseFiles(directorTemplatePath))
 	err = c.saveConfig(c.options.Port, c.DirectorConfigPath(), t)
+
+	if err != nil {
+		return err
+	}
+
+	cpiTemplatePath, err := c.assetsProvider.FullPath("cpi.sh")
+	if err != nil {
+		return err
+	}
+
+	cpiTemplate := template.Must(template.ParseFiles(cpiTemplatePath))
+
+	err = c.saveCPIConfig(c.CPIPath(), cpiTemplate)
+
 	if err != nil {
 		return err
 	}
@@ -87,6 +114,26 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 	if err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func (c *DirectorConfig) saveCPIConfig(cpiPath string, t *template.Template) error {
+	buffer := bytes.NewBuffer([]byte{})
+	context := c.options
+	context.DummyCPIPath = c.dummyCPIPath
+	context.BaseDir = c.baseDir
+
+	err := t.Execute(buffer, context)
+	if err != nil {
+		return err
+	}
+	err = c.fs.WriteFile(cpiPath, buffer.Bytes())
+	if err != nil {
+		return err
+	}
+
+	c.fs.Chmod(cpiPath, os.ModePerm)
 
 	return nil
 }
