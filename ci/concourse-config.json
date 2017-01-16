@@ -5,6 +5,7 @@
   "director_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director",
   "worker_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director-worker",
   "nginx_start_cmd": "BOSH_SRC_PATH/tmp/integration-nginx/sbin/nginx",
+  "verify_multidigest": "BOSH_SRC_PATH/tmp/verify-multidigest",
   "nats_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec nats-server",
   "cli_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec bosh",
   "dummy_cpi_path": "BOSH_SRC_PATH/bosh-director/bin/dummy_cpi",
