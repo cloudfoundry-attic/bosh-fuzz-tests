@@ -12,6 +12,7 @@ type Config struct {
 	DirectorStartCommand     string     `json:"director_start_cmd"`
 	WorkerStartCommand       string     `json:"worker_start_cmd"`
 	NginxStartCommand        string     `json:"nginx_start_cmd"`
+	VerifyMultidigest        string     `json:"verify_multidigest"`
 	NatsStartCommand         string     `json:"nats_start_cmd"`
 	DummyCPIPath             string     `json:"dummy_cpi_path"`
 	CliCmd                   string     `json:"cli_cmd"`

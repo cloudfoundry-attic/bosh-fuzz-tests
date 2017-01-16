@@ -78,6 +78,7 @@ func (d *dummy) Setup() error {
 		DatabaseUser:     d.database.User(),
 		DatabasePassword: d.database.Password(),
 		DatabasePort:     d.database.Port(),
+		VerifyMultidigestPath: d.config.VerifyMultidigest,
 	}
 
 	directorConfig := NewDirectorConfig(directorOptions, d.workingDir, d.fs, d.assetsProvider, d.config.NumberOfWorkers, d.config.DummyCPIPath)

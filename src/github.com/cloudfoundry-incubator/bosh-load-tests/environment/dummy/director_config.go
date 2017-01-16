@@ -12,14 +12,15 @@ import (
 )
 
 type DirectorOptions struct {
-	Port             int
-	DatabaseName     string
-	DatabaseServer   string
-	DatabaseUser     string
-	DatabasePassword string
-	DatabasePort     int
-	BaseDir          string
-	DummyCPIPath     string
+	Port             	  int
+	DatabaseName     	  string
+	DatabaseServer   	  string
+	DatabaseUser     	  string
+	DatabasePassword 	  string
+	DatabasePort     	  int
+	BaseDir          	  string
+	DummyCPIPath     	  string
+	VerifyMultidigestPath     string
 }
 
 type DirectorConfig struct {
