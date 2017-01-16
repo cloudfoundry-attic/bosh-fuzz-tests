@@ -96,7 +96,7 @@ func (d *deployer) RunDeploys() error {
 					errorPrefix += "DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO\n"
 					errorPrefix += "==========================================================\n"
 				}
-				return bosherr.WrapError(err, errorPrefix + "Running deploy")
+				return bosherr.WrapError(err, errorPrefix+"Running deploy")
 			}
 
 			debugLog, err := d.cliRunner.RunWithOutput("task", taskId, "--debug")
