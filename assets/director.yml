@@ -40,17 +40,17 @@ db: &bosh_db
 dns:
   db: *bosh_db
 
+verify_multidigest_path: {{ .VerifyMultidigestPath }}
+
 blobstore: &director_blobstore
   provider: local
   options:
     blobstore_path: {{ .BaseDir }}/blobstore
-    verify_multidigest_path: {{ .VerifyMultidigestPath }}
 
 backup_destination:
   provider: local
   options:
     blobstore_path: {{ .BaseDir }}/backup_destination
-    verify_multidigest_path: {{ .VerifyMultidigestPath }}
 
 compiled_package_cache:
   <<: *director_blobstore
