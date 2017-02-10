@@ -21,25 +21,11 @@ func NewDeleteDeployment(directorInfo DirectorInfo, deploymentName string, cliRu
 	}
 }
 
-func (r *deleteDeployment) Execute() error {
-	manifestPath, err := r.fs.TempFile("manifest-test")
-	if err != nil {
-		return err
-	}
-	defer r.fs.RemoveAll(manifestPath.Name())
+func (d *deleteDeployment) Execute() error {
+	d.cliRunner.SetEnv(d.directorInfo.URL)
 
-	err = r.cliRunner.RunWithArgs("download", "manifest", r.deploymentName, manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	err = r.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	deployWrapper := NewDeployWrapper(r.cliRunner)
-	_, err = deployWrapper.RunWithDebug("delete", "deployment", r.deploymentName)
+	deployWrapper := NewDeployWrapper(d.cliRunner)
+	_, err := deployWrapper.RunWithDebug("-d", d.deploymentName, "delete-deployment")
 	if err != nil {
 		return err
 	}

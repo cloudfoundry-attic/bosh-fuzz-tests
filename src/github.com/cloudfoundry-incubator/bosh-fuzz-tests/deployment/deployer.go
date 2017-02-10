@@ -48,6 +48,8 @@ func NewDeployer(
 }
 
 func (d *deployer) RunDeploys() error {
+	d.cliRunner.SetEnv(d.directorInfo.URL)
+
 	manifestPath, err := d.fs.TempFile("manifest")
 	if err != nil {
 		return bosherr.WrapError(err, "Creating manifest file")
@@ -77,18 +79,13 @@ func (d *deployer) RunDeploys() error {
 		}
 
 		if !d.generateManifestOnly {
-			err = d.cliRunner.RunWithArgs("update", "cloud-config", cloudConfigPath.Name())
+			err = d.cliRunner.RunWithArgs("update-cloud-config", cloudConfigPath.Name())
 			if err != nil {
 				return bosherr.WrapError(err, "Updating cloud config")
 			}
 
-			err = d.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-			if err != nil {
-				return bosherr.WrapError(err, "Setting deployment manifest")
-			}
-
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
-			taskId, err := deployWrapper.RunWithDebug("deploy")
+			taskId, err := deployWrapper.RunWithDebug("deploy", manifestPath.Name())
 			if err != nil {
 				errorPrefix := ""
 				if testCase.DeploymentWillFail {

@@ -12,54 +12,49 @@ import (
 )
 
 type DirectorOptions struct {
-	Port             	  int
-	DatabaseName     	  string
-	DatabaseServer   	  string
-	DatabaseUser     	  string
-	DatabasePassword 	  string
-	DatabasePort     	  int
-	BaseDir          	  string
-	DummyCPIPath     	  string
-	VerifyMultidigestPath     string
+	Port                  int
+	DatabaseName          string
+	DatabaseServer        string
+	DatabaseUser          string
+	DatabasePassword      string
+	DatabasePort          int
+	BaseDir               string
+	DummyCPIPath          string
+	RubyVersion           string
+	VerifyMultidigestPath string
 }
 
 type DirectorConfig struct {
 	options        DirectorOptions
 	numWorkers     int
-	baseDir        string
 	fs             boshsys.FileSystem
 	assetsProvider bltassets.Provider
-	dummyCPIPath   string
 }
 
 func NewDirectorConfig(
 	options DirectorOptions,
-	baseDir string,
 	fs boshsys.FileSystem,
 	assetsProvider bltassets.Provider,
 	numWorkers int,
-	dummyCPIPath string,
 ) *DirectorConfig {
 	return &DirectorConfig{
 		options:        options,
 		numWorkers:     numWorkers,
-		baseDir:        baseDir,
 		fs:             fs,
 		assetsProvider: assetsProvider,
-		dummyCPIPath:   dummyCPIPath,
 	}
 }
 
 func (c *DirectorConfig) DirectorConfigPath() string {
-	return filepath.Join(c.baseDir, "director.yml")
+	return filepath.Join(c.options.BaseDir, "director.yml")
 }
 
 func (c *DirectorConfig) CPIPath() string {
-	return filepath.Join(c.baseDir, "cpi")
+	return filepath.Join(c.options.BaseDir, "cpi")
 }
 
 func (c *DirectorConfig) WorkerConfigPath(index int) string {
-	return filepath.Join(c.baseDir, fmt.Sprintf("worker-%d.yml", index))
+	return filepath.Join(c.options.BaseDir, fmt.Sprintf("worker-%d.yml", index))
 }
 
 func (c *DirectorConfig) DirectorPort() int {
@@ -106,7 +101,6 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 	buffer := bytes.NewBuffer([]byte{})
 	context := c.options
 	context.Port = port
-	context.BaseDir = c.baseDir
 	err := t.Execute(buffer, context)
 	if err != nil {
 		return err
@@ -122,8 +116,6 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 func (c *DirectorConfig) saveCPIConfig(cpiPath string, t *template.Template) error {
 	buffer := bytes.NewBuffer([]byte{})
 	context := c.options
-	context.DummyCPIPath = c.dummyCPIPath
-	context.BaseDir = c.baseDir
 
 	err := t.Execute(buffer, context)
 	if err != nil {

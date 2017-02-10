@@ -32,23 +32,21 @@ var _ = Describe("Deployer", func() {
 		fs = fakesys.NewFakeFileSystem()
 		cmdRunner = fakesys.NewFakeCmdRunner()
 		directorInfo := bltaction.DirectorInfo{
+			Name: "fake-director",
 			UUID: "fake-director-uuid",
 			URL:  "fake-director-url",
 		}
 		boshCmd := boshsys.Command{Name: "bosh"}
 
-		fs.ReturnTempFile = fakesys.NewFakeFile("cli-config-path", fs)
-
 		cliRunner := bltclirunner.NewRunner(boshCmd, cmdRunner, fs)
-		cliRunner.Configure()
 		renderer := NewRenderer(fs)
 
-		cmdRunner.AddCmdResult("bosh -n -c cli-config-path deploy", fakesys.FakeCmdResult{
-			Stdout: "Task 15 done",
+		cmdRunner.AddCmdResult("bosh -e fake-director-url --ca-cert /tmp/cert -n --tty --client admin --client-secret admin tasks --recent=1 --json", fakesys.FakeCmdResult{
+			Stdout: `{"Tables":[{"Rows":[["15"]]}]}`,
 		})
 
-		cmdRunner.AddCmdResult("bosh -n -c cli-config-path deploy", fakesys.FakeCmdResult{
-			Stdout: "Task 20 done",
+		cmdRunner.AddCmdResult("bosh -e fake-director-url --ca-cert /tmp/cert -n --tty --client admin --client-secret admin tasks --recent=1 --json", fakesys.FakeCmdResult{
+			Stdout: `{"Tables":[{"Rows":[["20"]]}]}`,
 		})
 
 		parameters := bftconfig.Parameters{
@@ -96,35 +94,35 @@ var _ = Describe("Deployer", func() {
 		Expect(cmdRunner.RunComplexCommands).To(ConsistOf([]boshsys.Command{
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "update", "cloud-config", "manifest-path"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "update-cloud-config", "manifest-path"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "deployment", "manifest-path"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "deploy", "manifest-path"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "deploy"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "tasks", "--recent=1", "--json"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "task", "15", "--debug"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "task", "15", "--debug"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "update", "cloud-config", "manifest-path"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "update-cloud-config", "manifest-path"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "deployment", "manifest-path"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "deploy", "manifest-path"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "deploy"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "tasks", "--recent=1", "--json"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-n", "-c", "cli-config-path", "task", "20", "--debug"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "task", "20", "--debug"},
 			},
 		}))
 	})

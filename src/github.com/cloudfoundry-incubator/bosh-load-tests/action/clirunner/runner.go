@@ -5,19 +5,17 @@ import (
 )
 
 type Runner interface {
-	Configure() error
-	Clean() error
-	TargetAndLogin(target string) error
+	SetEnv(envName string)
 	RunInDirWithArgs(dir string, args ...string) error
 	RunWithArgs(args ...string) error
 	RunWithOutput(args ...string) (string, error)
 }
 
 type runner struct {
-	configPath string
-	cmd        boshsys.Command
-	cmdRunner  boshsys.CmdRunner
-	fs         boshsys.FileSystem
+	cmd       boshsys.Command
+	cmdRunner boshsys.CmdRunner
+	fs        boshsys.FileSystem
+	env       string
 }
 
 func NewRunner(cmd boshsys.Command, cmdRunner boshsys.CmdRunner, fs boshsys.FileSystem) Runner {
@@ -28,35 +26,8 @@ func NewRunner(cmd boshsys.Command, cmdRunner boshsys.CmdRunner, fs boshsys.File
 	}
 }
 
-func (r *runner) Configure() error {
-	configFile, err := r.fs.TempFile("bosh-config")
-	if err != nil {
-		return err
-	}
-	r.configPath = configFile.Name()
-	return nil
-}
-
-func (r *runner) Clean() error {
-	if r.configPath == "" {
-		return nil
-	}
-
-	return r.fs.RemoveAll(r.configPath)
-}
-
-func (r *runner) TargetAndLogin(target string) error {
-	err := r.RunWithArgs("target", target)
-	if err != nil {
-		return err
-	}
-
-	err = r.RunWithArgs("login", "admin", "admin")
-	if err != nil {
-		return err
-	}
-
-	return nil
+func (r *runner) SetEnv(envName string) {
+	r.env = envName
 }
 
 func (r *runner) RunInDirWithArgs(dir string, args ...string) error {
@@ -85,7 +56,12 @@ func (r *runner) RunWithOutput(args ...string) (string, error) {
 
 func (r *runner) cliCommand(args ...string) boshsys.Command {
 	cmd := r.cmd
-	cmd.Args = append(cmd.Args, "-n", "-c", r.configPath)
+	if r.env != "" {
+		cmd.Args = append(cmd.Args, "-e", r.env)
+	}
+	cmd.Args = append(cmd.Args, "--ca-cert", "/tmp/cert")
+	cmd.Args = append(cmd.Args, "-n", "--tty")
+	cmd.Args = append(cmd.Args, "--client", "admin", "--client-secret", "admin")
 	cmd.Args = append(cmd.Args, args...)
 
 	return cmd

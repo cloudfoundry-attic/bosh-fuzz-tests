@@ -23,18 +23,15 @@ func NewUploadCloudConfig(
 	}
 }
 
-func (p *uploadCloudConfig) Execute() error {
-	err := p.cliRunner.TargetAndLogin(p.directorInfo.URL)
+func (u *uploadCloudConfig) Execute() error {
+	u.cliRunner.SetEnv(u.directorInfo.URL)
+
+	cloudConfigPath, err := u.assetsProvider.FullPath("cloud_config.yml")
 	if err != nil {
 		return err
 	}
 
-	cloudConfigPath, err := p.assetsProvider.FullPath("cloud_config.yml")
-	if err != nil {
-		return err
-	}
-
-	err = p.cliRunner.RunWithArgs("update", "cloud-config", cloudConfigPath)
+	err = u.cliRunner.RunWithArgs("update-cloud-config", cloudConfigPath)
 	if err != nil {
 		return err
 	}

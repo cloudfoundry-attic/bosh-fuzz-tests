@@ -7,9 +7,10 @@
   "nginx_start_cmd": "BOSH_SRC_PATH/tmp/integration-nginx/sbin/nginx",
   "verify_multidigest": "BOSH_SRC_PATH/tmp/verify-multidigest",
   "nats_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec nats-server",
-  "cli_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec bosh",
+  "cli_cmd": "/tmp/gobosh",
   "dummy_cpi_path": "BOSH_SRC_PATH/bosh-director/bin/dummy_cpi",
   "number_of_workers": 3,
+  "trusted_certs": "-----BEGIN CERTIFICATE-----\nMIIDNjCCAh4CCQDHvfPvlV4LrTANBgkqhkiG9w0BAQsFADBdMQswCQYDVQQGEwJV\nUzETMBEGA1UECAwKQ2FsaWZvcm5pYTEWMBQGA1UEBwwNU2FuIEZyYW5jaXNjbzEN\nMAsGA1UECwwEQk9TSDESMBAGA1UEAwwJbG9jYWxob3N0MB4XDTE3MDIwOTE5MzEx\nNloXDTE4MDIwOTE5MzExNlowXTELMAkGA1UEBhMCVVMxEzARBgNVBAgMCkNhbGlm\nb3JuaWExFjAUBgNVBAcMDVNhbiBGcmFuY2lzY28xDTALBgNVBAsMBEJPU0gxEjAQ\nBgNVBAMMCWxvY2FsaG9zdDCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEB\nANGaqQ471fV0ASvSxJMexKBhwhuDyMeAy/jGwNQhR32i/OlrFtJAlwa27+LVTgAn\nuf+LQYkHYeKl01K17tFq5em+KfRVXb90lHqB6JngOUtkRSLi6gsYYHEZYEN2a9b/\nl+QeClE8M97ulV5Ah43rCfG2CQC3wdtmhCdGj6v1+0cGR2x3a9LcFsNg0cq8EqRb\nSi+hCy4bJtIZbDfTMy/IQu+VXuJwdv0MYTREcaIdAkw5wLn/ajDg4/a0IkIaE4DJ\n7rQanyHuZ7csa1BBxEbcu7D5hxyJfWSw/yp42ts4ksnxLDPyFz8lIpF3Mliwx94C\nG9p22Im9s5KxWp93ni5GUdUCAwEAATANBgkqhkiG9w0BAQsFAAOCAQEAPHTg6xEP\nfhAa7+6V1vY6KXEi8Vgn3bbxu355Mc/ynAYf2zW+CuRWDxvV0PYqpbIPARlPT8K4\nJGBbnu4jUlrB1Bnvj1FZ+YBQwXTkbADcuwHI90nWLlPAWn4nEJHI60jC6akaPcGK\n2FcyXZhHMbvkd4s135Yh/2UjqEYDFGMqru84TlQdJykWVtV7ISFLez6ByKpqkv3L\na38SyDqo17X+XaP5hErw3BrwlgeLa3WwtjXlqADNqj6WFDS7vT9/BGpnlbjjtkR0\nq2pXeTTJDTXnmYP3g3RrA8QVlhLQRV4kyze99roOq3BO7knFaV5Qrq+nFXta4jQn\n1osLbARObFlN0Q==\n-----END CERTIFICATE-----",
   "parameters" : {
     "NOTE" : "name_length is 253 - 65 (DNS name limit - BOSH UUID domain name)",
     "name_length" : [5, 188],

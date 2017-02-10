@@ -88,8 +88,6 @@ func main() {
 		panic(err)
 	}
 	cliRunner := cliRunnerFactory.Create()
-	cliRunner.Configure()
-	defer cliRunner.Clean()
 
 	if !testConfig.GenerateManifestOnly {
 		logger.Debug("main", "Preparing to deploy")

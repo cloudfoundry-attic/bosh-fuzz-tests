@@ -22,24 +22,10 @@ func NewRecreate(directorInfo DirectorInfo, deploymentName string, cliRunner blt
 }
 
 func (r *recreate) Execute() error {
-	manifestPath, err := r.fs.TempFile("manifest-test")
-	if err != nil {
-		return err
-	}
-	defer r.fs.RemoveAll(manifestPath.Name())
-
-	err = r.cliRunner.RunWithArgs("download", "manifest", r.deploymentName, manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	err = r.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-	if err != nil {
-		return err
-	}
+	r.cliRunner.SetEnv(r.directorInfo.URL)
 
 	deployWrapper := NewDeployWrapper(r.cliRunner)
-	_, err = deployWrapper.RunWithDebug("recreate", "simple", "0")
+	_, err := deployWrapper.RunWithDebug("-d", r.deploymentName, "recreate", "simple/0")
 	if err != nil {
 		return err
 	}

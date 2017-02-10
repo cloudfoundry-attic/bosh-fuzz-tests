@@ -38,8 +38,6 @@ func (f *actionsFlow) Run(usingLegacyManifest bool) error {
 	deploymentName := strings.Join([]string{"deployment", uuid}, "-")
 
 	cliRunner := f.cliRunnerFactory.Create()
-	cliRunner.Configure()
-	defer cliRunner.Clean()
 
 	for i, actionInfo := range f.actionInfos {
 		action, err := f.actionFactory.Create(actionInfo.Name, f.flowNumber, deploymentName, cliRunner, usingLegacyManifest)

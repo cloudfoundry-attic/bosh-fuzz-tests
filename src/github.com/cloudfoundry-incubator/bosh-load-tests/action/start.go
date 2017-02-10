@@ -21,25 +21,11 @@ func NewStart(directorInfo DirectorInfo, deploymentName string, cliRunner bltcli
 	}
 }
 
-func (r *start) Execute() error {
-	manifestPath, err := r.fs.TempFile("manifest-test")
-	if err != nil {
-		return err
-	}
-	defer r.fs.RemoveAll(manifestPath.Name())
+func (s *start) Execute() error {
+	s.cliRunner.SetEnv(s.directorInfo.URL)
 
-	err = r.cliRunner.RunWithArgs("download", "manifest", r.deploymentName, manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	err = r.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	deployWrapper := NewDeployWrapper(r.cliRunner)
-	_, err = deployWrapper.RunWithDebug("start", "simple", "0")
+	deployWrapper := NewDeployWrapper(s.cliRunner)
+	_, err := deployWrapper.RunWithDebug("-d", s.deploymentName, "start", "simple/0")
 	if err != nil {
 		return err
 	}

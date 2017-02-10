@@ -2,6 +2,9 @@
 
 set -e
 
+cp $(ls $CLI_DIR_PATH/bosh-cli-*-linux-amd64) "/tmp/gobosh"
+chmod a+x "/tmp/gobosh"
+
 export PATH=/usr/local/ruby/bin:/usr/local/go/bin:$PATH
 export DB='postgresql'
 
@@ -36,5 +39,7 @@ echo 'Running tests...'
 export GOPATH=$(realpath bosh-fuzz-tests)
 
 sed -i s#BOSH_SRC_PATH#${bosh_src_path}#g bosh-fuzz-tests/ci/concourse-config.json
+
+cp bosh-fuzz-tests/assets/ssl/* /tmp/
 
 go run bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/main.go bosh-fuzz-tests/ci/concourse-config.json ${SEED:-}

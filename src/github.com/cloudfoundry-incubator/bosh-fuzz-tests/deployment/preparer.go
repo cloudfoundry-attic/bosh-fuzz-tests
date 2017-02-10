@@ -30,10 +30,7 @@ func NewPreparer(
 }
 
 func (p *preparer) Prepare() error {
-	err := p.cliRunner.TargetAndLogin(p.directorInfo.URL)
-	if err != nil {
-		return err
-	}
+	p.cliRunner.SetEnv(p.directorInfo.URL)
 
 	stemcellsToUpload := []string{"stemcell.tgz", "stemcell_2.tgz"}
 	for _, stemcellToUpload := range stemcellsToUpload {
@@ -42,7 +39,7 @@ func (p *preparer) Prepare() error {
 			return err
 		}
 
-		err = p.cliRunner.RunWithArgs("upload", "stemcell", stemcellPath)
+		err = p.cliRunner.RunWithArgs("upload-stemcell", stemcellPath)
 		if err != nil {
 			return err
 		}
@@ -64,12 +61,12 @@ func (p *preparer) Prepare() error {
 		return err
 	}
 
-	err = p.cliRunner.RunInDirWithArgs(releaseDir, "create", "release", "--force")
+	err = p.cliRunner.RunInDirWithArgs(releaseDir, "create-release", "--force")
 	if err != nil {
 		return err
 	}
 
-	err = p.cliRunner.RunInDirWithArgs(releaseDir, "upload", "release")
+	err = p.cliRunner.RunInDirWithArgs(releaseDir, "upload-release")
 	if err != nil {
 		return err
 	}

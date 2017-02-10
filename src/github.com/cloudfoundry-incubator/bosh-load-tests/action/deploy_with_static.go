@@ -12,12 +12,12 @@ import (
 )
 
 type deployWithStatic struct {
-	directorInfo   DirectorInfo
-	flowNumber     int
-	deploymentName string
-	cliRunner      bltclirunner.Runner
-	fs             boshsys.FileSystem
-	assetsProvider bltassets.Provider
+	directorInfo        DirectorInfo
+	flowNumber          int
+	deploymentName      string
+	cliRunner           bltclirunner.Runner
+	fs                  boshsys.FileSystem
+	assetsProvider      bltassets.Provider
 	usingLegacyManifest bool
 }
 
@@ -31,21 +31,18 @@ func NewDeployWithStatic(
 	usingLegacyManifest bool,
 ) *deployWithStatic {
 	return &deployWithStatic{
-		directorInfo:   directorInfo,
-		flowNumber:     flowNumber,
-		deploymentName: deploymentName,
-		cliRunner:      cliRunner,
-		fs:             fs,
-		assetsProvider: assetsProvider,
+		directorInfo:        directorInfo,
+		flowNumber:          flowNumber,
+		deploymentName:      deploymentName,
+		cliRunner:           cliRunner,
+		fs:                  fs,
+		assetsProvider:      assetsProvider,
 		usingLegacyManifest: usingLegacyManifest,
 	}
 }
 
 func (d *deployWithStatic) Execute() error {
-	err := d.cliRunner.TargetAndLogin(d.directorInfo.URL)
-	if err != nil {
-		return err
-	}
+	d.cliRunner.SetEnv(d.directorInfo.URL)
 
 	manifestFilename := "manifest_with_static.yml"
 	if d.usingLegacyManifest == true {
@@ -79,13 +76,8 @@ func (d *deployWithStatic) Execute() error {
 		return err
 	}
 
-	err = d.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
 	deployWrapper := NewDeployWrapper(d.cliRunner)
-	_, err = deployWrapper.RunWithDebug("deploy")
+	_, err = deployWrapper.RunWithDebug("-d", d.deploymentName, "deploy", manifestPath.Name())
 	if err != nil {
 		return err
 	}

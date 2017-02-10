@@ -9,6 +9,7 @@ image_resource:
 inputs:
 - name: bosh-fuzz-tests
 - name: bosh-src
+- name: bosh-cli
 
 run:
   path: bosh-fuzz-tests/ci/tasks/test.sh
@@ -17,3 +18,4 @@ params:
   RUBY_VERSION: 2.3
   SEED: ~
   BOSH_SRC_PATH: bosh-src/src
+  CLI_DIR_PATH: bosh-cli

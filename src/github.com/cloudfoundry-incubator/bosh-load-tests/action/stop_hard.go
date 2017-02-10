@@ -21,25 +21,11 @@ func NewStopHard(directorInfo DirectorInfo, deploymentName string, cliRunner blt
 	}
 }
 
-func (r *stopHard) Execute() error {
-	manifestPath, err := r.fs.TempFile("manifest-test")
-	if err != nil {
-		return err
-	}
-	defer r.fs.RemoveAll(manifestPath.Name())
+func (s *stopHard) Execute() error {
+	s.cliRunner.SetEnv(s.directorInfo.URL)
 
-	err = r.cliRunner.RunWithArgs("download", "manifest", r.deploymentName, manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	err = r.cliRunner.RunWithArgs("deployment", manifestPath.Name())
-	if err != nil {
-		return err
-	}
-
-	deployWrapper := NewDeployWrapper(r.cliRunner)
-	_, err = deployWrapper.RunWithDebug("stop", "--hard", "simple", "0")
+	deployWrapper := NewDeployWrapper(s.cliRunner)
+	_, err := deployWrapper.RunWithDebug("-d", s.deploymentName, "stop", "--hard", "simple/0")
 	if err != nil {
 		return err
 	}

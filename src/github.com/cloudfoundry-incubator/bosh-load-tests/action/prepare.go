@@ -29,17 +29,14 @@ func NewPrepare(
 }
 
 func (p *prepare) Execute() error {
-	err := p.cliRunner.TargetAndLogin(p.directorInfo.URL)
-	if err != nil {
-		return err
-	}
+	p.cliRunner.SetEnv(p.directorInfo.URL)
 
 	stemcellPath, err := p.assetsProvider.FullPath("stemcell.tgz")
 	if err != nil {
 		return err
 	}
 
-	err = p.cliRunner.RunWithArgs("upload", "stemcell", stemcellPath)
+	err = p.cliRunner.RunWithArgs("upload-stemcell", stemcellPath)
 	if err != nil {
 		return err
 	}
@@ -60,12 +57,12 @@ func (p *prepare) Execute() error {
 		return err
 	}
 
-	err = p.cliRunner.RunInDirWithArgs(releaseDir, "create", "release", "--force")
+	err = p.cliRunner.RunInDirWithArgs(releaseDir, "create-release", "--force")
 	if err != nil {
 		return err
 	}
 
-	err = p.cliRunner.RunInDirWithArgs(releaseDir, "upload", "release")
+	err = p.cliRunner.RunInDirWithArgs(releaseDir, "upload-release")
 	if err != nil {
 		return err
 	}

@@ -72,16 +72,19 @@ func (d *dummy) Setup() error {
 	}
 
 	directorOptions := DirectorOptions{
-		Port:             65001,
-		DatabaseName:     d.database.Name(),
-		DatabaseServer:   d.database.Server(),
-		DatabaseUser:     d.database.User(),
-		DatabasePassword: d.database.Password(),
-		DatabasePort:     d.database.Port(),
+		Port:                  65001,
+		DatabaseName:          d.database.Name(),
+		DatabaseServer:        d.database.Server(),
+		DatabaseUser:          d.database.User(),
+		DatabasePassword:      d.database.Password(),
+		DatabasePort:          d.database.Port(),
+		BaseDir:               d.workingDir,
+		DummyCPIPath:          d.config.DummyCPIPath,
+		RubyVersion:           d.config.RubyVersion,
 		VerifyMultidigestPath: d.config.VerifyMultidigest,
 	}
 
-	directorConfig := NewDirectorConfig(directorOptions, d.workingDir, d.fs, d.assetsProvider, d.config.NumberOfWorkers, d.config.DummyCPIPath)
+	directorConfig := NewDirectorConfig(directorOptions, d.fs, d.assetsProvider, d.config.NumberOfWorkers)
 	d.directorService = NewDirectorService(
 		d.config.DirectorMigrationCommand,
 		d.config.DirectorStartCommand,

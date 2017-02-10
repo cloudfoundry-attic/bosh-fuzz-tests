@@ -1,8 +1,9 @@
 package action
 
 import (
-	"regexp"
+	"fmt"
 
+	"encoding/json"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
@@ -21,23 +22,29 @@ func (d *deployWrapper) RunWithDebug(args ...string) (string, error) {
 	output, err := d.cliRunner.RunWithOutput(args...)
 	taskId := ""
 
+	output, err = d.cliRunner.RunWithOutput("tasks", "--recent=1", "--json")
 	if err != nil {
-		re := regexp.MustCompile("bosh task ([0-9]+) --debug")
-		matches := re.FindAllStringSubmatch(output, -1)
+		return taskId, err
+	}
 
-		if len(matches) > 0 && len(matches[0]) > 1 {
-			taskId = matches[0][1]
-			debugErr := d.cliRunner.RunWithArgs("task", taskId, "--debug")
-			if debugErr != nil {
-				return taskId, debugErr
+	var outputStruct Output
+	json.Unmarshal([]byte(output), &outputStruct)
+
+	if outputStruct.Tables != nil {
+		for _, row := range outputStruct.Tables[0].Rows {
+			if len(row[0]) > 0 {
+				taskId = row[0]
+				break
 			}
 		}
 	} else {
-		re := regexp.MustCompile("Task ([0-9]+) done")
-		matches := re.FindAllStringSubmatch(output, -1)
+		fmt.Println(fmt.Sprintf("OUTPUT: %s", output))
+	}
 
-		if len(matches) > 0 && len(matches[0]) > 1 {
-			taskId = matches[0][1]
+	if err != nil {
+		debugErr := d.cliRunner.RunWithArgs("task", taskId, "--debug")
+		if debugErr != nil {
+			return taskId, debugErr
 		}
 	}
 
