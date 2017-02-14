@@ -2,7 +2,7 @@
 
 set -e
 
-cp $(ls $CLI_DIR_PATH/bosh-cli-*-linux-amd64) "/tmp/gobosh"
+cp $(ls $CLI_DIR_PATH/alpha-bosh-cli-*-linux-amd64) "/tmp/gobosh"
 chmod a+x "/tmp/gobosh"
 
 export PATH=/usr/local/ruby/bin:/usr/local/go/bin:$PATH
