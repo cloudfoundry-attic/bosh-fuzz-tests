@@ -34,6 +34,9 @@ cp -r bosh-agent $agent_path
   cd $bosh_src_path
   bundle install --local
   bundle exec rake spec:integration:install_dependencies
+
+  echo "Building agent..."
+  go/src/github.com/cloudfoundry/bosh-agent/bin/build
 )
 
 echo 'Running tests...'
