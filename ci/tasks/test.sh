@@ -25,13 +25,15 @@ chruby $RUBY_VERSION
 bosh_src_path="$PWD/$BOSH_SRC_PATH"
 
 echo 'Installing dependencies...'
+
+agent_path=bosh-src/src/go/src/github.com/cloudfoundry/
+mkdir -p $agent_path
+cp -r bosh-agent $agent_path
+
 (
   cd $bosh_src_path
   bundle install --local
   bundle exec rake spec:integration:install_dependencies
-
-  echo "Building agent..."
-  go/src/github.com/cloudfoundry/bosh-agent/bin/build
 )
 
 echo 'Running tests...'
