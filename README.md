@@ -20,6 +20,7 @@ To run fuzz tests locally with BOSH director from local source (`/Users/pivotal/
 as defined in `config.json`):
 
 ```
+cp ~/workspace/bosh-fuzz-tests/assets/ssl/* /tmp/
 bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
 ```
 
