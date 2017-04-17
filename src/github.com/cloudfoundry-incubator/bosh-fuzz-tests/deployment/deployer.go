@@ -85,7 +85,7 @@ func (d *deployer) RunDeploys() error {
 			}
 
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
-			taskId, err := deployWrapper.RunWithDebug("deploy", manifestPath.Name())
+			taskId, err := deployWrapper.RunWithDebug("-d", "foo-deployment", "deploy", manifestPath.Name())
 			if err != nil {
 				errorPrefix := ""
 				if testCase.DeploymentWillFail {

@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"fmt"
 	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )
@@ -15,7 +16,7 @@ func (n *nothingChangedComparator) Compare(previousInputs []bftinput.Input, curr
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
 		if n.nothingChanged(job, currentInput, previousInputs) {
-			expectations = append(expectations, bftexpectation.NewNegativeDebugLog(job.Name))
+			expectations = append(expectations, bftexpectation.NewDebugLog(fmt.Sprintf("No instances to update for '%s'", job.Name)))
 		}
 	}
 

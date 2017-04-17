@@ -54,7 +54,7 @@ var _ = Describe("NothingChangedComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewNegativeDebugLog("foo-job")
+			expectedDebugLogExpectation := bftexpectation.NewDebugLog("No instances to update for 'foo-job'")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})

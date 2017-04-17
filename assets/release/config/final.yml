@@ -1,5 +1,5 @@
 ---
-final_name: bosh-release
+final_name: foo-release
 blobstore:
   provider: local
   options:
