@@ -1,7 +1,0 @@
-{
-    "dependencies": {
-            "github.com/cloudfoundry-incubator/bosh-load-tests": {
-            "branch": "master"
-        }
-    }
-}

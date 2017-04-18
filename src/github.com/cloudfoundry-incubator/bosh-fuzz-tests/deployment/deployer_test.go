@@ -41,12 +41,12 @@ var _ = Describe("Deployer", func() {
 		cliRunner := bltclirunner.NewRunner(boshCmd, cmdRunner, fs)
 		renderer := NewRenderer(fs)
 
-		cmdRunner.AddCmdResult("bosh -e fake-director-url --ca-cert /tmp/cert -n --tty --client admin --client-secret admin tasks --recent=1 --json", fakesys.FakeCmdResult{
-			Stdout: `{"Tables":[{"Rows":[["15"]]}]}`,
+		cmdRunner.AddCmdResult("bosh -e fake-director-url --ca-cert /tmp/cert -n --tty --client admin --client-secret admin -d foo-deployment deploy manifest-path", fakesys.FakeCmdResult{
+			Stdout: `Task 888`,
 		})
 
-		cmdRunner.AddCmdResult("bosh -e fake-director-url --ca-cert /tmp/cert -n --tty --client admin --client-secret admin tasks --recent=1 --json", fakesys.FakeCmdResult{
-			Stdout: `{"Tables":[{"Rows":[["20"]]}]}`,
+		cmdRunner.AddCmdResult("bosh -e fake-director-url --ca-cert /tmp/cert -n --tty --client admin --client-secret admin -d foo-deployment deploy manifest-path", fakesys.FakeCmdResult{
+			Stdout: `Task 999`,
 		})
 
 		parameters := bftconfig.Parameters{
@@ -98,15 +98,11 @@ var _ = Describe("Deployer", func() {
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "deploy", "manifest-path"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "-d", "foo-deployment", "deploy", "manifest-path"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "tasks", "--recent=1", "--json"},
-			},
-			{
-				Name: "bosh",
-				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "task", "15", "--debug"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "task", "888", "--debug"},
 			},
 			{
 				Name: "bosh",
@@ -114,15 +110,11 @@ var _ = Describe("Deployer", func() {
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "deploy", "manifest-path"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "-d", "foo-deployment", "deploy", "manifest-path"},
 			},
 			{
 				Name: "bosh",
-				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "tasks", "--recent=1", "--json"},
-			},
-			{
-				Name: "bosh",
-				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "task", "20", "--debug"},
+				Args: []string{"-e", "fake-director-url", "--ca-cert", "/tmp/cert", "-n", "--tty", "--client", "admin", "--client-secret", "admin", "task", "999", "--debug"},
 			},
 		}))
 	})
