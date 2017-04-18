@@ -31,7 +31,7 @@ func (d *existingInstanceDebugLog) Run(debugLog string) error {
 		if len(match) > 1 {
 			instanceName := match[1]
 			instanceNameParts := strings.Split(instanceName, "/")
-			expectedRe := regexp.MustCompile(fmt.Sprintf("%s.* %s\\/%s \\(.*\\)", d.expectedString, instanceNameParts[0], instanceNameParts[1]))
+			expectedRe := regexp.MustCompile(fmt.Sprintf("%s.* %s\\/[0-9a-f]{8}-[0-9a-f-]{27} \\(%s\\)", d.expectedString, instanceNameParts[0], instanceNameParts[1]))
 			expectedMatches := expectedRe.FindAllStringSubmatch(debugLog, -1)
 
 			if len(expectedMatches) == 0 {
