@@ -35,7 +35,7 @@ func main() {
 	assetsProvider := bltassets.NewProvider(config.AssetsPath)
 
 	logger.Debug("main", "Setting up environment")
-	environmentProvider := bltenv.NewProvider(config, fs, cmdRunner, assetsProvider)
+	environmentProvider := bltenv.NewProvider(config, fs, cmdRunner, assetsProvider, logger)
 	environment := environmentProvider.Get()
 	err = environment.Setup()
 	if err != nil {

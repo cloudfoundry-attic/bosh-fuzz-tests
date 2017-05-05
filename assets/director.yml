@@ -36,6 +36,7 @@ db: &bosh_db
   connection_options:
     max_connections: 32
     pool_timeout: 10
+    reconnect: true
 
 dns:
   db: *bosh_db
@@ -60,8 +61,8 @@ snapshots:
 
 cloud:
   provider:
-      name: test-cpi
-      path: {{ .BaseDir }}/cpi
+    name: test-cpi
+    path: {{ .BaseDir }}/cpi
   properties:
     nats: nats://localhost:65010
     dir: {{ .BaseDir }}/boshcloud
@@ -72,3 +73,22 @@ cloud:
         host: 127.0.0.1
         host: 127.0.0.1
         password:
+
+user_management:
+{{if .UAAEnabled}}
+  provider: uaa
+  uaa:
+    public_key: |
+      -----BEGIN PUBLIC KEY-----
+      MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC/85WUjM7WKxnSMkd/TtGo+WWX
+      kI5pH8ACBtb5oameiMJIw/wZ+dtyIwU+NZ0mKua+IzpGL1++bLJL0fDxE1LpD88j
+      WzjaaTp8930UyY23oMxSa6JMG6OpDW469VTkY1g3uE/RAFtg7J9ZnDrTrMFJrduV
+      VRs5sM3o4r1UYUTD6wIDAQAB
+      -----END PUBLIC KEY-----
+    url: https://localhost:65002/uaa
+{{else}}
+  provider: local
+  local:
+    users:
+    - {name: test, password: secret}
+{{end}}

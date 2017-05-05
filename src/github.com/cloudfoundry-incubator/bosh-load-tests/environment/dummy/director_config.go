@@ -3,12 +3,12 @@ package dummy
 import (
 	"bytes"
 	"fmt"
+	"os"
 	"path/filepath"
 	"text/template"
 
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	"os"
 )
 
 type DirectorOptions struct {
@@ -22,6 +22,7 @@ type DirectorOptions struct {
 	DummyCPIPath          string
 	RubyVersion           string
 	VerifyMultidigestPath string
+	UAAEnabled            bool
 }
 
 type DirectorConfig struct {
