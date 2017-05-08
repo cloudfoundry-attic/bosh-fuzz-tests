@@ -1,0 +1,17 @@
+---
+name: variable
+templates:
+  ctl: bin/ctl
+  result.erb: result
+
+packages: []
+
+properties:
+  prop1:
+    description: password type
+    type: password
+  prop2:
+    description: certificate type
+    type: certificate
+  prop3:
+    description: no type

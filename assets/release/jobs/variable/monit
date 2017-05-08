@@ -1,0 +1,5 @@
+check process simple
+  with pidfile /var/vcap/sys/run/variable.pid
+  start program "/var/vcap/jobs/variable/bin/ctl start"
+  stop program "/var/vcap/jobs/variable/bin/ctl stop"
+  group vcap

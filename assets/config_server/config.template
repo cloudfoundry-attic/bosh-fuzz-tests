@@ -1,0 +1,9 @@
+{
+  "port": {{ .Port }},
+  "store": "{{ .Store }}",
+  "private_key_file_path": "{{ .AssetsPath }}/config_server/config_server.key",
+  "certificate_file_path": "{{ .AssetsPath }}/config_server/config_server.crt",
+  "jwt_verification_key_path": "{{ .AssetsPath }}/config_server/jwtVerification.key",
+  "ca_certificate_file_path": "{{ .AssetsPath }}/config_server/rootCA.pem",
+  "ca_private_key_file_path": "{{ .AssetsPath }}/config_server/rootCA.key"
+}
