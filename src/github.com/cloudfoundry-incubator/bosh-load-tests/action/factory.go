@@ -10,7 +10,7 @@ import (
 )
 
 type Factory interface {
-	Create(name string, flowNumber int, deploymentName string, cliRunner bltclirunner.Runner, usingLegacyManifest bool) (Action, error)
+	Create(name string, flowNumber int, deploymentName string, boshRunner bltclirunner.Runner, uaacRunner bltclirunner.Runner, usingLegacyManifest bool) (Action, error)
 }
 
 type factory struct {
@@ -36,28 +36,34 @@ func (f *factory) Create(
 	name string,
 	flowNumber int,
 	deploymentName string,
-	cliRunner bltclirunner.Runner,
+	boshRunner bltclirunner.Runner,
+	uaacRunner bltclirunner.Runner,
 	usingLegacyManifest bool,
 ) (Action, error) {
+
 	switch name {
 	case "prepare":
-		return NewPrepare(f.directorInfo, cliRunner, f.fs, f.assetsProvider), nil
+		return NewPrepare(f.directorInfo, boshRunner, f.fs, f.assetsProvider), nil
+	case "prepare_config_server":
+		return NewPrepareConfigServer(f.directorInfo, uaacRunner), nil
 	case "ignore":
-		return NewIgnore(f.directorInfo, deploymentName, cliRunner, f.fs, f.assetsProvider), nil
+		return NewIgnore(f.directorInfo, deploymentName, boshRunner, f.fs, f.assetsProvider), nil
 	case "upload_cloud_config":
-		return NewUploadCloudConfig(f.directorInfo, cliRunner, f.assetsProvider), nil
+		return NewUploadCloudConfig(f.directorInfo, boshRunner, f.assetsProvider), nil
 	case "deploy_with_dynamic":
-		return NewDeployWithDynamic(f.directorInfo, deploymentName, cliRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
+		return NewDeployWithDynamic(f.directorInfo, deploymentName, boshRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
 	case "deploy_with_static":
-		return NewDeployWithStatic(f.directorInfo, flowNumber, deploymentName, cliRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
+		return NewDeployWithStatic(f.directorInfo, flowNumber, deploymentName, boshRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
+	case "deploy_with_variables":
+		return NewDeployWithVariables(f.directorInfo, deploymentName, boshRunner, f.fs, f.assetsProvider), nil
 	case "recreate":
-		return NewRecreate(f.directorInfo, deploymentName, cliRunner, f.fs), nil
+		return NewRecreate(f.directorInfo, deploymentName, boshRunner, f.fs), nil
 	case "stop_hard":
-		return NewStopHard(f.directorInfo, deploymentName, cliRunner, f.fs), nil
+		return NewStopHard(f.directorInfo, deploymentName, boshRunner, f.fs), nil
 	case "start":
-		return NewStart(f.directorInfo, deploymentName, cliRunner, f.fs), nil
+		return NewStart(f.directorInfo, deploymentName, boshRunner, f.fs), nil
 	case "delete_deployment":
-		return NewDeleteDeployment(f.directorInfo, deploymentName, cliRunner, f.fs), nil
+		return NewDeleteDeployment(f.directorInfo, deploymentName, boshRunner, f.fs), nil
 	}
 
 	return nil, errors.New("unknown action")

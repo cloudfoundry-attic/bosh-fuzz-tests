@@ -1,21 +1,21 @@
 package dummy
 
 import (
+	"bytes"
+	"fmt"
+	"io/ioutil"
+	"net/http"
+	"strings"
+	"text/template"
+	"time"
+
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 	bltcom "github.com/cloudfoundry-incubator/bosh-load-tests/command"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshhttp "github.com/cloudfoundry/bosh-utils/http"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-
-	"bytes"
-	"fmt"
-	"io/ioutil"
-	"net/http"
 	"os"
-	"strings"
-	"text/template"
-	"time"
 )
 
 type UAAServiceOptions struct {
@@ -78,8 +78,7 @@ func (u *UAAService) renderStartScript(uaaScriptTemplatePath string) (string, er
 	scriptTemplate := template.Must(template.ParseFiles(uaaScriptTemplatePath))
 	buffer := bytes.NewBuffer([]byte{})
 
-	err := scriptTemplate.Execute(buffer, u.options)
-	if err != nil {
+	if err := scriptTemplate.Execute(buffer, u.options); err != nil {
 		return "", err
 	}
 
@@ -88,14 +87,23 @@ func (u *UAAService) renderStartScript(uaaScriptTemplatePath string) (string, er
 		return "", err
 	}
 
-	err = u.fs.WriteFile(renderedScript.Name(), buffer.Bytes())
-	if err != nil {
+	if err = u.fs.WriteFile(renderedScript.Name(), buffer.Bytes()); err != nil {
 		return "", err
 	}
 
-	u.fs.Chmod(renderedScript.Name(), os.ModePerm)
+	// Why? Writing rendered script to file system seems to leave the file open
+	// Ref: https://github.com/moby/moby/issues/9547
+	// Temporarily proceeding with using copied file hack
+	tempCopy := renderedScript.Name() + "-copy"
+	if err := u.fs.CopyFile(renderedScript.Name(), tempCopy); err != nil {
+		return "", err
+	}
 
-	return renderedScript.Name(), nil
+	if err := u.fs.Chmod(tempCopy, os.ModePerm); err != nil {
+		return "", err
+	}
+
+	return tempCopy, nil
 }
 
 func (u *UAAService) waitForServiceToStart() error {

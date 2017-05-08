@@ -13,7 +13,10 @@ type DirectorInfo struct {
 }
 
 func NewDirectorInfo(directorURL string, cliRunnerFactory bltclirunner.Factory) (DirectorInfo, error) {
-	cliRunner := cliRunnerFactory.Create()
+	cliRunner, err := cliRunnerFactory.Create("bosh")
+	if nil != err {
+		return DirectorInfo{}, err
+	}
 
 	cliRunner.SetEnv(directorURL)
 
