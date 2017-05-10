@@ -1,0 +1,7 @@
+#!/bin/bash
+
+set -e -x
+
+UAA_CONFIG_PATH={{ .AssetsPath }}/uaa/asymmetric \
+CATALINA_OPTS="-Duaa.http_port={{ .UaaHttpPort }} -Duaa.server_port={{ .UaaServerPort }} -Duaa.access_log_dir={{ .UaaAccessLogDirectory }} -Duaa.webapps={{ .TomcatPath }}/webapps" \
+{{ .TomcatPath }}/bin/catalina.sh run -config {{ .AssetsPath }}/uaa/tomcat-server.xml
