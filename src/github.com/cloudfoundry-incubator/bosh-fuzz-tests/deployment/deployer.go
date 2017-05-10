@@ -96,13 +96,8 @@ func (d *deployer) RunDeploys() error {
 				return bosherr.WrapError(err, errorPrefix+"Running deploy")
 			}
 
-			debugLog, err := d.cliRunner.RunWithOutput("task", taskId, "--debug")
-			if err != nil {
-				return bosherr.WrapError(err, "Getting task debug logs")
-			}
-
 			for _, expectation := range testCase.Expectations {
-				err := expectation.Run(debugLog)
+				err := expectation.Run(d.cliRunner, taskId)
 				if err != nil {
 					return bosherr.WrapError(err, "Running expectation")
 				}

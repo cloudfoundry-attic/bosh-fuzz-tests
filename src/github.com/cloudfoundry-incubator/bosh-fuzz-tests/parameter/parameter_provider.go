@@ -62,6 +62,9 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewCloudProperties(p.parameters.NumOfCloudProperties, p.nameGenerator, p.reuseDecider)
 	} else if name == "fixed_migrated_from" {
 		return NewFixedMigratedFrom()
+	} else if name == "variables" {
+		numOfVariables := p.parameters.NumOfVariables[rand.Intn(len(p.parameters.NumOfVariables))]
+		return NewVariables(numOfVariables, p.parameters.VariableTypes)
 	}
 
 	return nil
