@@ -19,14 +19,12 @@ type Case struct {
 type analyzer struct {
 	stemcellComparator       Comparator
 	nothingChangedComparator Comparator
-	variablesComparator      Comparator
 }
 
 func NewAnalyzer(logger boshlog.Logger) Analyzer {
 	return &analyzer{
 		stemcellComparator:       NewStemcellComparator(logger),
 		nothingChangedComparator: NewNothingChangedComparator(),
-		variablesComparator:      NewVariablesComparator(),
 	}
 }
 
@@ -44,7 +42,6 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 			deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(inputs[i-1], inputs[i])
 			deploymentWillFail = deploymentWillFail || a.isMovingInstancesStaticIPToAnotherAZ(inputs[i-1], inputs[i])
 		}
-		expectations = append(expectations, a.variablesComparator.Compare(inputs[:i], inputs[i])...)
 
 		cases = append(cases, Case{
 			Input:              inputs[i],

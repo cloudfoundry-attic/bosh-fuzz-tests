@@ -22,13 +22,7 @@ func NewExistingInstanceDebugLog(expectedString string, jobName string) Expectat
 	}
 }
 
-func (d *existingInstanceDebugLog) Run(cliRunner bltclirunner.Runner, taskId string) error {
-
-	debugLog, err := cliRunner.RunWithOutput("task", taskId, "--debug")
-	if err != nil {
-		return bosherr.WrapError(err, "Getting task debug logs")
-	}
-
+func (d *existingInstanceDebugLog) Run(debugLog string) error {
 	regexString := fmt.Sprintf("Existing desired instance '(%s[^']+)'", d.jobName)
 	re := regexp.MustCompile(regexString)
 	matches := re.FindAllStringSubmatch(debugLog, -1)

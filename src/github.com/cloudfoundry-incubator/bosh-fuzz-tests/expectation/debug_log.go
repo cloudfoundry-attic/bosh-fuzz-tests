@@ -3,7 +3,6 @@ package expectation
 import (
 	"strings"
 
-	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 )
 
@@ -17,12 +16,7 @@ func NewDebugLog(expectedString string) Expectation {
 	}
 }
 
-func (d *debugLog) Run(cliRunner bltclirunner.Runner, taskId string) error {
-	debugLog, err := cliRunner.RunWithOutput("task", taskId, "--debug")
-	if err != nil {
-		return bosherr.WrapError(err, "Getting task debug logs")
-	}
-
+func (d *debugLog) Run(debugLog string) error {
 	if !strings.Contains(debugLog, d.expectedString) {
 		return bosherr.Errorf("Task debug logs output does not contain expected string: %s", d.expectedString)
 	}

@@ -1,9 +1,11 @@
 package deployment_test
 
 import (
-	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	faksesys "github.com/cloudfoundry/bosh-utils/system/fakes"
+
+	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
+
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 )
@@ -154,25 +156,6 @@ var _ = Describe("Manifest/Renderer", func() {
 					Version: "1",
 				},
 			},
-			Variables: []bftinput.Variable{
-				{
-					Name: "var1",
-					Type: "ssh",
-				},
-				{
-					Name: "var2",
-					Type: "rsa",
-				},
-				{
-					Name: "var3",
-					Type: "password",
-				},
-				{
-					Name:    "var4",
-					Type:    "certificate",
-					Options: map[string]interface{}{"is_ca": true},
-				},
-			},
 		}
 
 		err := renderer.Render(input, manifestPath, cloudConfigPath)
@@ -232,18 +215,6 @@ jobs:
   networks:
   - name: default
     default: [dns, gateway]
-
-variables:
-- name: var1
-  type: ssh
-- name: var2
-  type: rsa
-- name: var3
-  type: password
-- name: var4
-  type: certificate
-  options:
-    is_ca: true
 `
 
 		manifestContents, err := fs.ReadFileString(manifestPath)

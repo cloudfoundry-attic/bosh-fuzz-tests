@@ -15,7 +15,6 @@ type FakeParameterProvider struct {
 	Update            *FakeUpdate
 	CloudProperties   *FakeCloudProperties
 	FixedMigratedFrom *FakeFixedMigratedFrom
-	Variables         *FakeVariables
 }
 
 func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeParameterProvider {
@@ -29,7 +28,6 @@ func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeP
 		Update:            NewFakeUpdate(),
 		CloudProperties:   NewFakeCloudProperties(),
 		FixedMigratedFrom: NewFakeFixedMigratedFrom(),
-		Variables:         NewFakeVariables(),
 	}
 }
 
@@ -53,8 +51,6 @@ func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
 	} else if name == "cloud_properties" {
 		return p.CloudProperties
 	} else if name == "fixed_migrated_from" {
-		return p.FixedMigratedFrom
-	} else if name == "variables" {
 		return p.FixedMigratedFrom
 	}
 

@@ -44,8 +44,6 @@ var _ = Describe("InputGenerator", func() {
 			MaxInFlight:                []int{3},
 			Serial:                     []string{"true"},
 			NumOfCloudProperties:       []int{2},
-			NumOfVariables:             []int{0, 10, 500},
-			VariableTypes:              []string{"rsa", "ssh", "password"},
 		}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 		nameGenerator = bftnamegen.NewNameGenerator()

@@ -1,6 +1,6 @@
 1cf51df github.com/cloudfoundry/bosh-utils/.git
-1b526d2 github.com/cloudfoundry-incubator/bosh-load-tests/.git
+cfddd39 github.com/cloudfoundry-incubator/bosh-load-tests/.git
 83438ca github.com/onsi/ginkgo/.git
-00acfa9 github.com/onsi/gomega/.git
-c9b681d golang.org/x/net/.git
+da1d0e4 github.com/onsi/gomega/.git
+feeb485 golang.org/x/net/.git
 470f45b golang.org/x/text/.git

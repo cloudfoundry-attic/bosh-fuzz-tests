@@ -2,7 +2,6 @@ package analyzer
 
 import (
 	"fmt"
-
 	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )

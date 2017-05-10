@@ -1,9 +1,7 @@
 package matchers
 
 import (
-	"bytes"
 	"encoding/xml"
-	"errors"
 	"fmt"
 	"io"
 	"reflect"
@@ -23,15 +21,18 @@ func (matcher *MatchXMLMatcher) Match(actual interface{}) (success bool, err err
 		return false, err
 	}
 
-	aval, err := parseXmlContent(actualString)
-	if err != nil {
+	aval := &xmlNode{}
+	eval := &xmlNode{}
+
+	if err := newXmlDecoder(strings.NewReader(actualString)).Decode(aval); err != nil {
 		return false, fmt.Errorf("Actual '%s' should be valid XML, but it is not.\nUnderlying error:%s", actualString, err)
 	}
-
-	eval, err := parseXmlContent(expectedString)
-	if err != nil {
+	if err := newXmlDecoder(strings.NewReader(expectedString)).Decode(eval); err != nil {
 		return false, fmt.Errorf("Expected '%s' should be valid XML, but it is not.\nUnderlying error:%s", expectedString, err)
 	}
+
+	aval.Clean()
+	eval.Clean()
 
 	return reflect.DeepEqual(aval, eval), nil
 }
@@ -59,73 +60,8 @@ func (matcher *MatchXMLMatcher) formattedPrint(actual interface{}) (actualString
 	return actualString, expectedString, nil
 }
 
-func parseXmlContent(content string) (*xmlNode, error) {
-	allNodes := []*xmlNode{}
-
-	dec := newXmlDecoder(strings.NewReader(content))
-	for {
-		tok, err := dec.Token()
-		if err != nil {
-			if err == io.EOF {
-				break
-			}
-			return nil, fmt.Errorf("failed to decode next token: %v", err)
-		}
-
-		lastNodeIndex := len(allNodes) - 1
-		var lastNode *xmlNode
-		if len(allNodes) > 0 {
-			lastNode = allNodes[lastNodeIndex]
-		} else {
-			lastNode = &xmlNode{}
-		}
-
-		switch tok := tok.(type) {
-		case xml.StartElement:
-			allNodes = append(allNodes, &xmlNode{XMLName: tok.Name, XMLAttr: tok.Attr})
-		case xml.EndElement:
-			if len(allNodes) > 1 {
-				allNodes[lastNodeIndex-1].Nodes = append(allNodes[lastNodeIndex-1].Nodes, lastNode)
-				allNodes = allNodes[:lastNodeIndex]
-			}
-		case xml.CharData:
-			lastNode.Content = append(lastNode.Content, tok.Copy()...)
-		case xml.Comment:
-			lastNode.Comments = append(lastNode.Comments, tok.Copy())
-		case xml.ProcInst:
-			lastNode.ProcInsts = append(lastNode.ProcInsts, tok.Copy())
-		}
-	}
-
-	if len(allNodes) == 0 {
-		return nil, errors.New("found no nodes")
-	}
-	firstNode := allNodes[0]
-	trimParentNodesContentSpaces(firstNode)
-
-	return firstNode, nil
-}
-
 func newXmlDecoder(reader io.Reader) *xml.Decoder {
 	dec := xml.NewDecoder(reader)
 	dec.CharsetReader = charset.NewReaderLabel
 	return dec
-}
-
-func trimParentNodesContentSpaces(node *xmlNode) {
-	if len(node.Nodes) > 0 {
-		node.Content = bytes.TrimSpace(node.Content)
-		for _, childNode := range node.Nodes {
-			trimParentNodesContentSpaces(childNode)
-		}
-	}
-}
-
-type xmlNode struct {
-	XMLName   xml.Name
-	Comments  []xml.Comment
-	ProcInsts []xml.ProcInst
-	XMLAttr   []xml.Attr
-	Content   []byte
-	Nodes     []*xmlNode
 }

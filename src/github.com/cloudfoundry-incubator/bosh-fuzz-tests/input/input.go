@@ -8,7 +8,6 @@ type Input struct {
 	Update       UpdateConfig
 	CloudConfig  CloudConfig
 	Stemcells    []StemcellConfig
-	Variables    []Variable
 }
 
 func (i Input) FindJobByName(jobName string) (Job, bool) {
