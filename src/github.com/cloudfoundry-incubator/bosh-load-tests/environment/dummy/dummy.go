@@ -13,17 +13,18 @@ import (
 )
 
 type dummy struct {
-	workingDir      string
-	database        Database
-	directorService *DirectorService
-	nginxService    *NginxService
-	uaaService      *UAAService
-	natsService     *NatsService
-	config          *bltconfig.Config
-	fs              boshsys.FileSystem
-	cmdRunner       boshsys.CmdRunner
-	assetsProvider  bltassets.Provider
-	logger          boshlog.Logger
+	workingDir          string
+	database            Database
+	directorService     *DirectorService
+	nginxService        *NginxService
+	uaaService          *UAAService
+	configServerService *ConfigServerService
+	natsService         *NatsService
+	config              *bltconfig.Config
+	fs                  boshsys.FileSystem
+	cmdRunner           boshsys.CmdRunner
+	assetsProvider      bltassets.Provider
+	logger              boshlog.Logger
 }
 
 func NewDummy(
@@ -93,6 +94,24 @@ func (d *dummy) Setup() error {
 		}
 	}
 
+	if d.config.ConfigServerConfig.Enabled {
+		if !d.config.UAAConfig.Enabled {
+			return errors.New("Config server requires UAA")
+		}
+
+		configServerOptions := ConfigServerOptions{
+			AssetsPath: d.config.AssetsPath,
+			Port:       65005,
+			Store:      "memory",
+		}
+
+		d.configServerService = NewConfigServerService(d.config.ConfigServerConfig.ConfigServerStartCommand, configServerOptions, d.cmdRunner, d.assetsProvider, d.fs, portWaiter)
+		err = d.configServerService.Start()
+		if err != nil {
+			return err
+		}
+	}
+
 	directorOptions := DirectorOptions{
 		Port:                  65001,
 		DatabaseName:          d.database.Name(),
@@ -105,6 +124,8 @@ func (d *dummy) Setup() error {
 		RubyVersion:           d.config.RubyVersion,
 		VerifyMultidigestPath: d.config.VerifyMultidigest,
 		UAAEnabled:            d.config.UAAConfig.Enabled,
+		ConfigServerEnabled:   d.config.ConfigServerConfig.Enabled,
+		AssetsPath:            d.config.AssetsPath,
 	}
 
 	directorConfig := NewDirectorConfig(directorOptions, d.fs, d.assetsProvider, d.config.NumberOfWorkers)

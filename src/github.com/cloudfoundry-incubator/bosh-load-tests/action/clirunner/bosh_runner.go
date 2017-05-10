@@ -4,33 +4,26 @@ import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 )
 
-type Runner interface {
-	SetEnv(envName string)
-	RunInDirWithArgs(dir string, args ...string) error
-	RunWithArgs(args ...string) error
-	RunWithOutput(args ...string) (string, error)
-}
-
-type runner struct {
+type boshRunner struct {
 	cmd       boshsys.Command
 	cmdRunner boshsys.CmdRunner
 	fs        boshsys.FileSystem
 	env       string
 }
 
-func NewRunner(cmd boshsys.Command, cmdRunner boshsys.CmdRunner, fs boshsys.FileSystem) Runner {
-	return &runner{
+func NewBoshRunner(cmd boshsys.Command, cmdRunner boshsys.CmdRunner, fs boshsys.FileSystem) Runner {
+	return &boshRunner{
 		cmd:       cmd,
 		cmdRunner: cmdRunner,
 		fs:        fs,
 	}
 }
 
-func (r *runner) SetEnv(envName string) {
+func (r *boshRunner) SetEnv(envName string) {
 	r.env = envName
 }
 
-func (r *runner) RunInDirWithArgs(dir string, args ...string) error {
+func (r *boshRunner) RunInDirWithArgs(dir string, args ...string) error {
 	cmd := r.cliCommand(args...)
 	cmd.WorkingDir = dir
 	_, _, _, err := r.cmdRunner.RunComplexCommand(cmd)
@@ -40,12 +33,12 @@ func (r *runner) RunInDirWithArgs(dir string, args ...string) error {
 	return nil
 }
 
-func (r *runner) RunWithArgs(args ...string) error {
+func (r *boshRunner) RunWithArgs(args ...string) error {
 	_, err := r.RunWithOutput(args...)
 	return err
 }
 
-func (r *runner) RunWithOutput(args ...string) (string, error) {
+func (r *boshRunner) RunWithOutput(args ...string) (string, error) {
 	stdOut, _, _, err := r.cmdRunner.RunComplexCommand(r.cliCommand(args...))
 	if err != nil {
 		return stdOut, err
@@ -54,7 +47,7 @@ func (r *runner) RunWithOutput(args ...string) (string, error) {
 	return stdOut, nil
 }
 
-func (r *runner) cliCommand(args ...string) boshsys.Command {
+func (r *boshRunner) cliCommand(args ...string) boshsys.Command {
 	cmd := r.cmd
 	if r.env != "" {
 		cmd.Args = append(cmd.Args, "-e", r.env)
