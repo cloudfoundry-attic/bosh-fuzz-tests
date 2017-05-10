@@ -20,14 +20,14 @@ scheduled_jobs:
     schedule: '*/1 * * * * *'
 
 db: &bosh_db
-  adapter: {{ .DatabaseServer }}
+  adapter: postgres
   database: {{ .DatabaseName }}
   # Settings are set to defaults since DbBackup
   # currently does not support export without them
   host: 127.0.0.1
-  port: {{ .DatabasePort }}
-  user: {{ .DatabaseUser }}
-  password: {{ .DatabasePassword }}
+  port: 5432
+  user: postgres
+  password: password
 
   # Failure to set `sslmode` will produce following error
   # 'PG::Error: SSL error: decryption failed or bad record mac:'
@@ -91,16 +91,4 @@ user_management:
   local:
     users:
     - {name: test, password: secret}
-{{end}}
-
-{{if .ConfigServerEnabled}}
-config_server:
-  enabled: true
-  url: https://localhost:65005
-  ca_cert_path: {{ .AssetsPath }}/config_server/rootCA.pem
-  uaa:
-    url: https://localhost:65002/uaa
-    client_id: test
-    client_secret: secret
-    ca_cert_path: /tmp/cert
 {{end}}
