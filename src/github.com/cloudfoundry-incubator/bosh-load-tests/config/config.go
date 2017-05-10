@@ -14,7 +14,6 @@ type Config struct {
 	NginxStartCommand        string     `json:"nginx_start_cmd"`
 	VerifyMultidigest        string     `json:"verify_multidigest"`
 	NatsStartCommand         string     `json:"nats_start_cmd"`
-	UAAConfig                UAAConfig  `json:"uaa"`
 	DummyCPIPath             string     `json:"dummy_cpi_path"`
 	RubyVersion              string     `json:"ruby_version"`
 	CliCmd                   string     `json:"cli_cmd"`
@@ -24,11 +23,6 @@ type Config struct {
 	UsingLegacyManifest      bool       `json:"using_legacy_manifest"`
 
 	fs boshsys.FileSystem
-}
-
-type UAAConfig struct {
-	Enabled    bool   `json:"enabled"`
-	TomcatPath string `json:"tomcat_path"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

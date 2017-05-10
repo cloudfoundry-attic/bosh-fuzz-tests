@@ -61,7 +61,7 @@ func (r *runner) cliCommand(args ...string) boshsys.Command {
 	}
 	cmd.Args = append(cmd.Args, "--ca-cert", "/tmp/cert")
 	cmd.Args = append(cmd.Args, "-n", "--tty")
-	cmd.Args = append(cmd.Args, "--client", "test", "--client-secret", "secret")
+	cmd.Args = append(cmd.Args, "--client", "admin", "--client-secret", "admin")
 	cmd.Args = append(cmd.Args, args...)
 
 	return cmd

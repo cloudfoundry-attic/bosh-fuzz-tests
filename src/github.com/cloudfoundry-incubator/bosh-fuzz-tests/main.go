@@ -52,7 +52,7 @@ func main() {
 
 	logger.Debug("main", "Setting up environment")
 
-	environmentProvider := bltenv.NewProvider(envConfig, fs, cmdRunner, assetsProvider, logger)
+	environmentProvider := bltenv.NewProvider(envConfig, fs, cmdRunner, assetsProvider)
 	environment := environmentProvider.Get()
 
 	if !testConfig.GenerateManifestOnly {

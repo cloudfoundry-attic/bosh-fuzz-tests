@@ -14,10 +14,6 @@ http {
     server 127.0.0.1:65001;
   }
 
-  upstream uaa {
-    server 127.0.0.1:65003;
-  }
-
   server {
     listen 65002;
 
@@ -57,12 +53,7 @@ http {
     }
 
     location @director_upload {
-      proxy_set_header X-BOSH-UPLOAD-REQUEST-TIME $request_time;
       proxy_pass http://director;
-    }
-
-    location /uaa {
-      proxy_pass http://uaa;
     }
   }
 }

@@ -1,7 +1,6 @@
 package environment
 
 import (
-	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
@@ -19,12 +18,11 @@ func NewProvider(
 	fs boshsys.FileSystem,
 	cmdRunner boshsys.CmdRunner,
 	assetsProvider bltassets.Provider,
-	logger boshlog.Logger,
 ) *provider {
 	return &provider{
 		config: config,
 		environments: map[string]Environment{
-			"dummy": bltdummy.NewDummy(config, fs, cmdRunner, assetsProvider, logger),
+			"dummy": bltdummy.NewDummy(config, fs, cmdRunner, assetsProvider),
 		},
 	}
 }
