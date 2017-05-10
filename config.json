@@ -11,6 +11,10 @@
     "enabled": true,
     "tomcat_path": "/Users/pivotal/workspace/bosh/src/tmp/integration-uaa/cloudfoundry-identity-uaa-3.5.0/apache-tomcat-8.0.21"
   },
+  "config_server": {
+    "enabled": true,
+    "config_server_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/integration-config-server/bosh-config-server-executable"
+  },
   "cli_cmd": "gobosh",
   "dummy_cpi_path": "/Users/pivotal/workspace/bosh/src/bosh-director/bin/dummy_cpi",
   "number_of_workers": 3,
@@ -32,7 +36,9 @@
     "canaries": [1, 2, 5],
     "max_in_flight": [1, 2, 100],
     "serial": ["not_specified", "true", "false"],
-    "num_of_cloud_properties": [0, 2, 4]
+    "num_of_cloud_properties": [0, 2, 4],
+    "num_of_variables": [0, 10, 100],
+    "variable_types": ["password", "ssh", "rsa"]
   },
   "number_of_consequent_deploys": 10
 }

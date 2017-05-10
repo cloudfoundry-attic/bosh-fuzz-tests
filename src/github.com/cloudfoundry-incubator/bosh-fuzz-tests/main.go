@@ -87,7 +87,11 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	cliRunner := cliRunnerFactory.Create()
+
+	cliRunner, err := cliRunnerFactory.Create("bosh")
+	if err != nil {
+		panic(err)
+	}
 
 	if !testConfig.GenerateManifestOnly {
 		logger.Debug("main", "Preparing to deploy")

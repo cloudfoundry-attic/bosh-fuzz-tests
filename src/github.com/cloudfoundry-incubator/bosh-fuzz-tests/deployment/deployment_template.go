@@ -43,5 +43,11 @@ jobs:{{ range .Jobs }}
   - name: {{ .Name }}{{ if .DefaultDNSnGW }}
     default: [dns, gateway]{{ end }}{{ if .StaticIps }}
     static_ips:{{ range .StaticIps }}
-    - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}
+    - {{ . }}{{ end }}{{ end }}{{ end }}{{ end }}{{ if .Variables }}
+
+variables:{{ range .Variables }}
+- name: {{ .Name }}
+  type: {{ .Type }}{{ if .Options }}
+  options:{{ range $key, $value := .Options }}
+    {{ $key }}: {{ $value }}{{ end }}{{ end }}{{ end }}{{ end }}
 `

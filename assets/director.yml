@@ -1,7 +1,9 @@
 ---
-name: Test Director
+name: TestDirector
 port: {{ .Port }}
 mbus: nats://localhost:65010
+
+record_events: true
 
 logging:
   level: DEBUG

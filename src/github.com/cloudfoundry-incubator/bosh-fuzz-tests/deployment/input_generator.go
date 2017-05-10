@@ -111,6 +111,7 @@ func (g *inputGenerator) fuzzInput(input bftinput.Input, previousInput bftinput.
 	input.CloudConfig = previousInput.CloudConfig
 	input.Stemcells = previousInput.Stemcells
 
+	input = g.parameterProvider.Get("variables").Apply(input, previousInput)
 	input = g.parameterProvider.Get("availability_zone").Apply(input, previousInput)
 	input = g.parameterProvider.Get("vm_type").Apply(input, previousInput)
 	input = g.parameterProvider.Get("stemcell").Apply(input, previousInput)
