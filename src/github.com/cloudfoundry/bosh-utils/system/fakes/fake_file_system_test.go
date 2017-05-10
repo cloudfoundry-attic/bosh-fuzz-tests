@@ -9,7 +9,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	. "github.com/cloudfoundry/bosh-utils/system/fakes"
-	"time"
 )
 
 var _ = Describe("FakeFileSystem", func() {
@@ -292,20 +291,6 @@ var _ = Describe("FakeFileSystem", func() {
 
 			_, err = fs.Stat("foobar")
 			Expect(err).ToNot(HaveOccurred())
-		})
-
-		It("allows setting ModTime on a fakefile", func() {
-			setModTime := time.Now()
-
-			fakeFile := NewFakeFile("foobar", fs)
-			fakeFile.Stats = &FakeFileStats{}
-			fakeFile.Stats.ModTime = setModTime
-
-			fs.RegisterOpenFile("foobar", fakeFile)
-
-			fileStat, err := fs.Stat("foobar")
-			Expect(err).ToNot(HaveOccurred())
-			Expect(fileStat.ModTime()).To(Equal(setModTime))
 		})
 	})
 

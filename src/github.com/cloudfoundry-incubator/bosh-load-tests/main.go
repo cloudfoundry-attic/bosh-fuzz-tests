@@ -62,14 +62,6 @@ func main() {
 
 	actionFactory := bltaction.NewFactory(directorInfo, fs, assetsProvider)
 
-	if config.UAAConfig.Enabled {
-		prepareConfigServerFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare_config_server"}}, actionFactory, cliRunnerFactory)
-		err = prepareConfigServerFlow.Run(false)
-		if err != nil {
-			panic(err)
-		}	
-	}
-
 	prepareActionFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare"}}, actionFactory, cliRunnerFactory)
 	err = prepareActionFlow.Run(false)
 	if err != nil {

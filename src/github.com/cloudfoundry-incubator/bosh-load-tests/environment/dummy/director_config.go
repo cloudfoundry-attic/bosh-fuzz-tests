@@ -23,8 +23,6 @@ type DirectorOptions struct {
 	RubyVersion           string
 	VerifyMultidigestPath string
 	UAAEnabled            bool
-	ConfigServerEnabled   bool
-	AssetsPath            string
 }
 
 type DirectorConfig struct {

@@ -37,17 +37,10 @@ func (f *actionsFlow) Run(usingLegacyManifest bool) error {
 	}
 	deploymentName := strings.Join([]string{"deployment", uuid}, "-")
 
-	boshRunner, err := f.cliRunnerFactory.Create("bosh")
-	if nil != err {
-		return err
-	}
-	uaacRunner, err := f.cliRunnerFactory.Create("uaac")
-	if nil != err {
-		return err
-	}
+	cliRunner := f.cliRunnerFactory.Create()
 
 	for i, actionInfo := range f.actionInfos {
-		action, err := f.actionFactory.Create(actionInfo.Name, f.flowNumber, deploymentName, boshRunner, uaacRunner, usingLegacyManifest)
+		action, err := f.actionFactory.Create(actionInfo.Name, f.flowNumber, deploymentName, cliRunner, usingLegacyManifest)
 		if err != nil {
 			return err
 		}

@@ -17,7 +17,6 @@ import (
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	"time"
 )
 
 type FakeFileType string
@@ -98,13 +97,12 @@ type FakeFileSystem struct {
 type FakeFileStats struct {
 	FileType FakeFileType
 
-	FileMode  os.FileMode
-	Flags     int
-	Username  string
+	FileMode os.FileMode
+	Flags    int
+	Username string
 	Groupname string
 
-	ModTime time.Time
-	Open    bool
+	Open bool
 
 	SymlinkTarget string
 
@@ -122,10 +120,6 @@ type FakeFileInfo struct {
 
 func (fi FakeFileInfo) Mode() os.FileMode {
 	return fi.file.Stats.FileMode
-}
-
-func (fi FakeFileInfo) ModTime() time.Time {
-	return fi.file.Stats.ModTime
 }
 
 func (fi FakeFileInfo) Size() int64 {

@@ -15,7 +15,7 @@ type PostgresqlDatabase struct {
 
 func NewPostgresqlDatabase(name string, cmdRunner boshsys.CmdRunner) *PostgresqlDatabase {
 	return &PostgresqlDatabase{
-		name:      name,
+		name: name,
 		cmdRunner: cmdRunner,
 	}
 }
