@@ -36,9 +36,9 @@ var _ = Describe("EventLogParser", func() {
 	})
 	Describe("FindById", func() {
 		events := Events{
-			Event{Id: "a", ObjectId: "/1"},
-			Event{Id: "b", ObjectId: "/2"},
-			Event{Id: "c", ObjectId: "/3"},
+			Event{Id: "a", ObjectName: "/1"},
+			Event{Id: "b", ObjectName: "/2"},
+			Event{Id: "c", ObjectName: "/3"},
 		}
 		Context("when Events has an Event with matching id", func() {
 			It("should return the event", func() {
@@ -46,7 +46,7 @@ var _ = Describe("EventLogParser", func() {
 				Expect(err).ToNot(HaveOccurred())
 				Expect(event).ToNot(BeNil())
 				Expect(event.Id).To(Equal("b"))
-				Expect(event.ObjectId).To(Equal("/2"))
+				Expect(event.ObjectName).To(Equal("/2"))
 			})
 		})
 		Context("when Events do not have an Event with matching id", func() {
@@ -80,7 +80,7 @@ var EventLogWithEvents = `
                     "error": "",
                     "id": "65",
                     "instance": "",
-                    "object_id": "/TestDirector/foo-deployment/nyAtiEiFR383GgdIXqjU",
+                    "object_name": "/TestDirector/foo-deployment/nyAtiEiFR383GgdIXqjU",
                     "object_type": "variable",
                     "task_id": "5",
                     "time": "Mon May  8 15:17:23 UTC 2017",
@@ -93,7 +93,7 @@ var EventLogWithEvents = `
                     "error": "",
                     "id": "61",
                     "instance": "",
-                    "object_id": "lock:deployment:foo-deployment",
+                    "object_name": "lock:deployment:foo-deployment",
                     "object_type": "lock",
                     "task_id": "5",
                     "time": "Mon May  8 15:17:23 UTC 2017",
@@ -106,7 +106,7 @@ var EventLogWithEvents = `
                     "error": "",
                     "id": "60",
                     "instance": "",
-                    "object_id": "foo-deployment",
+                    "object_name": "foo-deployment",
                     "object_type": "deployment",
                     "task_id": "5",
                     "time": "Mon May  8 15:17:23 UTC 2017",

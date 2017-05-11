@@ -34,7 +34,7 @@ func (v *variablesExpectation) Run(cliRunner bltclirunner.Runner, taskId string)
 
 	for _, variable := range v.variables {
 		if _, err := events.FindById(variable.Name); err != nil {
-			return bosherr.Errorf("Variable %s was not created", variable.Name)
+			return bosherr.Errorf("Variable '%s' was not created", variable.Name)
 		}
 	}
 

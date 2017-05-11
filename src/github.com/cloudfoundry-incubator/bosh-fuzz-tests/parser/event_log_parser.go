@@ -24,7 +24,7 @@ type Event struct {
 	Error      string `json:"error"`
 	Id         string `json:"id"`
 	Instance   string `json:"instance"`
-	ObjectId   string `json:"object_id"`
+	ObjectName string `json:"object_name"`
 	ObjectType string `json:"object_type"`
 	TaskId     string `json:"task_id"`
 	Time       string `json:"time"`
@@ -49,7 +49,7 @@ func (e Events) FindById(id string) (Event, error) {
 	}
 
 	for _, event := range e {
-		if event.ObjectId == expectedId {
+		if event.ObjectName == expectedId {
 			return event, nil
 		}
 	}
