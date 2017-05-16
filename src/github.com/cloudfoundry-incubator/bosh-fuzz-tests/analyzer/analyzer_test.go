@@ -98,6 +98,131 @@ var _ = Describe("Analyzer", func() {
 		})
 	})
 
+	Context("when variable is a certificate", func() {
+		Context("and certificate is not a CA", func() {
+			Context("and it does not reference a signing CA", func() {
+				It("should expect deployment to fail", func() {
+					input := bftinput.Input{
+						Variables: []bftinput.Variable{
+							{
+								Name:    "bad_cert",
+								Type:    "certificate",
+								Options: map[string]interface{}{"is_ca": false},
+							},
+						},
+					}
+					result := analyzer.Analyze([]bftinput.Input{input})
+					Expect(result[0].DeploymentWillFail).To(BeTrue())
+				})
+			})
+			Context("and it references a non-existent variable as the signing CA", func() {
+				It("should expect deployment to fail", func() {
+					input := bftinput.Input{
+						Variables: []bftinput.Variable{
+							{
+								Name:    "bad_cert",
+								Type:    "certificate",
+								Options: map[string]interface{}{"is_ca": false, "ca": "nonexistent"},
+							},
+						},
+					}
+					result := analyzer.Analyze([]bftinput.Input{input})
+					Expect(result[0].DeploymentWillFail).To(BeTrue())
+				})
+			})
+			Context("and it references a non-CA variable as the signing CA", func() {
+				It("should expect deployment to fail", func() {
+					input := bftinput.Input{
+						Variables: []bftinput.Variable{
+							{
+								Name:    "signed_cert",
+								Type:    "certificate",
+								Options: map[string]interface{}{"is_ca": false, "ca": "bad_signing_cert"},
+							},
+							{
+								Name:    "bad_signing_cert",
+								Type:    "certificate",
+								Options: map[string]interface{}{"is_ca": false, "ca": "root_ca"},
+							},
+							{
+								Name:    "root_ca",
+								Type:    "certificate",
+								Options: map[string]interface{}{"is_ca": true},
+							},
+						},
+					}
+					result := analyzer.Analyze([]bftinput.Input{input})
+					Expect(result[0].DeploymentWillFail).To(BeTrue())
+				})
+			})
+		})
+
+		Context("and certificate is a CA", func() {
+			Context("and it references another certificate", func() {
+				Context("and the referenced certificate is a CA", func() {
+					It("should expect deployment to not fail", func() {
+						input := bftinput.Input{
+							Variables: []bftinput.Variable{
+								{
+									Name:    "signed_cert",
+									Type:    "certificate",
+									Options: map[string]interface{}{"is_ca": true, "ca": "root_ca"},
+								},
+								{
+									Name:    "root_ca",
+									Type:    "certificate",
+									Options: map[string]interface{}{"is_ca": true},
+								},
+							},
+						}
+						result := analyzer.Analyze([]bftinput.Input{input})
+						Expect(result[0].DeploymentWillFail).To(BeFalse())
+					})
+				})
+				Context("and the referenced certificate is missing", func() {
+					It("should expect deployment to fail", func() {
+						input := bftinput.Input{
+							Variables: []bftinput.Variable{
+								{
+									Name:    "signed_cert",
+									Type:    "certificate",
+									Options: map[string]interface{}{"is_ca": true, "ca": "root_ca"},
+								},
+							},
+						}
+						result := analyzer.Analyze([]bftinput.Input{input})
+						Expect(result[0].DeploymentWillFail).To(BeTrue())
+					})
+				})
+				Context("and the referenced certificate is not a CA", func() {
+					It("should expect deployment to fail", func() {
+						input := bftinput.Input{
+							Variables: []bftinput.Variable{
+								{
+									Name:    "signed_cert",
+									Type:    "certificate",
+									Options: map[string]interface{}{"is_ca": true, "ca": "bad_signing_cert"},
+								},
+								{
+									Name:    "bad_signing_cert",
+									Type:    "certificate",
+									Options: map[string]interface{}{"is_ca": false, "ca": "root_ca"},
+								},
+								{
+									Name:    "root_ca",
+									Type:    "certificate",
+									Options: map[string]interface{}{"is_ca": true},
+								},
+							},
+						}
+						result := analyzer.Analyze([]bftinput.Input{input})
+						Expect(result[0].DeploymentWillFail).To(BeTrue())
+					})
+				})
+			})
+		})
+	})
+
 	It("It does not move an existing instance's static IP to another AZ", func() {
 		previousInput := bftinput.Input{
 			CloudConfig: bftinput.CloudConfig{

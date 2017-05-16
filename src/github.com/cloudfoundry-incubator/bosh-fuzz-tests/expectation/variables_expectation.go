@@ -18,7 +18,7 @@ func NewVariablesExpectation(variables []input.Variable) Expectation {
 }
 
 func (v *variablesExpectation) Run(cliRunner bltclirunner.Runner, taskId string) error {
-	eventLog, err := cliRunner.RunWithOutput("events", "--task="+taskId, "--object-type=variable", "--json")
+	eventLog, err := cliRunner.RunWithOutput("events", "--task="+taskId, "--object-type=variable", "--action=create", "--json")
 	if err != nil {
 		return bosherr.WrapError(err, "Getting event logs")
 	}

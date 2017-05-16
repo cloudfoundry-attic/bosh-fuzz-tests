@@ -92,6 +92,7 @@ func (d *deployer) RunDeploys() error {
 					errorPrefix += "\n==========================================================\n"
 					errorPrefix += "DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO\n"
 					errorPrefix += "==========================================================\n"
+					continue
 				}
 				return bosherr.WrapError(err, errorPrefix+"Running deploy")
 			}

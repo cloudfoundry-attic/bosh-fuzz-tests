@@ -44,7 +44,8 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 			deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(inputs[i-1], inputs[i])
 			deploymentWillFail = deploymentWillFail || a.isMovingInstancesStaticIPToAnotherAZ(inputs[i-1], inputs[i])
 		}
-		expectations = append(expectations, a.variablesComparator.Compare(inputs[:i], inputs[i])...)
+		expectations = append(expectations, a.variablesComparator.Compare(nil, inputs[i])...)
+		deploymentWillFail = deploymentWillFail || a.hasVariablesCertificateWithoutCA(inputs[i])
 
 		cases = append(cases, Case{
 			Input:              inputs[i],
@@ -54,6 +55,47 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 	}
 
 	return cases
+}
+func (a *analyzer) hasVariablesCertificateWithoutCA(currentInput bftinput.Input) bool {
+	for _, variable := range currentInput.Variables {
+		if variable.Type != "certificate" {
+			continue
+		}
+
+		options := variable.Options
+		isCA, ok := options["is_ca"].(bool)
+		if !ok {
+			isCA = false
+		}
+
+		referencedCA, found := options["ca"]
+		if isCA && !found {
+			continue
+		}
+
+		if !isCA && !found {
+			return true
+		}
+
+		var referencedVariable bftinput.Variable
+		for _, variable := range currentInput.Variables {
+			if variable.Name == referencedCA {
+				referencedVariable = variable
+				break
+			}
+		}
+
+		if referencedVariable.Type != "certificate" {
+			return true
+		} else {
+			isCA, ok := referencedVariable.Options["is_ca"].(bool)
+			if !ok || !isCA {
+				return true
+			}
+		}
+	}
+
+	return false
 }
 
 func (a *analyzer) isMigratingFromAzsToNoAzsAndReusingStaticIps(previousInput bftinput.Input, currentInput bftinput.Input) bool {

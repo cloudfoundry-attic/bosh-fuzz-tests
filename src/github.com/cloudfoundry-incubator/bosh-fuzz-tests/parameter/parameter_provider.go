@@ -64,7 +64,7 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewFixedMigratedFrom()
 	} else if name == "variables" {
 		numOfVariables := p.parameters.NumOfVariables[rand.Intn(len(p.parameters.NumOfVariables))]
-		return NewVariables(numOfVariables, p.parameters.VariableTypes)
+		return NewVariables(numOfVariables, p.parameters.VariableTypes, p.nameGenerator, p.reuseDecider)
 	}
 
 	return nil
