@@ -43,6 +43,9 @@ db: &bosh_db
 dns:
   db: *bosh_db
 
+local_dns:
+  enabled: true
+
 verify_multidigest_path: {{ .VerifyMultidigestPath }}
 
 blobstore: &director_blobstore
