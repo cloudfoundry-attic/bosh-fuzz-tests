@@ -18,6 +18,8 @@
   "cli_cmd": "gobosh",
   "dummy_cpi_path": "/Users/pivotal/workspace/bosh/src/bosh-director/bin/dummy_cpi",
   "number_of_workers": 3,
+  "placeholder_exclusions": ["jobs", "jobs.templates", "jobs.templates.properties"],
+
   "parameters" : {
     "NOTE" : "name_length is 253 - 65 (DNS name limit - BOSH UUID domain name)",
     "name_length" : [5, 188],
@@ -38,7 +40,8 @@
     "serial": ["not_specified", "true", "false"],
     "num_of_cloud_properties": [0, 2, 4],
     "num_of_variables": [0, 2, 40],
-    "variable_types": ["password", "ssh", "rsa", "certificate"]
+    "variable_types": ["password", "ssh", "rsa", "certificate"],
+    "num_of_substitutions": [1, 3, 5, 10],
   },
   "number_of_consequent_deploys": 10
 }

@@ -6,6 +6,7 @@ import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
 	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
+	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 )
@@ -20,6 +21,7 @@ type deployer struct {
 	renderer             Renderer
 	inputGenerator       InputGenerator
 	analyzer             bftanalyzer.Analyzer
+	sprinkler            variables.Sprinkler
 	fs                   boshsys.FileSystem
 	logger               boshlog.Logger
 	generateManifestOnly bool
@@ -31,6 +33,7 @@ func NewDeployer(
 	renderer Renderer,
 	inputGenerator InputGenerator,
 	analyzer bftanalyzer.Analyzer,
+	sprinkler variables.Sprinkler,
 	fs boshsys.FileSystem,
 	logger boshlog.Logger,
 	generateManifestOnly bool,
@@ -41,6 +44,7 @@ func NewDeployer(
 		renderer:             renderer,
 		inputGenerator:       inputGenerator,
 		analyzer:             analyzer,
+		sprinkler:            sprinkler,
 		fs:                   fs,
 		logger:               logger,
 		generateManifestOnly: generateManifestOnly,
@@ -87,14 +91,10 @@ func (d *deployer) RunDeploys() error {
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
 			taskId, err := deployWrapper.RunWithDebug("-d", "foo-deployment", "deploy", manifestPath.Name())
 			if err != nil {
-				errorPrefix := ""
 				if testCase.DeploymentWillFail {
-					errorPrefix += "\n==========================================================\n"
-					errorPrefix += "DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO\n"
-					errorPrefix += "==========================================================\n"
 					continue
 				}
-				return bosherr.WrapError(err, errorPrefix+"Running deploy")
+				return bosherr.WrapError(err, "Running deploy")
 			}
 
 			for _, expectation := range testCase.Expectations {
