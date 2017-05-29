@@ -146,23 +146,7 @@ jobs:
 					})
 				})
 
-				XContext("when marshalling manifest with placheolder fails", func() {
-					BeforeEach(func() {
-						placeholderPlanter.PlantPlaceholdersStub =
-							func(manifest *map[interface{}]interface{},
-								 candidates [][]interface{}) (map[string]interface{}, error) {
-							return nil, nil
-						}
-					})
-
-					It("raises an error", func() {
-						_, err := sprinkler.SprinklePlaceholders("manifest-path")
-						Expect(err).To(HaveOccurred())
-						Expect(err.Error()).To(Equal("Error marshalling manifest file"))
-					})
-				})
-
-				Context("when writing manifest with placheolder to file fails", func() {
+				Context("when writing manifest with placeholder to file fails", func() {
 					BeforeEach(func() {
 						fs.WriteFileError = errors.New("write-error")
 					})

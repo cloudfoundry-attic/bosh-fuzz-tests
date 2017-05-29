@@ -34,7 +34,7 @@ func (p pathPicker) PickPaths(paths [][]interface{}, requestedPicks int) [][]int
 	return picks
 }
 
-func (p pathPicker) compareStartsWithPath(a []interface{},b []interface{}) bool {
+func (p pathPicker) compareStartsWithPath(a []interface{}, b []interface{}) bool {
 	shorterPath := a
 	longerPath := b
 	if len(b) < len(a) {
@@ -52,7 +52,7 @@ func (p pathPicker) compareStartsWithPath(a []interface{},b []interface{}) bool 
 }
 
 func (p pathPicker) trimmedPaths(paths [][]interface{}, toRemove []interface{}) [][]interface{} {
-	result := [][]interface{} {}
+	result := [][]interface{}{}
 
 	for _, value := range paths {
 		if !p.compareStartsWithPath(value, toRemove) {

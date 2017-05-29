@@ -1,15 +1,14 @@
 package variables
 
 type PathBuilder interface {
-	BuildPaths(obj interface{}) ([][]interface{})
+	BuildPaths(obj interface{}) [][]interface{}
 }
 
 type pathBuilder struct {
 }
 
 func NewPathBuilder() PathBuilder {
-	return pathBuilder{
-	}
+	return pathBuilder{}
 }
 
 // Returns:
@@ -17,8 +16,8 @@ func NewPathBuilder() PathBuilder {
 // map item name or array index
 // for example [ ['hi', 3, 'there', 'property'], ]
 // for example [ ['jobs', 'templates', 0, 'name'], ]
-func (b pathBuilder) BuildPaths(obj interface{}) ([][]interface{}) {
-	output := [][]interface{} {}
+func (b pathBuilder) BuildPaths(obj interface{}) [][]interface{} {
+	output := [][]interface{}{}
 	b.buildPaths(nil, obj, &output)
 
 	return output
@@ -36,7 +35,7 @@ func (b pathBuilder) buildPaths(path []interface{}, obj interface{}, output *[][
 			*output = append(*output, newPath)
 			b.buildPaths(newPath, item, output)
 		}
-	case map[interface {}]interface{}:
+	case map[interface{}]interface{}:
 		for key, value := range obj.(map[interface{}]interface{}) {
 			newPath := b.appendPath(path, key)
 			*output = append(*output, newPath)

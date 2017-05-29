@@ -1,38 +1,42 @@
 package variables
 
-
 type PathWeeder interface {
-	WeedPaths(paths [][]interface{}, invalidPaths [][]interface{}) [][]interface{}
+	WeedPaths(paths [][]interface{}) [][]interface{}
 }
 
 type pathWeeder struct {
 }
 
-
 type Anything struct {
-
 }
 
 var Integer Anything = Anything{}
 var String Anything = Anything{}
 
-
 func NewPathWeeder() PathWeeder {
-	return pathWeeder{
-	}
+	return pathWeeder{}
 }
 
-var badPathPatterns [][]interface{} = [][]interface{} {
-	{"properties"},
-	{"instance_groups", Integer, "properties"},
-	{"instance_groups", Integer, "jobs", Integer, "properties"},
-	{"instance_groups", Integer, "jobs", Integer, "consumes", String, "properties"},
-	{"jobs", Integer, "properties"},
-	{"jobs", Integer, "templates", Integer, "properties"},
-	{"jobs", Integer, "templates", Integer, "consumes", String, "properties"},
+var badPathPatterns [][]interface{} = [][]interface{}{
 	{"instance_groups", Integer, "env"},
+	{"instance_groups", Integer, "jobs", Integer, "consumes", String, "properties"},
+	{"instance_groups", Integer, "jobs", Integer, "properties"},
+	{"instance_groups", Integer, "properties"},
 	{"jobs", Integer, "env"},
+	{"jobs", Integer, "properties"},
+	{"jobs", Integer, "templates", Integer, "consumes", String, "properties"},
+	{"jobs", Integer, "templates", Integer, "properties"},
+	{"name"},
+	{"properties"},
 	{"resource_pools", Integer, "env"},
+	{"variables", Integer, String},
+	{"variables", Integer},
+	{"variables"},
+	{"releases", Integer, String}, // should be supported. not working now.
+	{"releases", Integer},         // should be supported. not working now.
+	{"releases"},                  // should be supported. not working now.
+	{"stemcells", Integer},        // should be supported. not working now.
+	{"stemcells"},                 // should be supported. not working now.
 }
 
 // Returns:
@@ -41,11 +45,27 @@ var badPathPatterns [][]interface{} = [][]interface{} {
 // for example [ ['hi', 3, 'there', 'property'], ]
 // and invalid ones are [ ['hi', Anything, 'there', Anything], ]
 
-func (b pathWeeder) WeedPaths(paths [][]interface{}, invalidPaths [][]interface{}) [][]interface{} {
+func (p pathWeeder) WeedPaths(paths [][]interface{}) [][]interface{} {
+
+	for _, pattern := range badPathPatterns {
+		paths = p.trimmedPaths(paths, pattern)
+	}
 	return paths
 }
 
-func pathMatchesPattern(path []interface{}, pattern []interface{}) bool {
+func (p pathWeeder) trimmedPaths(paths [][]interface{}, patternToRemove []interface{}) [][]interface{} {
+	result := [][]interface{}{}
+
+	for _, value := range paths {
+		if !p.pathMatchesPattern(value, patternToRemove) {
+			result = append(result, value)
+		}
+	}
+
+	return result
+}
+
+func (p pathWeeder) pathMatchesPattern(path []interface{}, pattern []interface{}) bool {
 	if len(path) != len(pattern) {
 		return false
 	}

@@ -1,11 +1,11 @@
 package variables
 
 import (
-	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
+	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
+	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 	"gopkg.in/yaml.v2"
-	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 )
 
 type Sprinkler interface {
@@ -13,24 +13,32 @@ type Sprinkler interface {
 }
 
 type sprinkler struct {
-	parameters bftconfig.Parameters
-    fs boshsys.FileSystem
-	randomizer NumberRandomizer
-	pathBuilder PathBuilder
-	pathPicker PathPicker
+	parameters         bftconfig.Parameters
+	fs                 boshsys.FileSystem
+	randomizer         NumberRandomizer
+	pathBuilder        PathBuilder
+	pathPicker         PathPicker
 	placeholderPlanter PlaceholderPlanter
-	nameGenerator name_generator.NameGenerator
+	nameGenerator      name_generator.NameGenerator
 }
 
-func NewSprinkler(parameters bftconfig.Parameters, fs boshsys.FileSystem, randomizer NumberRandomizer, pathBuilder PathBuilder, pathPicker PathPicker, placeholderPlanter PlaceholderPlanter, nameGenerator name_generator.NameGenerator) *sprinkler {
+func NewSprinkler(
+	parameters bftconfig.Parameters,
+	fs boshsys.FileSystem,
+	randomizer NumberRandomizer,
+	pathBuilder PathBuilder,
+	pathPicker PathPicker,
+	placeholderPlanter PlaceholderPlanter,
+	nameGenerator name_generator.NameGenerator,
+) Sprinkler {
 	return &sprinkler{
-		parameters: parameters,
-		fs: fs,
-		randomizer: randomizer,
-		pathBuilder: pathBuilder,
-		pathPicker: pathPicker,
+		parameters:         parameters,
+		fs:                 fs,
+		randomizer:         randomizer,
+		pathBuilder:        pathBuilder,
+		pathPicker:         pathPicker,
 		placeholderPlanter: placeholderPlanter,
-		nameGenerator: nameGenerator,
+		nameGenerator:      nameGenerator,
 	}
 }
 
@@ -52,12 +60,12 @@ func (s sprinkler) SprinklePlaceholders(manifestPath string) (map[string]interfa
 	placeholderPaths := s.pathBuilder.BuildPaths(manifest)
 	randomizer := DefaultNumberRandomizer{}
 
+	placeholderPaths = NewPathWeeder().WeedPaths(placeholderPaths)
+
 	numOfSubstitutions := s.parameters.NumOfSubstitutions[randomizer.Intn(len(s.parameters.NumOfSubstitutions))]
 	candidates := s.pathPicker.PickPaths(placeholderPaths, numOfSubstitutions)
 
-	// TODO: Filter
-
-	substitutedVariables, err := s.placeholderPlanter.PlantPlaceholders(&manifest, candidates)  //-- returns a list of values that were substituted
+	substitutedVariables, err := s.placeholderPlanter.PlantPlaceholders(&manifest, candidates) //-- returns a list of values that were substituted
 	if err != nil {
 		return nil, bosherr.WrapError(err, "Error adding variables to manifest file")
 	}
@@ -74,4 +82,3 @@ func (s sprinkler) SprinklePlaceholders(manifestPath string) (map[string]interfa
 
 	return substitutedVariables, nil
 }
-

@@ -13,7 +13,7 @@ type placeholderPlanter struct {
 }
 
 func NewPlaceholderPlanter(nameGenerator NameGenerator) PlaceholderPlanter {
-	return placeholderPlanter {
+	return placeholderPlanter{
 		nameGenerator: nameGenerator,
 	}
 }
@@ -23,7 +23,7 @@ func (p placeholderPlanter) PlantPlaceholders(manifest *map[interface{}]interfac
 
 	for _, candidate := range candidates {
 		variableName := p.nameGenerator.Generate(8)
-		record, err := p.setRecord(manifest, candidate, "((" + variableName + "))")
+		record, err := p.setRecord(manifest, candidate, "(("+variableName+"))")
 		if err != nil {
 			return nil, err
 		}

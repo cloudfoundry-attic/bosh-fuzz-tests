@@ -7,8 +7,12 @@ import (
 
 	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables"
+
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
+	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
+
+	"encoding/json"
 )
 
 type Deployer interface {
@@ -71,6 +75,19 @@ func (d *deployer) RunDeploys() error {
 		return bosherr.WrapError(err, "Generating input")
 	}
 
+	logger := boshlog.NewLogger(boshlog.LevelDebug)
+	cmdRunner := boshsys.NewExecCmdRunner(logger)
+	fs := boshsys.NewOsFileSystem(logger)
+
+	envConfig := bltconfig.NewConfig(fs)
+
+	cliRunnerFactory := bltclirunner.NewFactory(envConfig.CliCmd, cmdRunner, fs)
+
+	uaaRunner, err := cliRunnerFactory.Create("uaac")
+	if err != nil {
+		panic(err)
+	}
+
 	cases := d.analyzer.Analyze(inputs)
 
 	for _, testCase := range cases {
@@ -80,6 +97,37 @@ func (d *deployer) RunDeploys() error {
 		err = d.renderer.Render(input, manifestPath.Name(), cloudConfigPath.Name())
 		if err != nil {
 			return bosherr.WrapError(err, "Rendering deployment manifest")
+		}
+
+		substitutionMap, err := d.sprinkler.SprinklePlaceholders(manifestPath.Name())
+		if err != nil {
+			return bosherr.WrapError(err, "Could not sprinkle placholders in manifest")
+		}
+
+		for key, value := range substitutionMap {
+
+			stringMapValue := d.convertToStringMap(value)
+
+			dataStruct := struct {
+				Name  string      `json:"name"`
+				Value interface{} `json:"value"`
+			}{"/TestDirector/foo-deployment/" + key, stringMapValue}
+
+			data, err := json.Marshal(dataStruct)
+			if nil != err {
+				return err
+			}
+
+			if err := uaaRunner.RunWithArgs("token", "client", "get", "test", "-s", "secret"); nil != err {
+				return err
+			}
+			if err := uaaRunner.RunWithArgs("curl", "--insecure", "--request", "PUT", "--header", "Content-Type:Application/JSON", "--data", string(data), "https://localhost:65005/v1/data"); nil != err {
+				return err
+			}
+		}
+
+		if err != nil {
+			return bosherr.WrapError(err, "Populating config server key values")
 		}
 
 		if !d.generateManifestOnly {
@@ -107,4 +155,27 @@ func (d *deployer) RunDeploys() error {
 	}
 
 	return nil
+}
+
+func (d deployer) convertToStringMap(obj interface{}) interface{} {
+
+	switch obj.(type) {
+	case []interface{}:
+		outputArray := []interface{}{}
+
+		for _, item := range obj.([]interface{}) {
+			outputArray = append(outputArray, d.convertToStringMap(item))
+		}
+		obj = outputArray
+	case map[interface{}]interface{}:
+		outputMap := map[string]interface{}{}
+
+		for key, value := range obj.(map[interface{}]interface{}) {
+			outputMap[key.(string)] = d.convertToStringMap(value)
+		}
+		obj = outputMap
+	default:
+		return obj
+	}
+	return obj
 }

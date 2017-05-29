@@ -127,7 +127,7 @@ ranks:
 		})
 	})
 
-	Context("when yaml contains nested and array elements",func() {
+	Context("when yaml contains nested and array elements", func() {
 		BeforeEach(func() {
 			yamlString = `
 officer:
@@ -164,7 +164,7 @@ officer:
 		})
 	})
 
-	Context("when yaml contains simple, nested and array elements",func() {
+	Context("when yaml contains simple, nested and array elements", func() {
 		BeforeEach(func() {
 			yamlString = `
 name: foo-deployment
@@ -208,7 +208,7 @@ jobs:
 		It("should return the correct paths", func() {
 			paths := pathBuilder.BuildPaths(yamlMap)
 
-			expectedPaths := [][]interface{} {
+			expectedPaths := [][]interface{}{
 				{"name"},
 				{"releases"},
 				{"releases", 0},

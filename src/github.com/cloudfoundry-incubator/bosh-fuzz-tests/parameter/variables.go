@@ -27,7 +27,7 @@ func NewVariables(numVariables int, variableTypes []string, nameGenerator name_g
 func (v *variables) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	variables := []bftinput.Variable{}
 	previousVariables := previousInput.Variables
-	certsHash := map [string]bool{}
+	certsHash := map[string]bool{}
 
 	for _, variable := range previousVariables {
 		if v.decider.IsYes() {
