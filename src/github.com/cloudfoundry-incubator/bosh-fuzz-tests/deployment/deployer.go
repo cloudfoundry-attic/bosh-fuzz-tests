@@ -13,6 +13,7 @@ import (
 	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 
 	"encoding/json"
+	"net/url"
 )
 
 type Deployer interface {
@@ -104,6 +105,19 @@ func (d *deployer) RunDeploys() error {
 			return bosherr.WrapError(err, "Could not sprinkle placholders in manifest")
 		}
 
+		// Setup UAA
+		targetURL, err := url.Parse(d.directorInfo.URL)
+		if nil != err {
+			return err
+		}
+		targetURL.Scheme = "https"
+		targetURL.Path = "/uaa"
+
+		target := targetURL.String()
+		if err := uaaRunner.RunWithArgs("target", target, "--skip-ssl-validation"); nil != err {
+			return err
+		}
+
 		for key, value := range substitutionMap {
 
 			stringMapValue := d.convertToStringMap(value)
@@ -117,7 +131,6 @@ func (d *deployer) RunDeploys() error {
 			if nil != err {
 				return err
 			}
-
 			if err := uaaRunner.RunWithArgs("token", "client", "get", "test", "-s", "secret"); nil != err {
 				return err
 			}
