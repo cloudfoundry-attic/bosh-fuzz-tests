@@ -39,8 +39,7 @@
     "serial": ["not_specified", "true", "false"],
     "num_of_cloud_properties": [0, 2, 4],
     "num_of_variables": [0, 2, 40],
-    "variable_types": ["password", "ssh", "rsa", "certificate"],
-    "num_of_substitutions": [1, 3, 5, 10]
+    "variable_types": ["password", "ssh", "rsa", "certificate"]
   },
   "number_of_consequent_deploys": 10
 }

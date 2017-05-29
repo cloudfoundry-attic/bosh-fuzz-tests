@@ -34,7 +34,6 @@ type Parameters struct {
 	NumOfCloudProperties       []int      `json:"num_of_cloud_properties"`
 	NumOfVariables             []int      `json:"num_of_variables"`
 	VariableTypes              []string   `json:"variable_types"`
-	NumOfSubstitutions         []int      `json:"num_of_substitutions"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

@@ -26,8 +26,6 @@ bosh_src_path="$PWD/$BOSH_SRC_PATH"
 
 echo 'Installing dependencies...'
 
-gem install cf-uaac --no-document
-
 agent_path=bosh-src/src/go/src/github.com/cloudfoundry/
 mkdir -p $agent_path
 cp -r bosh-agent $agent_path

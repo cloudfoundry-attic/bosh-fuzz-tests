@@ -6,13 +6,8 @@ import (
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 
 	bftanalyzer "github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
-	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables"
-
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
-	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
-
-	"encoding/json"
 )
 
 type Deployer interface {
@@ -25,7 +20,6 @@ type deployer struct {
 	renderer             Renderer
 	inputGenerator       InputGenerator
 	analyzer             bftanalyzer.Analyzer
-	sprinkler            variables.Sprinkler
 	fs                   boshsys.FileSystem
 	logger               boshlog.Logger
 	generateManifestOnly bool
@@ -37,7 +31,6 @@ func NewDeployer(
 	renderer Renderer,
 	inputGenerator InputGenerator,
 	analyzer bftanalyzer.Analyzer,
-	sprinkler variables.Sprinkler,
 	fs boshsys.FileSystem,
 	logger boshlog.Logger,
 	generateManifestOnly bool,
@@ -48,7 +41,6 @@ func NewDeployer(
 		renderer:             renderer,
 		inputGenerator:       inputGenerator,
 		analyzer:             analyzer,
-		sprinkler:            sprinkler,
 		fs:                   fs,
 		logger:               logger,
 		generateManifestOnly: generateManifestOnly,
@@ -75,19 +67,6 @@ func (d *deployer) RunDeploys() error {
 		return bosherr.WrapError(err, "Generating input")
 	}
 
-	logger := boshlog.NewLogger(boshlog.LevelDebug)
-	cmdRunner := boshsys.NewExecCmdRunner(logger)
-	fs := boshsys.NewOsFileSystem(logger)
-
-	envConfig := bltconfig.NewConfig(fs)
-
-	cliRunnerFactory := bltclirunner.NewFactory(envConfig.CliCmd, cmdRunner, fs)
-
-	uaaRunner, err := cliRunnerFactory.Create("uaac")
-	if err != nil {
-		panic(err)
-	}
-
 	cases := d.analyzer.Analyze(inputs)
 
 	for _, testCase := range cases {
@@ -99,37 +78,6 @@ func (d *deployer) RunDeploys() error {
 			return bosherr.WrapError(err, "Rendering deployment manifest")
 		}
 
-		substitutionMap, err := d.sprinkler.SprinklePlaceholders(manifestPath.Name())
-		if err != nil {
-			return bosherr.WrapError(err, "Could not sprinkle placholders in manifest")
-		}
-
-		for key, value := range substitutionMap {
-
-			stringMapValue := d.convertToStringMap(value)
-
-			dataStruct := struct {
-				Name  string      `json:"name"`
-				Value interface{} `json:"value"`
-			}{"/TestDirector/foo-deployment/" + key, stringMapValue}
-
-			data, err := json.Marshal(dataStruct)
-			if nil != err {
-				return err
-			}
-
-			if err := uaaRunner.RunWithArgs("token", "client", "get", "test", "-s", "secret"); nil != err {
-				return err
-			}
-			if err := uaaRunner.RunWithArgs("curl", "--insecure", "--request", "PUT", "--header", "Content-Type:Application/JSON", "--data", string(data), "https://localhost:65005/v1/data"); nil != err {
-				return err
-			}
-		}
-
-		if err != nil {
-			return bosherr.WrapError(err, "Populating config server key values")
-		}
-
 		if !d.generateManifestOnly {
 			err = d.cliRunner.RunWithArgs("update-cloud-config", cloudConfigPath.Name())
 			if err != nil {
@@ -139,10 +87,14 @@ func (d *deployer) RunDeploys() error {
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
 			taskId, err := deployWrapper.RunWithDebug("-d", "foo-deployment", "deploy", manifestPath.Name())
 			if err != nil {
+				errorPrefix := ""
 				if testCase.DeploymentWillFail {
+					errorPrefix += "\n==========================================================\n"
+					errorPrefix += "DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO\n"
+					errorPrefix += "==========================================================\n"
 					continue
 				}
-				return bosherr.WrapError(err, "Running deploy")
+				return bosherr.WrapError(err, errorPrefix+"Running deploy")
 			}
 
 			for _, expectation := range testCase.Expectations {
@@ -155,27 +107,4 @@ func (d *deployer) RunDeploys() error {
 	}
 
 	return nil
-}
-
-func (d deployer) convertToStringMap(obj interface{}) interface{} {
-
-	switch obj.(type) {
-	case []interface{}:
-		outputArray := []interface{}{}
-
-		for _, item := range obj.([]interface{}) {
-			outputArray = append(outputArray, d.convertToStringMap(item))
-		}
-		obj = outputArray
-	case map[interface{}]interface{}:
-		outputMap := map[string]interface{}{}
-
-		for key, value := range obj.(map[interface{}]interface{}) {
-			outputMap[key.(string)] = d.convertToStringMap(value)
-		}
-		obj = outputMap
-	default:
-		return obj
-	}
-	return obj
 }
