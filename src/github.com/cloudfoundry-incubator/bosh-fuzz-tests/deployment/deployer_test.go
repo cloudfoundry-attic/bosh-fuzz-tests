@@ -10,6 +10,7 @@ import (
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/deploymentfakes"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation/expectationfakes"
+	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables/variablesfakes"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner/clirunnerfakes"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
@@ -25,6 +26,7 @@ var _ = Describe("Deployer", func() {
 		inputGenerator *deploymentfakes.FakeInputGenerator
 		analyzer       *analyzerfakes.FakeAnalyzer
 		fs             *fakesys.FakeFileSystem
+		sprinkler      *variablesfakes.FakeSprinkler
 
 		deployer Deployer
 	)
@@ -35,6 +37,7 @@ var _ = Describe("Deployer", func() {
 		inputGenerator = &deploymentfakes.FakeInputGenerator{}
 		analyzer = &analyzerfakes.FakeAnalyzer{}
 		fs = fakesys.NewFakeFileSystem()
+		sprinkler = &variablesfakes.FakeSprinkler{}
 
 		directorInfo := bltaction.DirectorInfo{
 			Name: "fake-director",
@@ -44,7 +47,7 @@ var _ = Describe("Deployer", func() {
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, analyzer, fs, logger, false)
+		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, analyzer, sprinkler, fs, logger, false)
 	})
 
 	Context("when fs errors when creating temporary file", func() {
@@ -131,14 +134,9 @@ var _ = Describe("Deployer", func() {
 						cases[0].DeploymentWillFail = true
 					})
 
-					It("returns an error with prefix", func() {
+					It("does not returns an error", func() {
 						err := deployer.RunDeploys()
-						Expect(err).To(HaveOccurred())
-						Expect(err.Error()).To(Equal(`
-==========================================================
-DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO
-==========================================================
-Running deploy: error`))
+						Expect(err).ToNot(HaveOccurred())
 					})
 				})
 			})

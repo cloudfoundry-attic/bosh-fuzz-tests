@@ -17,8 +17,9 @@ import (
 	bftdeployment "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 	bftnamegen "github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bftparam "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter"
-
 	bftnetwork "github.com/cloudfoundry-incubator/bosh-fuzz-tests/parameter/network"
+	bftvariables "github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables"
+
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
@@ -124,12 +125,28 @@ func main() {
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, decider, logger)
 	analyzer := bftanalyzer.NewAnalyzer(logger)
 
+	varsRandomizer := bftvariables.DefaultNumberRandomizer{}
+	varsPathBuilder := bftvariables.NewPathBuilder()
+	varsPathPicker := bftvariables.NewPathPicker(varsRandomizer)
+	varsPlaceholderPlanter := bftvariables.NewPlaceholderPlanter(nameGenerator)
+
+	sprinkler := bftvariables.NewSprinkler(
+		testConfig.Parameters,
+		fs,
+		varsRandomizer,
+		varsPathBuilder,
+		varsPathPicker,
+		varsPlaceholderPlanter,
+		nameGenerator,
+	)
+
 	deployer := bftdeployment.NewDeployer(
 		cliRunner,
 		directorInfo,
 		renderer,
 		inputGenerator,
 		analyzer,
+		sprinkler,
 		fs,
 		logger,
 		testConfig.GenerateManifestOnly,
