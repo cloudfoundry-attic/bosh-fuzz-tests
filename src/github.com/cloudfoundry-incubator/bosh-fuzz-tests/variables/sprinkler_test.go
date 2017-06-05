@@ -39,7 +39,7 @@ var _ = Describe("Sprinkler", func() {
 				Names: []string{"placeholder1", "placeholder2"},
 			}
 
-			sprinkler = NewSprinkler(parameters, fs, randomizer, pathBuilder, pathPicker, placeholderPlanter, nameGenerator)
+			sprinkler = NewSprinkler(parameters, fs, randomizer, pathBuilder, pathPicker, placeholderPlanter)
 		})
 
 		Context("when manifest exists at given path", func() {
@@ -48,7 +48,7 @@ var _ = Describe("Sprinkler", func() {
 			})
 
 			It("does NOT raise an error", func() {
-				_, err := sprinkler.SprinklePlaceholders("manifest-path")
+				_, err := sprinkler.SprinklePlaceholders("manifest-path", [][]interface{} {})
 				Expect(err).ToNot(HaveOccurred())
 			})
 
@@ -60,7 +60,7 @@ var _ = Describe("Sprinkler", func() {
 				})
 
 				It("raises an error", func() {
-					_, err := sprinkler.SprinklePlaceholders("manifest-path")
+					_, err := sprinkler.SprinklePlaceholders("manifest-path", [][]interface{} {})
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(ContainSubstring("Error unmarshalling manifest file"))
 				})
@@ -114,7 +114,7 @@ jobs:
 						return nil, nil
 					}
 
-					_, err := sprinkler.SprinklePlaceholders("manifest-path")
+					_, err := sprinkler.SprinklePlaceholders("manifest-path", [][]interface{} {})
 					Expect(err).ToNot(HaveOccurred())
 
 					updatedYamlString, _ := fs.ReadFile("manifest-path")
@@ -128,7 +128,7 @@ jobs:
 						return map[string]interface{}{"placeholder1": "foo-deployment"}, nil
 					}
 
-					result, err := sprinkler.SprinklePlaceholders("manifest-path")
+					result, err := sprinkler.SprinklePlaceholders("manifest-path", [][]interface{} {})
 					Expect(err).ToNot(HaveOccurred())
 
 					Expect(result).To(Equal(map[string]interface{}{"placeholder1": "foo-deployment"}))
@@ -140,7 +140,7 @@ jobs:
 					})
 
 					It("raises an error", func() {
-						_, err := sprinkler.SprinklePlaceholders("manifest-path")
+						_, err := sprinkler.SprinklePlaceholders("manifest-path", [][]interface{} {})
 						Expect(err).To(HaveOccurred())
 						Expect(err.Error()).To(Equal("Error adding variables to manifest file: sample-error"))
 					})
@@ -152,7 +152,7 @@ jobs:
 					})
 
 					It("raises an error", func() {
-						_, err := sprinkler.SprinklePlaceholders("manifest-path")
+						_, err := sprinkler.SprinklePlaceholders("manifest-path", [][]interface{} {})
 						Expect(err).To(HaveOccurred())
 						Expect(err.Error()).To(Equal("Error writing manifest file: write-error"))
 					})
@@ -166,7 +166,7 @@ jobs:
 			})
 
 			It("raises an error", func() {
-				_, err := sprinkler.SprinklePlaceholders("bad-manifest-path")
+				_, err := sprinkler.SprinklePlaceholders("bad-manifest-path", [][]interface{} {})
 				Expect(err).To(HaveOccurred())
 				Expect(err.Error()).To(Equal("Error reading manifest file: Not found: open bad-manifest-path: no such file or directory"))
 			})

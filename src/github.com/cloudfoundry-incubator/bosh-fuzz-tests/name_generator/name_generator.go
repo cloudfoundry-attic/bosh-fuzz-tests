@@ -9,10 +9,17 @@ type NameGenerator interface {
 }
 
 type nameGenerator struct {
+	absolute bool
 }
 
 func NewNameGenerator() NameGenerator {
 	return &nameGenerator{}
+}
+
+func NewAbsoluteNameGenerator() NameGenerator {
+	return &nameGenerator{
+		absolute: true,
+	}
 }
 
 func (n *nameGenerator) Generate(length int) string {
@@ -21,6 +28,9 @@ func (n *nameGenerator) Generate(length int) string {
 
 	for i := 1; i < len(b); i++ {
 		b[i] = characterRunes[rand.Intn(len(characterRunes))]
+	}
+	if n.absolute {
+		return "/" + string(b)
 	}
 	return string(b)
 }

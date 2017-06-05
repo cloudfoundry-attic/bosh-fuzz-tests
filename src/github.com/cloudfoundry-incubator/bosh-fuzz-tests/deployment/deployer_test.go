@@ -47,7 +47,18 @@ var _ = Describe("Deployer", func() {
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, analyzer, sprinkler, fs, logger, false)
+		deployer = NewDeployer(
+			cliRunner,
+			directorInfo,
+			renderer,
+			inputGenerator,
+			analyzer,
+			sprinkler,
+			sprinkler,
+			fs,
+			logger,
+			false,
+		)
 	})
 
 	Context("when fs errors when creating temporary file", func() {

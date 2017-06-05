@@ -10,7 +10,7 @@ import (
 var _ = Describe("PathWeeder", func() {
 
 	Context("from a list of paths", func() {
-		var paths [][]interface{}
+		var paths, badCloudConfigPatterns [][]interface{}
 		BeforeEach(func() {
 			paths = [][]interface{}{
 				{"azs", 0, "iaas"},
@@ -30,6 +30,19 @@ var _ = Describe("PathWeeder", func() {
 				{"stemcells", 0},
 				{"stemcells"},
 			}
+			badCloudConfigPatterns = [][]interface{}{
+				{"resource_pools"},
+				{"instance_groups", Integer, "jobs", Integer, "properties"},
+				{"instance_groups", Integer, "jobs", Integer, String, String, "properties"},
+				{"instance_groups", Integer, "properties"},
+				{"name"},
+				{"properties"},
+				{"releases", Integer, String},
+				{"releases", Integer},
+				{"releases"},
+				{"stemcells", Integer},
+				{"stemcells"},
+			}
 		})
 
 		It("has all invalid paths removed", func() {
@@ -41,7 +54,7 @@ var _ = Describe("PathWeeder", func() {
 				{"network", "test", "properties"},
 				{"properties", "autocorrect"},
 			}
-			result := NewPathWeeder().WeedPaths(paths)
+			result := NewPathWeeder().WeedPaths(paths, badCloudConfigPatterns)
 			Expect(result).To(Equal(expectedPaths))
 		})
 	})

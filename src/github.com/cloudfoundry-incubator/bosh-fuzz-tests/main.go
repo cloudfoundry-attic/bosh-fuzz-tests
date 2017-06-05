@@ -117,6 +117,8 @@ func main() {
 	rand.Seed(seed)
 
 	nameGenerator := bftnamegen.NewNameGenerator()
+	absoluteNameGenerator := bftnamegen.NewAbsoluteNameGenerator()
+
 	decider := bftdecider.NewRandomDecider()
 
 	ipPoolProvider := bftnetwork.NewIpPoolProvider()
@@ -129,6 +131,7 @@ func main() {
 	varsPathBuilder := bftvariables.NewPathBuilder()
 	varsPathPicker := bftvariables.NewPathPicker(varsRandomizer)
 	varsPlaceholderPlanter := bftvariables.NewPlaceholderPlanter(nameGenerator)
+	varsAbsolutePlaceholderPlanter := bftvariables.NewPlaceholderPlanter(absoluteNameGenerator)
 
 	sprinkler := bftvariables.NewSprinkler(
 		testConfig.Parameters,
@@ -137,7 +140,15 @@ func main() {
 		varsPathBuilder,
 		varsPathPicker,
 		varsPlaceholderPlanter,
-		nameGenerator,
+	)
+
+	absoluteSprinkler := bftvariables.NewSprinkler(
+		testConfig.Parameters,
+		fs,
+		varsRandomizer,
+		varsPathBuilder,
+		varsPathPicker,
+		varsAbsolutePlaceholderPlanter,
 	)
 
 	deployer := bftdeployment.NewDeployer(
@@ -147,6 +158,7 @@ func main() {
 		inputGenerator,
 		analyzer,
 		sprinkler,
+		absoluteSprinkler,
 		fs,
 		logger,
 		testConfig.GenerateManifestOnly,

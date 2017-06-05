@@ -8,10 +8,11 @@ import (
 )
 
 type FakeSprinkler struct {
-	SprinklePlaceholdersStub        func(manifestPath string) (map[string]interface{}, error)
+	SprinklePlaceholdersStub        func(manifestPath string, badPathFilter [][]interface{}) (map[string]interface{}, error)
 	sprinklePlaceholdersMutex       sync.RWMutex
 	sprinklePlaceholdersArgsForCall []struct {
-		manifestPath string
+		manifestPath  string
+		badPathFilter [][]interface{}
 	}
 	sprinklePlaceholdersReturns struct {
 		result1 map[string]interface{}
@@ -25,16 +26,22 @@ type FakeSprinkler struct {
 	invocationsMutex sync.RWMutex
 }
 
-func (fake *FakeSprinkler) SprinklePlaceholders(manifestPath string) (map[string]interface{}, error) {
+func (fake *FakeSprinkler) SprinklePlaceholders(manifestPath string, badPathFilter [][]interface{}) (map[string]interface{}, error) {
+	var badPathFilterCopy [][]interface{}
+	if badPathFilter != nil {
+		badPathFilterCopy = make([][]interface{}, len(badPathFilter))
+		copy(badPathFilterCopy, badPathFilter)
+	}
 	fake.sprinklePlaceholdersMutex.Lock()
 	ret, specificReturn := fake.sprinklePlaceholdersReturnsOnCall[len(fake.sprinklePlaceholdersArgsForCall)]
 	fake.sprinklePlaceholdersArgsForCall = append(fake.sprinklePlaceholdersArgsForCall, struct {
-		manifestPath string
-	}{manifestPath})
-	fake.recordInvocation("SprinklePlaceholders", []interface{}{manifestPath})
+		manifestPath  string
+		badPathFilter [][]interface{}
+	}{manifestPath, badPathFilterCopy})
+	fake.recordInvocation("SprinklePlaceholders", []interface{}{manifestPath, badPathFilterCopy})
 	fake.sprinklePlaceholdersMutex.Unlock()
 	if fake.SprinklePlaceholdersStub != nil {
-		return fake.SprinklePlaceholdersStub(manifestPath)
+		return fake.SprinklePlaceholdersStub(manifestPath, badPathFilter)
 	}
 	if specificReturn {
 		return ret.result1, ret.result2
@@ -48,10 +55,10 @@ func (fake *FakeSprinkler) SprinklePlaceholdersCallCount() int {
 	return len(fake.sprinklePlaceholdersArgsForCall)
 }
 
-func (fake *FakeSprinkler) SprinklePlaceholdersArgsForCall(i int) string {
+func (fake *FakeSprinkler) SprinklePlaceholdersArgsForCall(i int) (string, [][]interface{}) {
 	fake.sprinklePlaceholdersMutex.RLock()
 	defer fake.sprinklePlaceholdersMutex.RUnlock()
-	return fake.sprinklePlaceholdersArgsForCall[i].manifestPath
+	return fake.sprinklePlaceholdersArgsForCall[i].manifestPath, fake.sprinklePlaceholdersArgsForCall[i].badPathFilter
 }
 
 func (fake *FakeSprinkler) SprinklePlaceholdersReturns(result1 map[string]interface{}, result2 error) {

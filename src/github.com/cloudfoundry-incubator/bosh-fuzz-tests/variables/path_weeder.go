@@ -1,7 +1,7 @@
 package variables
 
 type PathWeeder interface {
-	WeedPaths(paths [][]interface{}) [][]interface{}
+	WeedPaths(paths [][]interface{}, badPathPatterns [][]interface{}) [][]interface{}
 }
 
 type pathWeeder struct {
@@ -17,35 +17,13 @@ func NewPathWeeder() PathWeeder {
 	return pathWeeder{}
 }
 
-var badPathPatterns [][]interface{} = [][]interface{}{
-	{"instance_groups", Integer, "env"},
-	{"instance_groups", Integer, "jobs", Integer, "consumes", String, "properties"},
-	{"instance_groups", Integer, "jobs", Integer, "properties"},
-	{"instance_groups", Integer, "properties"},
-	{"jobs", Integer, "env"},
-	{"jobs", Integer, "properties"},
-	{"jobs", Integer, "templates", Integer, "consumes", String, "properties"},
-	{"jobs", Integer, "templates", Integer, "properties"},
-	{"name"},
-	{"properties"},
-	{"resource_pools", Integer, "env"},
-	{"variables", Integer, String},
-	{"variables", Integer},
-	{"variables"},
-	{"releases", Integer, String}, // should be supported. not working now.
-	{"releases", Integer},         // should be supported. not working now.
-	{"releases"},                  // should be supported. not working now.
-	{"stemcells", Integer},        // should be supported. not working now.
-	{"stemcells"},                 // should be supported. not working now.
-}
-
 // Returns:
 // array of locations of possible placeholder locations in the format:
 // map item name or array index
 // for example [ ['hi', 3, 'there', 'property'], ]
 // and invalid ones are [ ['hi', Anything, 'there', Anything], ]
 
-func (p pathWeeder) WeedPaths(paths [][]interface{}) [][]interface{} {
+func (p pathWeeder) WeedPaths(paths [][]interface{}, badPathPatterns [][]interface{}) [][]interface{} {
 
 	for _, pattern := range badPathPatterns {
 		paths = p.trimmedPaths(paths, pattern)

@@ -2,14 +2,13 @@ package variables
 
 import (
 	bftconfig "github.com/cloudfoundry-incubator/bosh-fuzz-tests/config"
-	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
 	"gopkg.in/yaml.v2"
 )
 
 type Sprinkler interface {
-	SprinklePlaceholders(manifestPath string) (map[string]interface{}, error)
+	SprinklePlaceholders(manifestPath string, badPathFilter [][]interface{}) (map[string]interface{}, error)
 }
 
 type sprinkler struct {
@@ -19,7 +18,6 @@ type sprinkler struct {
 	pathBuilder        PathBuilder
 	pathPicker         PathPicker
 	placeholderPlanter PlaceholderPlanter
-	nameGenerator      name_generator.NameGenerator
 }
 
 func NewSprinkler(
@@ -29,7 +27,6 @@ func NewSprinkler(
 	pathBuilder PathBuilder,
 	pathPicker PathPicker,
 	placeholderPlanter PlaceholderPlanter,
-	nameGenerator name_generator.NameGenerator,
 ) Sprinkler {
 	return &sprinkler{
 		parameters:         parameters,
@@ -38,13 +35,12 @@ func NewSprinkler(
 		pathBuilder:        pathBuilder,
 		pathPicker:         pathPicker,
 		placeholderPlanter: placeholderPlanter,
-		nameGenerator:      nameGenerator,
 	}
 }
 
 // Returns: map
 // key is the placeholder name. value is the placeholder value
-func (s sprinkler) SprinklePlaceholders(manifestPath string) (map[string]interface{}, error) {
+func (s sprinkler) SprinklePlaceholders(manifestPath string, badPathFilter [][]interface{}) (map[string]interface{}, error) {
 	manifest := map[interface{}]interface{}{}
 
 	yamlFile, err := s.fs.ReadFile(manifestPath)
@@ -60,7 +56,7 @@ func (s sprinkler) SprinklePlaceholders(manifestPath string) (map[string]interfa
 	placeholderPaths := s.pathBuilder.BuildPaths(manifest)
 	randomizer := DefaultNumberRandomizer{}
 
-	placeholderPaths = NewPathWeeder().WeedPaths(placeholderPaths)
+	placeholderPaths = NewPathWeeder().WeedPaths(placeholderPaths, badPathFilter)
 
 	numOfSubstitutions := s.parameters.NumOfSubstitutions[randomizer.Intn(len(s.parameters.NumOfSubstitutions))]
 	candidates := s.pathPicker.PickPaths(placeholderPaths, numOfSubstitutions)
