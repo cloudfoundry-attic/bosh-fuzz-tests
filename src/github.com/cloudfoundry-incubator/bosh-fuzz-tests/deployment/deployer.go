@@ -93,20 +93,6 @@ var badCloudConfigPatterns [][]interface{} = [][]interface{}{
 func (d *deployer) RunDeploys() error {
 	d.cliRunner.SetEnv(d.directorInfo.URL)
 
-	manifestPath, err := d.fs.TempFile("manifest")
-	if err != nil {
-		return bosherr.WrapError(err, "Creating manifest file")
-	}
-	defer d.fs.RemoveAll(manifestPath.Name())
-
-	cloudConfigPath, err := d.fs.TempFile("cloud-config")
-	if err != nil {
-		return bosherr.WrapError(err, "Creating cloud config file")
-	}
-	fmt.Println("\ncloudConfigPath", cloudConfigPath.Name())
-
-	defer d.fs.RemoveAll(cloudConfigPath.Name())
-
 	inputs, err := d.inputGenerator.Generate()
 	if err != nil {
 		return bosherr.WrapError(err, "Generating input")
@@ -131,27 +117,32 @@ func (d *deployer) RunDeploys() error {
 		input := testCase.Input
 		input.DirectorUUID = d.directorInfo.UUID
 
+		manifestPath, err := d.fs.TempFile("manifest")
+		if err != nil {
+			return bosherr.WrapError(err, "Creating manifest file")
+		}
+		defer d.fs.RemoveAll(manifestPath.Name())
+
+		cloudConfigPath, err := d.fs.TempFile("cloud-config")
+		if err != nil {
+			return bosherr.WrapError(err, "Creating cloud config file")
+		}
+		defer d.fs.RemoveAll(cloudConfigPath.Name())
+
 		err = d.renderer.Render(input, manifestPath.Name(), cloudConfigPath.Name())
 		if err != nil {
 			return bosherr.WrapError(err, "Rendering deployment manifest")
 		}
 
-		fmt.Printf("\n============= checkpoint\n")
-
 		substitutionMap, err := d.sprinkler.SprinklePlaceholders(manifestPath.Name(), badManifestPatterns)
 		if err != nil {
 			return bosherr.WrapError(err, "Could not sprinkle placeholders in manifest")
 		}
-		fmt.Println("\nsubstitutionMap", substitutionMap)
 
-		fmt.Println(">>>> I am Absolutely certain that this should work.")
 		cloudConfigSubstitutionMap, err := d.absoluteSprinkler.SprinklePlaceholders(cloudConfigPath.Name(), badCloudConfigPatterns)
 		if err != nil {
 			return bosherr.WrapError(err, "Could not sprinkle placeholders in cloud config")
 		}
-		fmt.Println("\ncloudConfigSubstitutionMap", cloudConfigSubstitutionMap)
-		contents, _ := d.fs.ReadFile(cloudConfigPath.Name())
-		fmt.Printf("\n============= cloud config\n%v\n=================== ^^ cloud config\n", string(contents))
 
 		// Setup UAA
 		targetURL, err := url.Parse(d.directorInfo.URL)
@@ -224,10 +215,14 @@ func (d *deployer) RunDeploys() error {
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
 			taskId, err := deployWrapper.RunWithDebug("-d", "foo-deployment", "deploy", manifestPath.Name())
 			if err != nil {
+				errorPrefix := ""
 				if testCase.DeploymentWillFail {
+					errorPrefix += "\n==========================================================\n"
+					errorPrefix += "DEPLOYMENT FAILURE IS EXPECTED DUE TO UNSUPPORTED SCENARIO\n"
+					errorPrefix += "==========================================================\n"
 					continue
 				}
-				return bosherr.WrapError(err, "Running deploy")
+				return bosherr.WrapError(err, errorPrefix+"Running deploy")
 			}
 
 			for _, expectation := range testCase.Expectations {
