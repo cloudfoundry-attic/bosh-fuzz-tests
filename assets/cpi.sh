@@ -1,7 +1,13 @@
 #!/bin/bash
 
-source /etc/profile.d/chruby.sh
-chruby ruby-2.3.1
+source /usr/local/opt/chruby/share/chruby/chruby.sh
+source /usr/local/opt/chruby/share/chruby/auto.sh
+
+RUBIES+=(
+  /Users/pivotal/.rubies/ruby-2.3.1
+)
+
+chruby 2.3.1
 
 read INPUT
 

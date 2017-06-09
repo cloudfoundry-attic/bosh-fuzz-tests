@@ -86,6 +86,7 @@ var badCloudConfigPatterns [][]interface{} = [][]interface{}{
 	{"properties"},
 	{"resource_pools", variables.Integer, "env"},
 	{"resource_pools", variables.Integer, "stemcell"},
+	{"resource_pools", variables.Integer, "stemcell", variables.String},
 	{"resource_pools"},
 }
 
@@ -121,13 +122,13 @@ func (d *deployer) RunDeploys() error {
 		if err != nil {
 			return bosherr.WrapError(err, "Creating manifest file")
 		}
-		defer d.fs.RemoveAll(manifestPath.Name())
+		//defer d.fs.RemoveAll(manifestPath.Name())
 
 		cloudConfigPath, err := d.fs.TempFile("cloud-config")
 		if err != nil {
 			return bosherr.WrapError(err, "Creating cloud config file")
 		}
-		defer d.fs.RemoveAll(cloudConfigPath.Name())
+		//defer d.fs.RemoveAll(cloudConfigPath.Name())
 
 		err = d.renderer.Render(input, manifestPath.Name(), cloudConfigPath.Name())
 		if err != nil {
