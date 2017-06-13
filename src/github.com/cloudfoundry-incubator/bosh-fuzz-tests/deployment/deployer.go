@@ -84,6 +84,7 @@ var badManifestPatterns [][]interface{} = [][]interface{}{
 
 var badCloudConfigPatterns [][]interface{} = [][]interface{}{
 	{"properties"},
+	{"resource_pools", variables.Integer},
 	{"resource_pools", variables.Integer, "env"},
 	{"resource_pools", variables.Integer, "stemcell"},
 	{"resource_pools", variables.Integer, "stemcell", variables.String},
