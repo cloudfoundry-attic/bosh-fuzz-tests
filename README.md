@@ -21,7 +21,14 @@ as defined in `config.json`):
 
 ```
 cp ~/workspace/bosh-fuzz-tests/assets/ssl/* /tmp/
-bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
+DB=postgresql bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
+```
+
+Note, on the local workstation this will leave processes behind.
+To clean up those processes you can try:
+
+```
+kill $(ps aux | egrep "nats-server|bosh-fuzz-tests|bin/bosh-director" | grep -v grep | awk '{print $2}')
 ```
 
 To re-create failures seen on Concourse:
