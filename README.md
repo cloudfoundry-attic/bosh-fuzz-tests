@@ -28,7 +28,7 @@ Note, on the local workstation this will leave processes behind.
 To clean up those processes you can try:
 
 ```
-kill $(ps aux | egrep "nats-server|bosh-fuzz-tests|bin/bosh-director" | grep -v grep | awk '{print $2}')
+kill $(ps aux | egrep "nats-server|bosh-fuzz-tests|bin/bosh-director|bosh-config-server-executable" | grep -v grep | awk '{print $2}')
 ```
 
 To re-create failures seen on Concourse:
