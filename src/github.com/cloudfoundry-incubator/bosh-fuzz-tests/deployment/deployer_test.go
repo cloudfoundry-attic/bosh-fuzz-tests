@@ -22,6 +22,7 @@ import (
 var _ = Describe("Deployer", func() {
 	var (
 		cliRunner      *clirunnerfakes.FakeRunner
+		uaaRunner      *clirunnerfakes.FakeRunner
 		renderer       *deploymentfakes.FakeRenderer
 		inputGenerator *deploymentfakes.FakeInputGenerator
 		analyzer       *analyzerfakes.FakeAnalyzer
@@ -33,6 +34,7 @@ var _ = Describe("Deployer", func() {
 
 	BeforeEach(func() {
 		cliRunner = &clirunnerfakes.FakeRunner{}
+		uaaRunner = &clirunnerfakes.FakeRunner{}
 		renderer = &deploymentfakes.FakeRenderer{}
 		inputGenerator = &deploymentfakes.FakeInputGenerator{}
 		analyzer = &analyzerfakes.FakeAnalyzer{}
@@ -47,7 +49,7 @@ var _ = Describe("Deployer", func() {
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 
-		deployer = NewDeployer(cliRunner, directorInfo, renderer, inputGenerator, analyzer, sprinkler, fs, logger, false)
+		deployer = NewDeployer(cliRunner, uaaRunner, directorInfo, renderer, inputGenerator, analyzer, sprinkler, fs, logger, false)
 	})
 
 	Context("when fs errors when creating temporary file", func() {

@@ -3,6 +3,7 @@ package main
 import (
 	"math/rand"
 	"os"
+	"os/exec"
 	"os/signal"
 	"strconv"
 	"syscall"
@@ -32,6 +33,17 @@ func main() {
 		println("Usage: bft path/to/config.json seed")
 		os.Exit(1)
 	}
+
+	defer func() {
+		cmd := exec.Command("bash", "-c", `
+		ps aux \
+		| egrep "nats-server|bosh-fuzz-tests|bin/bosh-director|bosh-config-server-executable|bosh-agent" \
+		| grep -v grep \
+		| awk '{print $2}' \
+		| xargs kill
+		`)
+		cmd.Run()
+	}()
 
 	logger := boshlog.NewLogger(boshlog.LevelDebug)
 	fs := boshsys.NewOsFileSystem(logger)
@@ -94,6 +106,11 @@ func main() {
 		panic(err)
 	}
 
+	uaaRunner, err := cliRunnerFactory.Create("uaac")
+	if err != nil {
+		panic(err)
+	}
+
 	if !testConfig.GenerateManifestOnly {
 		logger.Debug("main", "Preparing to deploy")
 		preparer := bftdeployment.NewPreparer(directorInfo, cliRunner, fs, assetsProvider)
@@ -142,6 +159,7 @@ func main() {
 
 	deployer := bftdeployment.NewDeployer(
 		cliRunner,
+		uaaRunner,
 		directorInfo,
 		renderer,
 		inputGenerator,

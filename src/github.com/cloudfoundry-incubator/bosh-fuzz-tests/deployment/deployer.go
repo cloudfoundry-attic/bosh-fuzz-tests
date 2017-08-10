@@ -10,7 +10,6 @@ import (
 
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
-	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 
 	"encoding/json"
 	"net/url"
@@ -22,6 +21,7 @@ type Deployer interface {
 
 type deployer struct {
 	cliRunner            bltclirunner.Runner
+	uaaRunner            bltclirunner.Runner
 	directorInfo         bltaction.DirectorInfo
 	renderer             Renderer
 	inputGenerator       InputGenerator
@@ -34,6 +34,7 @@ type deployer struct {
 
 func NewDeployer(
 	cliRunner bltclirunner.Runner,
+	uaaRunner bltclirunner.Runner,
 	directorInfo bltaction.DirectorInfo,
 	renderer Renderer,
 	inputGenerator InputGenerator,
@@ -45,6 +46,7 @@ func NewDeployer(
 ) Deployer {
 	return &deployer{
 		cliRunner:            cliRunner,
+		uaaRunner:            uaaRunner,
 		directorInfo:         directorInfo,
 		renderer:             renderer,
 		inputGenerator:       inputGenerator,
@@ -76,19 +78,6 @@ func (d *deployer) RunDeploys() error {
 		return bosherr.WrapError(err, "Generating input")
 	}
 
-	logger := boshlog.NewLogger(boshlog.LevelDebug)
-	cmdRunner := boshsys.NewExecCmdRunner(logger)
-	fs := boshsys.NewOsFileSystem(logger)
-
-	envConfig := bltconfig.NewConfig(fs)
-
-	cliRunnerFactory := bltclirunner.NewFactory(envConfig.CliCmd, cmdRunner, fs)
-
-	uaaRunner, err := cliRunnerFactory.Create("uaac")
-	if err != nil {
-		panic(err)
-	}
-
 	cases := d.analyzer.Analyze(inputs)
 
 	for _, testCase := range cases {
@@ -114,7 +103,7 @@ func (d *deployer) RunDeploys() error {
 		targetURL.Path = "/uaa"
 
 		target := targetURL.String()
-		if err := uaaRunner.RunWithArgs("target", target, "--skip-ssl-validation"); nil != err {
+		if err := d.uaaRunner.RunWithArgs("target", target, "--skip-ssl-validation"); nil != err {
 			return err
 		}
 
@@ -131,10 +120,10 @@ func (d *deployer) RunDeploys() error {
 			if nil != err {
 				return err
 			}
-			if err := uaaRunner.RunWithArgs("token", "client", "get", "test", "-s", "secret"); nil != err {
+			if err := d.uaaRunner.RunWithArgs("token", "client", "get", "test", "-s", "secret"); nil != err {
 				return err
 			}
-			if err := uaaRunner.RunWithArgs("curl", "--insecure", "--request", "PUT", "--header", "Content-Type:Application/JSON", "--data", string(data), "https://localhost:65005/v1/data"); nil != err {
+			if err := d.uaaRunner.RunWithArgs("curl", "--insecure", "--request", "PUT", "--header", "Content-Type:Application/JSON", "--data", string(data), "https://localhost:65005/v1/data"); nil != err {
 				return err
 			}
 		}
