@@ -44,6 +44,7 @@ cp -r bosh-agent $agent_path
 echo 'Running tests...'
 
 export GOPATH=$(realpath bosh-fuzz-tests)
+export PATH=$GOPATH/bin:$PATH
 
 sed -i s#BOSH_SRC_PATH#${bosh_src_path}#g bosh-fuzz-tests/ci/concourse-config.json
 sed -i s#PWD#${PWD}#g bosh-fuzz-tests/ci/concourse-config.json
