@@ -34,8 +34,11 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	steps := []Step{}
 
 	jobs := testCase.Input.Jobs
+	if len(jobs) == 0 {
+		return steps
+	}
 
-	if len(jobs) > 0 {
+	for i := 0; i < rand.Intn(6); i++ {
 		job := jobs[rand.Intn(len(jobs))]
 
 		if len(job.Templates) > 0 {
@@ -47,13 +50,13 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 				fmt.Sprintf("%s/any", job.Name),
 			}
 
-			steps = []Step{
+			steps = append(steps,
 				ErrandStep{
 					Name:           job.Templates[rand.Intn(len(job.Templates))].Name,
 					DeploymentName: "foo-deployment",
 					InstanceFilter: instanceFilters[rand.Intn(len(instanceFilters))],
 				},
-			}
+			)
 		}
 	}
 

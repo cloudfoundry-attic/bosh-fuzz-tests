@@ -51,13 +51,13 @@ var _ = Describe("ErrandStepGenerator", func() {
 		DescribeTable("instance filters", func(name, instanceFilter string) {
 			Eventually(func() []deployment.Step {
 				return generator.Steps(testCase)
-			}, time.Second, time.Microsecond).Should(Equal([]deployment.Step{
+			}, time.Second, time.Microsecond).Should(ContainElement(
 				deployment.ErrandStep{
 					Name:           name,
 					InstanceFilter: instanceFilter,
 					DeploymentName: "foo-deployment",
 				},
-			}))
+			))
 		},
 			Entry("", "template-name", ""),
 			Entry("", "template-name", "instance-name"),
@@ -76,6 +76,18 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", "other-job-template-name", "other-job/0"),
 			Entry("", "other-job-template-name", "other-job/first"),
 			Entry("", "other-job-template-name", "other-job/any"),
+		)
+
+		DescribeTable("number of steps returned", func(numberOfSteps int) {
+			Eventually(func() []deployment.Step {
+				return generator.Steps(testCase)
+			}, time.Second, time.Microsecond).Should(HaveLen(numberOfSteps))
+		},
+			Entry("", 0),
+			Entry("", 1),
+			Entry("", 2),
+			Entry("", 3),
+			Entry("", 4),
 		)
 
 		Context("when input's job has no templates", func() {
