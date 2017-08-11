@@ -1,9 +1,12 @@
 package main
 
 import (
+	"os"
+	"os/signal"
+	"syscall"
+
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	"os"
 
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
@@ -34,28 +37,37 @@ func main() {
 	logger.Debug("main", "Setting up environment")
 	environmentProvider := bltenv.NewProvider(config, fs, cmdRunner, assetsProvider, logger)
 	environment := environmentProvider.Get()
+	err = environment.Setup()
+	if err != nil {
+		panic(err)
+	}
+	defer environment.Shutdown()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, syscall.SIGTERM)
+	go func() {
+		<-c
+		environment.Shutdown()
+		os.Exit(1)
+	}()
 
 	logger.Debug("main", "Starting deploy")
 
 	cliRunnerFactory := bltclirunner.NewFactory(config.CliCmd, cmdRunner, fs)
 
-	var directorInfo bltaction.DirectorInfo
-	if environment == nil {
-		directorInfo, err = bltaction.NewDirectorInfo(os.Getenv("BOSH_ENVIRONMENT"), cliRunnerFactory)
-	} else {
-		directorInfo, err = bltaction.NewDirectorInfo(environment.DirectorURL(), cliRunnerFactory)
-	}
-
+	directorInfo, err := bltaction.NewDirectorInfo(environment.DirectorURL(), cliRunnerFactory)
 	if err != nil {
 		panic(err)
 	}
 
 	actionFactory := bltaction.NewFactory(directorInfo, fs, assetsProvider)
 
-	prepareConfigServerFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare_config_server"}}, actionFactory, cliRunnerFactory)
-	err = prepareConfigServerFlow.Run(false)
-	if err != nil {
-		panic(err)
+	if config.UAAConfig.Enabled {
+		prepareConfigServerFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare_config_server"}}, actionFactory, cliRunnerFactory)
+		err = prepareConfigServerFlow.Run(false)
+		if err != nil {
+			panic(err)
+		}	
 	}
 
 	prepareActionFlow := bltflow.NewFlow(1, []bltflow.ActionInfo{{Name: "prepare"}}, actionFactory, cliRunnerFactory)

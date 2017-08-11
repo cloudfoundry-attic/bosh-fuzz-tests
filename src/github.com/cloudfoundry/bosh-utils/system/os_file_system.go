@@ -98,18 +98,8 @@ func (fs *osFileSystem) WriteFileString(path, content string) (err error) {
 	return fs.WriteFile(path, []byte(content))
 }
 
-func (fs *osFileSystem) WriteFileQuietly(path string, content []byte) error {
-	return fs.writeFileHelper(path, content, false)
-}
-
 func (fs *osFileSystem) WriteFile(path string, content []byte) error {
-	return fs.writeFileHelper(path, content, true)
-}
-
-func (fs *osFileSystem) writeFileHelper(path string, content []byte, logDebug bool) error {
-	if logDebug {
-		fs.logger.Debug(fs.logTag, "Writing %s", path)
-	}
+	fs.logger.Debug(fs.logTag, "Writing %s", path)
 
 	err := fs.MkdirAll(filepath.Dir(path), os.ModePerm)
 	if err != nil {
@@ -123,9 +113,7 @@ func (fs *osFileSystem) writeFileHelper(path string, content []byte, logDebug bo
 
 	defer file.Close()
 
-	if logDebug {
-		fs.logger.DebugWithDetails(fs.logTag, "Write content", content)
-	}
+	fs.logger.DebugWithDetails(fs.logTag, "Write content", content)
 
 	_, err = file.Write(content)
 	if err != nil {

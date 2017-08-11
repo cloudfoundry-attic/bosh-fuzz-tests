@@ -19,20 +19,18 @@ type execProcess struct {
 	stdoutWriter *bytes.Buffer
 	stderrWriter *bytes.Buffer
 	keepAttached bool
-	quiet        bool
 	pid          int
 	pgid         int
 	logger       boshlog.Logger
 	waitCh       chan Result
 }
 
-func NewExecProcess(cmd *exec.Cmd, keepAttached bool, quiet bool, logger boshlog.Logger) *execProcess {
+func NewExecProcess(cmd *exec.Cmd, keepAttached bool, logger boshlog.Logger) *execProcess {
 	return &execProcess{
 		cmd:          cmd,
 		stdoutWriter: bytes.NewBufferString(""),
 		stderrWriter: bytes.NewBufferString(""),
 		keepAttached: keepAttached,
-		quiet:        quiet,
 		logger:       logger,
 	}
 }
@@ -57,14 +55,10 @@ func (p *execProcess) wait() Result {
 	err := p.cmd.Wait()
 
 	stdout := string(p.stdoutWriter.Bytes())
-	if !p.quiet {
-		p.logger.Debug(execProcessLogTag, "Stdout: %s", stdout)
-	}
+	p.logger.Debug(execProcessLogTag, "Stdout: %s", stdout)
 
 	stderr := string(p.stderrWriter.Bytes())
-	if !p.quiet {
-		p.logger.Debug(execProcessLogTag, "Stderr: %s", stderr)
-	}
+	p.logger.Debug(execProcessLogTag, "Stderr: %s", stderr)
 
 	exitStatus := -1
 	waitStatus := p.cmd.ProcessState.Sys().(syscall.WaitStatus)

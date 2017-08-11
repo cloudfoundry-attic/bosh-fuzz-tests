@@ -9,7 +9,6 @@ import (
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	"strings"
 )
 
 type deployWithStatic struct {
@@ -42,8 +41,6 @@ func NewDeployWithStatic(
 	}
 }
 
-var numInstancesPerFlow = 100
-
 func (d *deployWithStatic) Execute() error {
 	d.cliRunner.SetEnv(d.directorInfo.URL)
 
@@ -65,19 +62,11 @@ func (d *deployWithStatic) Execute() error {
 
 	t := template.Must(template.ParseFiles(manifestTemplatePath))
 	buffer := bytes.NewBuffer([]byte{})
-
-	var staticIPs []string
-	for i := 0; i < numInstancesPerFlow; i++ {
-		staticIPs = append(staticIPs, d.GetNextIP(i))
-	}
-
 	data := manifestData{
 		DeploymentName: d.deploymentName,
 		DirectorUUID:   d.directorInfo.UUID,
-		StaticIPs:      strings.Join(staticIPs, ","),
-		NumInstances:   numInstancesPerFlow,
+		StaticIP:       d.getNextIP(),
 	}
-
 	err = t.Execute(buffer, data)
 	if err != nil {
 		return err
@@ -96,12 +85,9 @@ func (d *deployWithStatic) Execute() error {
 	return nil
 }
 
-func (d *deployWithStatic) GetNextIP(i int) string {
-	ip := net.ParseIP("10.245.0.0")
+func (d *deployWithStatic) getNextIP() string {
+	ip := net.ParseIP("192.168.1.10")
 	b := ip.To4()
-	reservedRange := 11 // reserve 10.245.0.0 to 10.245.0.10. bosh director lives at 10.245.0.3
-	instanceIndex := reservedRange + d.flowNumber*numInstancesPerFlow + i
-	b[2] = b[2] + byte(instanceIndex/253)
-	b[3] = b[3] + byte(1+(instanceIndex%253))
+	b[3] = b[3] + byte(d.flowNumber)
 	return net.IPv4(b[0], b[1], b[2], b[3]).String()
 }

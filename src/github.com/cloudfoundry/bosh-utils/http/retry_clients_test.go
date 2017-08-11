@@ -9,7 +9,6 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
-	"errors"
 	"fmt"
 
 	. "github.com/cloudfoundry/bosh-utils/http"
@@ -117,7 +116,7 @@ var _ = Describe("RetryClients", func() {
 
 			for code := 200; code < 400; code++ {
 				successHttpCode := code
-				It(fmt.Sprintf("attempts once if request is %d", code), func() {
+				It(fmt.Sprintf("attemps once if request is %d", code), func() {
 					fakeClient.StatusCode = successHttpCode
 
 					req := &http.Request{}
@@ -130,62 +129,27 @@ var _ = Describe("RetryClients", func() {
 				})
 			}
 
-			Context("underlying connection errors should not be influenced by request method", func() {
-				for _, method := range []string{"GET", "HEAD", "POST", "DELETE"} {
-					It(fmt.Sprintf("retries for maxAttempts with a %s request", method), func() {
-						fakeClient.SetNilResponse()
-						fakeClient.Error = errors.New("fake-err")
-
-						req := &http.Request{Method: method}
-						resp, err := retryClient.Do(req)
-						Expect(err).To(HaveOccurred())
-						Expect(err.Error()).To(ContainSubstring("fake-err"))
-						Expect(resp).To(BeNil())
-
-						Expect(fakeClient.CallCount).To(Equal(maxAttempts))
-						Expect(fakeClient.Requests).To(ContainElement(req))
-					})
-				}
-			})
-
 			timeoutCodes := []int{
 				http.StatusGatewayTimeout,
 				http.StatusServiceUnavailable,
 			}
 			for _, code := range timeoutCodes {
-				for _, method := range []string{"GET", "HEAD"} {
-					Context(fmt.Sprintf("timeout http status code '%d' with %s request", code, method), func() {
-						It("retries for maxAttempts", func() {
-							fakeClient.StatusCode = code
+				code := code
 
-							req := &http.Request{Method: method}
-							resp, err := retryClient.Do(req)
-							Expect(err).To(HaveOccurred())
+				Context(fmt.Sprintf("timeout http status code '%d'", code), func() {
+					It("retries for maxAttempts", func() {
+						fakeClient.StatusCode = code
 
-							Expect(resp.StatusCode).To(Equal(code))
+						req := &http.Request{}
+						resp, err := retryClient.Do(req)
+						Expect(err).To(HaveOccurred())
 
-							Expect(fakeClient.CallCount).To(Equal(maxAttempts))
-							Expect(fakeClient.Requests).To(ContainElement(req))
-						})
+						Expect(resp.StatusCode).To(Equal(code))
+
+						Expect(fakeClient.CallCount).To(Equal(maxAttempts))
+						Expect(fakeClient.Requests).To(ContainElement(req))
 					})
-				}
-
-				for _, method := range []string{"POST", "DELETE"} {
-					Context(fmt.Sprintf("timeout http status code '%d' with %s request", code, method), func() {
-						It("does not retry", func() {
-							fakeClient.StatusCode = code
-
-							req := &http.Request{Method: method}
-							resp, err := retryClient.Do(req)
-							Expect(err).ToNot(HaveOccurred())
-
-							Expect(resp.StatusCode).To(Equal(code))
-
-							Expect(fakeClient.CallCount).To(Equal(1))
-							Expect(fakeClient.Requests).To(ContainElement(req))
-						})
-					})
-				}
+				})
 			}
 
 		})
