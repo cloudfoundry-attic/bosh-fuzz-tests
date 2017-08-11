@@ -37,7 +37,7 @@ func main() {
 	defer func() {
 		cmd := exec.Command("bash", "-c", `
 		ps aux \
-		| egrep "nats-server|bosh-fuzz-tests|bin/bosh-director|bosh-config-server-executable|bosh-agent" \
+		| egrep "nats-server|bin/bosh-director|bosh-config-server-executable|bosh-agent" \
 		| grep -v grep \
 		| awk '{print $2}' \
 		| xargs kill
