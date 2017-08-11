@@ -1,6 +1,7 @@
 package deployment
 
 import (
+	"fmt"
 	"math/rand"
 
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
@@ -11,6 +12,7 @@ type ErrandStepGenerator struct{}
 
 type ErrandStep struct {
 	Name           string
+	InstanceFilter string
 	DeploymentName string
 }
 
@@ -29,24 +31,39 @@ func NewErrandStepGenerator() ErrandStepGenerator {
 }
 
 func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
+	steps := []Step{}
+
 	jobs := testCase.Input.Jobs
 
 	if len(jobs) > 0 {
 		job := jobs[rand.Intn(len(jobs))]
 
 		if len(job.Templates) > 0 {
-			return []Step{
+			instanceFilters := []string{
+				"",
+				job.Name,
+				fmt.Sprintf("%s/0", job.Name),
+				fmt.Sprintf("%s/first", job.Name),
+				fmt.Sprintf("%s/any", job.Name),
+			}
+
+			steps = []Step{
 				ErrandStep{
 					Name:           job.Templates[rand.Intn(len(job.Templates))].Name,
 					DeploymentName: "foo-deployment",
+					InstanceFilter: instanceFilters[rand.Intn(len(instanceFilters))],
 				},
 			}
 		}
 	}
 
-	return []Step{}
+	return steps
 }
 
 func (es ErrandStep) Run(runner clirunner.Runner) error {
-	return runner.RunWithArgs("run-errand", es.Name, "-d", es.DeploymentName)
+	args := []string{"run-errand", es.Name, "-d", es.DeploymentName}
+	if es.InstanceFilter != "" {
+		args = append(args, "--instance", es.InstanceFilter)
+	}
+	return runner.RunWithArgs(args...)
 }
