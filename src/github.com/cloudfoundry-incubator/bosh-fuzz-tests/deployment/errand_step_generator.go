@@ -1,6 +1,8 @@
 package deployment
 
 import (
+	"math/rand"
+
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 )
@@ -30,10 +32,15 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	jobs := testCase.Input.Jobs
 
 	if len(jobs) > 0 {
-		job := jobs[0]
+		job := jobs[rand.Intn(len(jobs))]
 
 		if len(job.Templates) > 0 {
-			return []Step{ErrandStep{Name: job.Templates[0].Name, DeploymentName: "foo-deployment"}}
+			return []Step{
+				ErrandStep{
+					Name:           job.Templates[rand.Intn(len(job.Templates))].Name,
+					DeploymentName: "foo-deployment",
+				},
+			}
 		}
 	}
 

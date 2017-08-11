@@ -14,22 +14,17 @@ import (
 
 var _ = Describe("ErrandStepGenerator", func() {
 	var (
-		generator     deployment.ErrandStepGenerator
-		testCase      analyzer.Case
-		testJobs      []bftinput.Job
-		testTemplates []bftinput.Template
+		generator deployment.ErrandStepGenerator
+		testCase  analyzer.Case
+		testJobs  []bftinput.Job
 	)
 
 	BeforeEach(func() {
-		testJobs = nil
 		generator = deployment.NewErrandStepGenerator()
 	})
 
 	Describe("Steps", func() {
 		JustBeforeEach(func() {
-			if testJobs == nil {
-				testJobs = []bftinput.Job{{Name: "instance-name", Templates: testTemplates}}
-			}
 			testCase = analyzer.Case{
 				Input: bftinput.Input{
 					Jobs: testJobs,
@@ -38,16 +33,51 @@ var _ = Describe("ErrandStepGenerator", func() {
 		})
 
 		BeforeEach(func() {
-			testTemplates = []bftinput.Template{{Name: "template-name"}}
+			testTemplates := []bftinput.Template{
+				{Name: "template-name"},
+				{Name: "other-template-name"},
+			}
+			secondJobTestTemplates := []bftinput.Template{
+				{Name: "other-job-template-name"},
+			}
+			testJobs = []bftinput.Job{
+				{Name: "instance-name", Templates: testTemplates},
+				{Name: "other-job", Templates: secondJobTestTemplates},
+			}
 		})
 
-		It("returns an errand step that has the correct name and deployment name", func() {
-			Expect(generator.Steps(testCase)).To(Equal([]deployment.Step{deployment.ErrandStep{Name: "template-name", DeploymentName: "foo-deployment"}}))
+		It("returns an errand step that has one of the correct names and deployment name", func() {
+			Eventually(func() []deployment.Step {
+				return generator.Steps(testCase)
+			}).Should(Equal([]deployment.Step{
+				deployment.ErrandStep{
+					Name:           "template-name",
+					DeploymentName: "foo-deployment",
+				},
+			}))
+
+			Eventually(func() []deployment.Step {
+				return generator.Steps(testCase)
+			}).Should(Equal([]deployment.Step{
+				deployment.ErrandStep{
+					Name:           "other-template-name",
+					DeploymentName: "foo-deployment",
+				},
+			}))
+
+			Eventually(func() []deployment.Step {
+				return generator.Steps(testCase)
+			}).Should(Equal([]deployment.Step{
+				deployment.ErrandStep{
+					Name:           "other-job-template-name",
+					DeploymentName: "foo-deployment",
+				},
+			}))
 		})
 
 		Context("when input's job has no templates", func() {
 			BeforeEach(func() {
-				testTemplates = []bftinput.Template{}
+				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{}}}
 			})
 
 			It("returns an empty array of Steps", func() {
