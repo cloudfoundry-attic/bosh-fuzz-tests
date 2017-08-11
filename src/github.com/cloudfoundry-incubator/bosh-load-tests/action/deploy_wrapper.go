@@ -4,6 +4,7 @@ import (
 	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	"regexp"
+	"fmt"
 )
 
 var taskIDRegex = regexp.MustCompilePOSIX(`^Task ([0-9]+)$`)
@@ -26,7 +27,7 @@ func (d *deployWrapper) RunWithDebug(args ...string) (string, error) {
 	if len(matches) > 0 {
 		taskID = matches[1]
 	} else {
-		return "", bosherr.Error("Failed to get task id")
+		return "", bosherr.Error(fmt.Sprintf("Failed to get task id -\nStdOut: %s\nError: %s\n", output, err))
 	}
 
 	if err != nil {
