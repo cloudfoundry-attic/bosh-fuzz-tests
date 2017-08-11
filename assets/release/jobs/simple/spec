@@ -2,6 +2,7 @@
 name: simple
 templates:
   ctl: bin/ctl
+  run: bin/run
 
 packages: []
 

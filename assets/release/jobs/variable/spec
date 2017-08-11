@@ -2,6 +2,7 @@
 name: variable
 templates:
   ctl: bin/ctl
+  run: bin/run
   result.erb: result
 
 packages: []

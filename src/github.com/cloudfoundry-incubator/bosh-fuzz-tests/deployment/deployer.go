@@ -25,6 +25,7 @@ type deployer struct {
 	directorInfo         bltaction.DirectorInfo
 	renderer             Renderer
 	inputGenerator       InputGenerator
+	stepGenerators       []StepGenerator
 	analyzer             bftanalyzer.Analyzer
 	sprinkler            variables.Sprinkler
 	fs                   boshsys.FileSystem
@@ -38,6 +39,7 @@ func NewDeployer(
 	directorInfo bltaction.DirectorInfo,
 	renderer Renderer,
 	inputGenerator InputGenerator,
+	stepGenerators []StepGenerator,
 	analyzer bftanalyzer.Analyzer,
 	sprinkler variables.Sprinkler,
 	fs boshsys.FileSystem,
@@ -50,6 +52,7 @@ func NewDeployer(
 		directorInfo:         directorInfo,
 		renderer:             renderer,
 		inputGenerator:       inputGenerator,
+		stepGenerators:       stepGenerators,
 		analyzer:             analyzer,
 		sprinkler:            sprinkler,
 		fs:                   fs,
@@ -151,6 +154,18 @@ func (d *deployer) RunDeploys() error {
 				err := expectation.Run(d.cliRunner, taskId)
 				if err != nil {
 					return bosherr.WrapError(err, "Running expectation")
+				}
+			}
+
+			steps := []Step{}
+			for _, stepGenerator := range d.stepGenerators {
+				steps = append(steps, stepGenerator.Steps(testCase)...)
+			}
+
+			for _, step := range steps {
+				err = step.Run(d.cliRunner)
+				if err != nil {
+					return bosherr.WrapError(err, "Running step")
 				}
 			}
 		}

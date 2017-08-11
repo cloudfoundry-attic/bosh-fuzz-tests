@@ -141,6 +141,7 @@ func main() {
 	parameterProvider := bftparam.NewParameterProvider(testConfig.Parameters, nameGenerator, decider, networksAssigner, logger)
 	inputGenerator := bftdeployment.NewInputGenerator(testConfig.Parameters, parameterProvider, testConfig.NumberOfConsequentDeploys, nameGenerator, decider, logger)
 	analyzer := bftanalyzer.NewAnalyzer(logger)
+	errandGenerator := bftdeployment.NewErrandStepGenerator()
 
 	varsRandomizer := bftvariables.DefaultNumberRandomizer{}
 	varsPathBuilder := bftvariables.NewPathBuilder()
@@ -163,6 +164,7 @@ func main() {
 		directorInfo,
 		renderer,
 		inputGenerator,
+		[]bftdeployment.StepGenerator{errandGenerator},
 		analyzer,
 		sprinkler,
 		fs,

@@ -2,6 +2,7 @@
 name: foo
 templates:
   ctl: bin/ctl
+  run: bin/run
 
 packages:
 - foo

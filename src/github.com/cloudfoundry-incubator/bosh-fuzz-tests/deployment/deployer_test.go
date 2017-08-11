@@ -21,13 +21,14 @@ import (
 
 var _ = Describe("Deployer", func() {
 	var (
-		cliRunner      *clirunnerfakes.FakeRunner
-		uaaRunner      *clirunnerfakes.FakeRunner
-		renderer       *deploymentfakes.FakeRenderer
-		inputGenerator *deploymentfakes.FakeInputGenerator
-		analyzer       *analyzerfakes.FakeAnalyzer
-		fs             *fakesys.FakeFileSystem
-		sprinkler      *variablesfakes.FakeSprinkler
+		cliRunner       *clirunnerfakes.FakeRunner
+		uaaRunner       *clirunnerfakes.FakeRunner
+		renderer        *deploymentfakes.FakeRenderer
+		inputGenerator  *deploymentfakes.FakeInputGenerator
+		analyzer        *analyzerfakes.FakeAnalyzer
+		fs              *fakesys.FakeFileSystem
+		sprinkler       *variablesfakes.FakeSprinkler
+		errandGenerator *deploymentfakes.FakeStepGenerator
 
 		deployer Deployer
 	)
@@ -40,6 +41,7 @@ var _ = Describe("Deployer", func() {
 		analyzer = &analyzerfakes.FakeAnalyzer{}
 		fs = fakesys.NewFakeFileSystem()
 		sprinkler = &variablesfakes.FakeSprinkler{}
+		errandGenerator = &deploymentfakes.FakeStepGenerator{}
 
 		directorInfo := bltaction.DirectorInfo{
 			Name: "fake-director",
@@ -49,7 +51,7 @@ var _ = Describe("Deployer", func() {
 
 		logger := boshlog.NewLogger(boshlog.LevelNone)
 
-		deployer = NewDeployer(cliRunner, uaaRunner, directorInfo, renderer, inputGenerator, analyzer, sprinkler, fs, logger, false)
+		deployer = NewDeployer(cliRunner, uaaRunner, directorInfo, renderer, inputGenerator, []StepGenerator{errandGenerator}, analyzer, sprinkler, fs, logger, false)
 	})
 
 	Context("when fs errors when creating temporary file", func() {
@@ -161,6 +163,26 @@ var _ = Describe("Deployer", func() {
 					Expect(err).To(HaveOccurred())
 					Expect(err.Error()).To(Equal("Running expectation: error"))
 				})
+			})
+		})
+
+		Context("when there are errand steps", func() {
+			BeforeEach(func() {
+				cliRunner.RunWithOutputReturns("Task 1", nil)
+			})
+
+			var fakeStep *deploymentfakes.FakeStep
+
+			BeforeEach(func() {
+				fakeStep = &deploymentfakes.FakeStep{}
+				errandGenerator.StepsReturns([]Step{fakeStep})
+			})
+
+			It("runs the steps", func() {
+				err := deployer.RunDeploys()
+				Expect(err).ToNot(HaveOccurred())
+				Expect(fakeStep.RunCallCount()).To(Equal(1))
+				Expect(fakeStep.RunArgsForCall(0)).To(Equal(cliRunner))
 			})
 		})
 	})
