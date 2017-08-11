@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 set -e
+set -x
 
 cp $(ls $CLI_DIR_PATH/alpha-bosh-cli-*-linux-amd64) "/tmp/gobosh"
 chmod a+x "/tmp/gobosh"
@@ -57,3 +58,5 @@ pushd bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/
 popd
 
 go run bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/main.go bosh-fuzz-tests/ci/concourse-config.json ${SEED:-}
+
+true
