@@ -47,7 +47,6 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 				job.Name,
 				fmt.Sprintf("%s/0", job.Name),
 				fmt.Sprintf("%s/first", job.Name),
-				fmt.Sprintf("%s/any", job.Name),
 			}
 
 			steps = append(steps,

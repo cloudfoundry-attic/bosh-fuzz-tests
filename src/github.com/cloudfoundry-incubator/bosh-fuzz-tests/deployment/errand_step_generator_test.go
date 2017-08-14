@@ -63,19 +63,16 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", "template-name", "instance-name"),
 			Entry("", "template-name", "instance-name/0"),
 			Entry("", "template-name", "instance-name/first"),
-			Entry("", "template-name", "instance-name/any"),
 
 			Entry("", "other-template-name", ""),
 			Entry("", "other-template-name", "instance-name"),
 			Entry("", "other-template-name", "instance-name/0"),
 			Entry("", "other-template-name", "instance-name/first"),
-			Entry("", "other-template-name", "instance-name/any"),
 
 			Entry("", "other-job-template-name", ""),
 			Entry("", "other-job-template-name", "other-job"),
 			Entry("", "other-job-template-name", "other-job/0"),
 			Entry("", "other-job-template-name", "other-job/first"),
-			Entry("", "other-job-template-name", "other-job/any"),
 		)
 
 		DescribeTable("number of steps returned", func(numberOfSteps int) {
