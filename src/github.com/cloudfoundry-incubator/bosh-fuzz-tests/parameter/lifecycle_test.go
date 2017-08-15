@@ -65,4 +65,76 @@ var _ = Describe("Lifecycle", func() {
 			}).Should(Equal("service"))
 		})
 	})
+
+	Context("when previous job has a persistent disk pool", func() {
+		It("always sets lifecycle to service, never to errand", func() {
+			input := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo"}}}
+			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskPool: "diskpool"}}}
+			Consistently(func() string {
+				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+			}).Should(Equal("service"))
+		})
+	})
+
+	Context("when previous job has a persistent disk type", func() {
+		It("always sets lifecycle to service, never to errand", func() {
+			input := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo"}}}
+			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskType: "diskpool"}}}
+			Consistently(func() string {
+				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+			}).Should(Equal("service"))
+		})
+	})
+
+	Context("when previous job has a persistent disk size", func() {
+		It("always sets lifecycle to service, never to errand", func() {
+			input := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo"}}}
+			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskSize: 100}}}
+			Consistently(func() string {
+				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+			}).Should(Equal("service"))
+		})
+	})
+
+	Context("when previous migrated from job has a persistent disk pool", func() {
+		It("always sets lifecycle to service, never to errand", func() {
+			input := bftinput.Input{
+				Jobs: []bftinput.Job{
+					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
+				},
+			}
+			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskPool: "diskpool"}}}
+			Consistently(func() string {
+				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+			}).Should(Equal("service"))
+		})
+	})
+
+	Context("when previous migrated from job has a persistent disk type", func() {
+		It("always sets lifecycle to service, never to errand", func() {
+			input := bftinput.Input{
+				Jobs: []bftinput.Job{
+					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
+				},
+			}
+			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskType: "diskpool"}}}
+			Consistently(func() string {
+				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+			}).Should(Equal("service"))
+		})
+	})
+
+	Context("when previous migrated from job has a persistent disk size", func() {
+		It("always sets lifecycle to service, never to errand", func() {
+			input := bftinput.Input{
+				Jobs: []bftinput.Job{
+					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
+				},
+			}
+			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskSize: 100}}}
+			Consistently(func() string {
+				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+			}).Should(Equal("service"))
+		})
+	})
 })
