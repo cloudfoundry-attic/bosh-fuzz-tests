@@ -48,10 +48,6 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 				fmt.Sprintf("%s/0", job.Name),
 			}
 
-			if job.Lifecycle != "errand" {
-				instanceFilters = append(instanceFilters, fmt.Sprintf("%s/first", job.Name))
-			}
-
 			steps = append(steps,
 				ErrandStep{
 					Name:           job.Templates[rand.Intn(len(job.Templates))].Name,
