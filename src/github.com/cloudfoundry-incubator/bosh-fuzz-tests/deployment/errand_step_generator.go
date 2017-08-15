@@ -41,7 +41,7 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	for i := 0; i < rand.Intn(6); i++ {
 		job := jobs[rand.Intn(len(jobs))]
 
-		if len(job.Templates) > 0 {
+		if len(job.Templates) > 0 && job.Instances > 0 {
 			instanceFilters := []string{
 				"",
 				job.Name,

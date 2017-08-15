@@ -43,8 +43,8 @@ var _ = Describe("ErrandStepGenerator", func() {
 				{Name: "other-job-template-name"},
 			}
 			testJobs = []bftinput.Job{
-				{Name: "instance-name", Templates: testTemplates},
-				{Name: "other-job", Templates: secondJobTestTemplates},
+				{Name: "instance-name", Templates: testTemplates, Instances: 1},
+				{Name: "other-job", Templates: secondJobTestTemplates, Instances: 1},
 			}
 		})
 
@@ -86,7 +86,7 @@ var _ = Describe("ErrandStepGenerator", func() {
 
 		Context("when input's job has no templates", func() {
 			BeforeEach(func() {
-				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{}}}
+				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{}, Instances: 1}}
 			})
 
 			It("returns an empty array of Steps", func() {
@@ -97,6 +97,16 @@ var _ = Describe("ErrandStepGenerator", func() {
 		Context("when input has no jobs", func() {
 			BeforeEach(func() {
 				testJobs = []bftinput.Job{}
+			})
+
+			It("returns an empty array of Steps", func() {
+				Expect(generator.Steps(testCase)).To(Equal([]deployment.Step{}))
+			})
+		})
+
+		Context("when input's job has no instances", func() {
+			BeforeEach(func() {
+				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{{Name: "template"}}, Instances: 0}}
 			})
 
 			It("returns an empty array of Steps", func() {
