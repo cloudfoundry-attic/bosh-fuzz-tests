@@ -16,6 +16,7 @@ type FakeParameterProvider struct {
 	CloudProperties   *FakeCloudProperties
 	FixedMigratedFrom *FakeFixedMigratedFrom
 	Variables         *FakeVariables
+	Lifecycle         *FakeLifecycle
 }
 
 func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeParameterProvider {
@@ -30,32 +31,36 @@ func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeP
 		CloudProperties:   NewFakeCloudProperties(),
 		FixedMigratedFrom: NewFakeFixedMigratedFrom(),
 		Variables:         NewFakeVariables(),
+		Lifecycle:         NewFakeLifecycle(),
 	}
 }
 
 func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
-	if name == "stemcell" {
+	switch name {
+	case "stemcell":
 		return p.Stemcell
-	} else if name == "persistent_disk" {
+	case "persistent_disk":
 		return p.PersistentDisk
-	} else if name == "vm_type" {
+	case "vm_type":
 		return p.VmType
-	} else if name == "availability_zone" {
+	case "availability_zone":
 		return p.AvailabilityZone
-	} else if name == "network" {
+	case "network":
 		return p.Network
-	} else if name == "template" {
+	case "template":
 		return p.Template
-	} else if name == "compilation" {
+	case "compilation":
 		return p.Compilation
-	} else if name == "update" {
+	case "update":
 		return p.Update
-	} else if name == "cloud_properties" {
+	case "cloud_properties":
 		return p.CloudProperties
-	} else if name == "fixed_migrated_from" {
+	case "fixed_migrated_from":
 		return p.FixedMigratedFrom
-	} else if name == "variables" {
+	case "variables":
 		return p.FixedMigratedFrom
+	case "lifecycle":
+		return p.Lifecycle
 	}
 
 	return nil

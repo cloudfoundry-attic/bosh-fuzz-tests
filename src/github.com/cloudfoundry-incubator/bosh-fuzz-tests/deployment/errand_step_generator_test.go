@@ -75,6 +75,26 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", "other-job-template-name", "other-job/first"),
 		)
 
+		Context("when input job is lifecycle errand", func() {
+			BeforeEach(func() {
+				testJobs = []bftinput.Job{
+					{Name: "instance-name", Templates: []bftinput.Template{{Name: "template-name"}}, Lifecycle: "errand"},
+				}
+			})
+
+			It("does not include the /first selector", func() {
+				Consistently(func() []deployment.Step {
+					return generator.Steps(testCase)
+				}, time.Second, time.Microsecond).ShouldNot(ContainElement(
+					deployment.ErrandStep{
+						Name:           "template-name",
+						InstanceFilter: "instance-name/first",
+						DeploymentName: "foo-deployment",
+					},
+				))
+			})
+		})
+
 		DescribeTable("number of steps returned", func(numberOfSteps int) {
 			Eventually(func() []deployment.Step {
 				return generator.Steps(testCase)

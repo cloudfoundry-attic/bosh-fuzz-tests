@@ -39,32 +39,35 @@ func NewParameterProvider(
 }
 
 func (p *parameterProvider) Get(name string) Parameter {
-	if name == "stemcell" {
+	switch name {
+	case "stemcell":
 		stemcellDefinition := p.parameters.StemcellDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
 		return NewStemcell(stemcellDefinition, p.parameters.StemcellVersions)
-	} else if name == "persistent_disk" {
+	case "persistent_disk":
 		persistentDiskDefinition := p.parameters.PersistentDiskDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
 		return NewPersistentDisk(persistentDiskDefinition, p.parameters.PersistentDiskSize, p.nameGenerator)
-	} else if name == "vm_type" {
+	case "vm_type":
 		vmTypeDefinition := p.parameters.VmTypeDefinition[rand.Intn(len(p.parameters.VmTypeDefinition))]
 		return NewVmType(vmTypeDefinition, p.nameGenerator, p.reuseDecider, p.logger)
-	} else if name == "availability_zone" {
+	case "availability_zone":
 		return NewAvailabilityZone(p.parameters.AvailabilityZones)
-	} else if name == "network" {
+	case "network":
 		return NewNetwork(p.networkAssigner)
-	} else if name == "template" {
+	case "template":
 		return NewTemplate(p.parameters.Templates)
-	} else if name == "compilation" {
+	case "compilation":
 		return NewCompilation(p.parameters.NumberOfCompilationWorkers)
-	} else if name == "update" {
+	case "update":
 		return NewUpdate(p.parameters.Canaries, p.parameters.MaxInFlight, p.parameters.Serial)
-	} else if name == "cloud_properties" {
+	case "cloud_properties":
 		return NewCloudProperties(p.parameters.NumOfCloudProperties, p.nameGenerator, p.reuseDecider)
-	} else if name == "fixed_migrated_from" {
+	case "fixed_migrated_from":
 		return NewFixedMigratedFrom()
-	} else if name == "variables" {
+	case "variables":
 		numOfVariables := p.parameters.NumOfVariables[rand.Intn(len(p.parameters.NumOfVariables))]
 		return NewVariables(numOfVariables, p.parameters.VariableTypes, p.nameGenerator, p.reuseDecider)
+	case "lifecycle":
+		return NewLifecycle()
 	}
 
 	return nil

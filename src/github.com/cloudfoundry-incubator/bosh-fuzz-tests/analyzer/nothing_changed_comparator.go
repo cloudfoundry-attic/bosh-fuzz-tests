@@ -16,7 +16,7 @@ func NewNothingChangedComparator() Comparator {
 func (n *nothingChangedComparator) Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
 	expectations := []bftexpectation.Expectation{}
 	for _, job := range currentInput.Jobs {
-		if n.nothingChanged(job, currentInput, previousInputs) {
+		if n.nothingChanged(job, currentInput, previousInputs) && n.isNotErrand(job) {
 			expectations = append(expectations, bftexpectation.NewDebugLog(fmt.Sprintf("No instances to update for '%s'", job.Name)))
 		}
 	}
@@ -108,4 +108,8 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 	}
 
 	return true
+}
+
+func (n *nothingChangedComparator) isNotErrand(job bftinput.Job) bool {
+	return job.Lifecycle != "errand"
 }

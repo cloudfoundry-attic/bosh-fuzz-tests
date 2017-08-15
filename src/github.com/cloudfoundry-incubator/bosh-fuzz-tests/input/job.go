@@ -15,6 +15,7 @@ type Job struct {
 	ResourcePool       string
 	Stemcell           string
 	Templates          []Template
+	Lifecycle          string
 }
 
 func (j Job) IsEqual(other Job) bool {

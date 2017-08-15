@@ -519,4 +519,33 @@ var _ = Describe("NothingChangedComparator", func() {
 			Expect(expectations).To(BeEmpty())
 		})
 	})
+
+	Context("when Lifecycle property is errand", func() {
+		BeforeEach(func() {
+			previousInputs = []bftinput.Input{
+				{
+					Jobs: []bftinput.Job{
+						{
+							Name:      "foo-job",
+							Lifecycle: "errand",
+						},
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				Jobs: []bftinput.Job{
+					{
+						Name:      "foo-job",
+						Lifecycle: "errand",
+					},
+				},
+			}
+		})
+
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
 })

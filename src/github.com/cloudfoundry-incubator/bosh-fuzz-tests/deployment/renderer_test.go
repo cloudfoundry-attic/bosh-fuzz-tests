@@ -30,6 +30,7 @@ var _ = Describe("Manifest/Renderer", func() {
 				{
 					Name:               "foo-job",
 					Instances:          5,
+					Lifecycle:          "service",
 					AvailabilityZones:  []string{"z1", "z2"},
 					PersistentDiskSize: 100,
 					VmType:             "default",
@@ -48,6 +49,7 @@ var _ = Describe("Manifest/Renderer", func() {
 				{
 					Name:               "bar-job",
 					Instances:          2,
+					Lifecycle:          "errand",
 					AvailabilityZones:  []string{"z3", "z4"},
 					PersistentDiskPool: "fast-disks",
 					VmType:             "default",
@@ -201,6 +203,7 @@ update:
 jobs:
 - name: foo-job
   instances: 5
+  lifecycle: service
   vm_type: default
   persistent_disk: 100
   stemcell: default
@@ -217,6 +220,7 @@ jobs:
     - 192.168.1.5
 - name: bar-job
   instances: 2
+  lifecycle: errand
   vm_type: default
   persistent_disk_pool: fast-disks
   stemcell: default

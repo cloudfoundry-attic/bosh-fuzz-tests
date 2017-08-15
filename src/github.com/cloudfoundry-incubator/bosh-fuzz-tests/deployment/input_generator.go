@@ -122,6 +122,7 @@ func (g *inputGenerator) fuzzInput(input bftinput.Input, previousInput bftinput.
 	input = g.parameterProvider.Get("update").Apply(input, previousInput)
 	input = g.parameterProvider.Get("cloud_properties").Apply(input, previousInput)
 	input = g.parameterProvider.Get("fixed_migrated_from").Apply(input, previousInput)
+	input = g.parameterProvider.Get("lifecycle").Apply(input, previousInput)
 
 	return input
 }
@@ -160,6 +161,7 @@ func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.I
 	input := bftinput.Input{
 		Jobs: []bftinput.Job{},
 	}
+
 	for _, jobName := range jobNames {
 		input.Jobs = append(input.Jobs, bftinput.Job{
 			Name:      jobName,

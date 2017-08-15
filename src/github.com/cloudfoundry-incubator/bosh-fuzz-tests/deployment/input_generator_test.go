@@ -75,6 +75,7 @@ var _ = Describe("InputGenerator", func() {
 						Name:               "joNAw",
 						Instances:          2,
 						AvailabilityZones:  []string{"z1"},
+						Lifecycle:          "mufasa",
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
 						Networks: []bftinput.JobNetworkConfig{
@@ -87,6 +88,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "gQ8el",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
@@ -165,6 +167,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "joNAw",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
@@ -178,6 +181,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "gQ8el",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
@@ -276,6 +280,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "joNAw",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskType: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
@@ -374,6 +379,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "joNAw",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskType: "fake-persistent-disk",
 						Networks: []bftinput.JobNetworkConfig{
@@ -467,6 +473,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "vgrKicN3O2",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						VmType:             "fake-vm-type",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
@@ -545,6 +552,7 @@ var _ = Describe("InputGenerator", func() {
 					{
 						Name:               "joNAw",
 						Instances:          2,
+						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						VmType:             "fake-vm-type",
 						PersistentDiskPool: "fake-persistent-disk",
