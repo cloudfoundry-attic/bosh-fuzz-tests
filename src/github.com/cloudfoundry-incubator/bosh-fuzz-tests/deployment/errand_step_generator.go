@@ -12,9 +12,10 @@ import (
 type ErrandStepGenerator struct{}
 
 type ErrandStep struct {
-	Name           string
-	InstanceFilter string
-	DeploymentName string
+	Name             string
+	InstanceFilter   string
+	DeploymentName   string
+	CommandLineFlags []string
 }
 
 //go:generate counterfeiter . Step
@@ -33,6 +34,7 @@ func NewErrandStepGenerator() ErrandStepGenerator {
 
 func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	steps := []Step{}
+	cliFlagPossibilities := []string{"keep-alive"}
 
 	instanceGroups := testCase.Input.InstanceGroups
 	if len(instanceGroups) == 0 {
@@ -49,13 +51,20 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 				fmt.Sprintf("%s/0", instanceGroup.Name),
 			}
 
-			steps = append(steps,
-				ErrandStep{
-					Name:           getErrandName(instanceGroup),
-					DeploymentName: "foo-deployment",
-					InstanceFilter: instanceFilters[rand.Intn(len(instanceFilters))],
-				},
-			)
+			step := ErrandStep{
+				Name:             getErrandName(instanceGroup),
+				DeploymentName:   "foo-deployment",
+				InstanceFilter:   instanceFilters[rand.Intn(len(instanceFilters))],
+				CommandLineFlags: []string{},
+			}
+
+			for _, flag := range cliFlagPossibilities {
+				if rand.Intn(2) == 0 {
+					step.CommandLineFlags = append(step.CommandLineFlags, flag)
+				}
+			}
+
+			steps = append(steps, step)
 		}
 	}
 
@@ -76,6 +85,10 @@ func (es ErrandStep) Run(runner clirunner.Runner) error {
 	args := []string{"run-errand", es.Name, "-d", es.DeploymentName}
 	if es.InstanceFilter != "" {
 		args = append(args, "--instance", es.InstanceFilter)
+	}
+
+	for _, flag := range es.CommandLineFlags {
+		args = append(args, fmt.Sprintf("--%s", flag))
 	}
 	return runner.RunWithArgs(args...)
 }

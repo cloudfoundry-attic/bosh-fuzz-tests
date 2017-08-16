@@ -53,9 +53,10 @@ var _ = Describe("ErrandStepGenerator", func() {
 				return generator.Steps(testCase)
 			}, time.Second, time.Microsecond).Should(ContainElement(
 				deployment.ErrandStep{
-					Name:           name,
-					InstanceFilter: instanceFilter,
-					DeploymentName: "foo-deployment",
+					Name:             name,
+					InstanceFilter:   instanceFilter,
+					DeploymentName:   "foo-deployment",
+					CommandLineFlags: []string{},
 				},
 			))
 		},
@@ -70,6 +71,21 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", "other-instance-group-job-name", ""),
 			Entry("", "other-instance-group-job-name", "other-instance-group"),
 			Entry("", "other-instance-group-job-name", "other-instance-group/0"),
+		)
+
+		DescribeTable("command line options", func(flags []string) {
+			Eventually(func() []deployment.Step {
+				return generator.Steps(testCase)
+			}, time.Second, time.Microsecond).Should(ContainElement(
+				deployment.ErrandStep{
+					Name:             "job-name",
+					DeploymentName:   "foo-deployment",
+					CommandLineFlags: flags,
+				},
+			))
+		},
+			Entry("can be empty", []string{}),
+			Entry("can have keep-alive", []string{"keep-alive"}),
 		)
 
 		DescribeTable("number of steps returned", func(numberOfSteps int) {
@@ -99,8 +115,9 @@ var _ = Describe("ErrandStepGenerator", func() {
 					return generator.Steps(testCase)
 				}, time.Second, time.Microsecond).Should(ContainElement(
 					deployment.ErrandStep{
-						Name:           name,
-						DeploymentName: "foo-deployment",
+						Name:             name,
+						DeploymentName:   "foo-deployment",
+						CommandLineFlags: []string{},
 					},
 				))
 			},
@@ -124,8 +141,9 @@ var _ = Describe("ErrandStepGenerator", func() {
 					return generator.Steps(testCase)
 				}, 50*time.Millisecond, time.Microsecond).ShouldNot(ContainElement(
 					deployment.ErrandStep{
-						Name:           "instance-name",
-						DeploymentName: "foo-deployment",
+						Name:             "instance-name",
+						DeploymentName:   "foo-deployment",
+						CommandLineFlags: []string{},
 					},
 				))
 			})
@@ -186,6 +204,31 @@ var _ = Describe("ErrandStep", func() {
 			Expect(args[1]).To(Equal("yogurt"))
 			Expect(args[2]).To(Equal("-d"))
 			Expect(args[3]).To(Equal("greek"))
+		})
+
+		Context("when cli flags are present", func() {
+			BeforeEach(func() {
+				step = deployment.ErrandStep{
+					Name:             "yogurt",
+					DeploymentName:   "plain",
+					CommandLineFlags: []string{"fancy", "behavior"},
+				}
+			})
+
+			It("sends those flags to the cli", func() {
+				err := step.Run(cliRunner)
+				Expect(err).NotTo(HaveOccurred())
+
+				Expect(cliRunner.RunWithArgsCallCount()).To(Equal(1))
+				args := cliRunner.RunWithArgsArgsForCall(0)
+				Expect(args).To(HaveLen(6))
+				Expect(args[0]).To(Equal("run-errand"))
+				Expect(args[1]).To(Equal("yogurt"))
+				Expect(args[2]).To(Equal("-d"))
+				Expect(args[3]).To(Equal("plain"))
+				Expect(args[4]).To(Equal("--fancy"))
+				Expect(args[5]).To(Equal("--behavior"))
+			})
 		})
 
 		Context("when an instance filter is present", func() {
