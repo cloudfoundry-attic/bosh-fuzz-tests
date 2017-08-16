@@ -35,7 +35,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					PersistentDiskSize: 100,
 					VmType:             "default",
 					Stemcell:           "default",
-					Templates: []bftinput.Template{
+					Jobs: []bftinput.Job{
 						{Name: "simple"},
 					},
 					Networks: []bftinput.InstanceGroupNetworkConfig{
@@ -54,7 +54,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					PersistentDiskPool: "fast-disks",
 					VmType:             "default",
 					Stemcell:           "default",
-					Templates: []bftinput.Template{
+					Jobs: []bftinput.Job{
 						{Name: "simple"},
 					},
 					Networks: []bftinput.InstanceGroupNetworkConfig{
@@ -330,7 +330,7 @@ disk_pools:
 						Name:      "foo-instance-group",
 						Instances: 5,
 						Networks:  []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -430,7 +430,7 @@ compilation:
 					Instances:          5,
 					PersistentDiskPool: "fast-disks",
 					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
-					Templates: []bftinput.Template{
+					Jobs: []bftinput.Job{
 						{Name: "simple"},
 					},
 				},
@@ -542,7 +542,7 @@ disk_pools:
 					Instances:          5,
 					PersistentDiskType: "fast-disks",
 					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
-					Templates: []bftinput.Template{
+					Jobs: []bftinput.Job{
 						{Name: "simple"},
 					},
 				},
@@ -661,7 +661,7 @@ disk_types:
 					ResourcePool:       "foo-pool",
 					PersistentDiskPool: "fast-disks",
 					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
-					Templates: []bftinput.Template{
+					Jobs: []bftinput.Job{
 						{Name: "simple"},
 					},
 				},

@@ -191,7 +191,7 @@ func (n *assigner) generateSubnetsWithoutAzs() []bftinput.SubnetConfig {
 }
 
 type InstanceGroupsOnNetwork struct {
-	InstanceGroups           []bftinput.InstanceGroup
+	InstanceGroups []bftinput.InstanceGroup
 	TotalInstances int
 }
 
@@ -201,7 +201,7 @@ func (n *assigner) aggregateNetworkInstanceGroups(instanceGroups []bftinput.Inst
 	for _, instanceGroup := range instanceGroups {
 		for _, instanceGroupNetwork := range instanceGroup.Networks {
 			instanceGroupsOnNetworks[instanceGroupNetwork.Name] = InstanceGroupsOnNetwork{
-				InstanceGroups:           append(instanceGroupsOnNetworks[instanceGroupNetwork.Name].InstanceGroups, instanceGroup),
+				InstanceGroups: append(instanceGroupsOnNetworks[instanceGroupNetwork.Name].InstanceGroups, instanceGroup),
 				TotalInstances: instanceGroupsOnNetworks[instanceGroupNetwork.Name].TotalInstances + instanceGroup.Instances,
 			}
 		}

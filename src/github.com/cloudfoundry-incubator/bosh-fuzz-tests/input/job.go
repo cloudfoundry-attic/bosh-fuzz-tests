@@ -14,7 +14,7 @@ type InstanceGroup struct {
 	VmType             string
 	ResourcePool       string
 	Stemcell           string
-	Templates          []Template
+	Jobs               []Job
 	Lifecycle          string
 }
 
@@ -35,7 +35,7 @@ func (j InstanceGroup) FindNetworkByName(networkName string) (InstanceGroupNetwo
 	return InstanceGroupNetworkConfig{}, false
 }
 
-type Template struct {
+type Job struct {
 	Name string
 }
 

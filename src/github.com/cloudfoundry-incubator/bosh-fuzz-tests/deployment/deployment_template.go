@@ -37,7 +37,7 @@ jobs:{{ range .InstanceGroups }}
     az: {{ .AvailabilityZone }}{{ end }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
   - {{ . }}{{ end }}{{ end }}
-  templates:{{ range .Templates }}
+  templates:{{ range .Jobs }}
   - name: {{ .Name }}
     release: foo-release{{ end }}
   networks:{{ range .Networks }}

@@ -10,7 +10,7 @@ type FakeParameterProvider struct {
 	VmType            *FakeVmType
 	AvailabilityZone  *FakeAvailabilityZone
 	Network           *FakeNetwork
-	Template          *FakeTemplate
+	Job               *FakeJob
 	Compilation       *FakeCompilation
 	Update            *FakeUpdate
 	CloudProperties   *FakeCloudProperties
@@ -25,7 +25,7 @@ func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeP
 		PersistentDisk:    NewFakePersistentDisk(persistentDiskDef),
 		VmType:            NewFakeVmType(vmTypeDef),
 		AvailabilityZone:  NewFakeAvailabilityZone(),
-		Template:          NewFakeTemplate(),
+		Job:               NewFakeJob(),
 		Compilation:       NewFakeCompilation(),
 		Update:            NewFakeUpdate(),
 		CloudProperties:   NewFakeCloudProperties(),
@@ -47,8 +47,8 @@ func (p *FakeParameterProvider) Get(name string) bftparam.Parameter {
 		return p.AvailabilityZone
 	case "network":
 		return p.Network
-	case "template":
-		return p.Template
+	case "job":
+		return p.Job
 	case "compilation":
 		return p.Compilation
 	case "update":

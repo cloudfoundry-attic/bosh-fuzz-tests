@@ -3,12 +3,12 @@ package input
 import "reflect"
 
 type Input struct {
-	DirectorUUID string
-	InstanceGroups         []InstanceGroup
-	Update       UpdateConfig
-	CloudConfig  CloudConfig
-	Stemcells    []StemcellConfig
-	Variables    []Variable
+	DirectorUUID   string
+	InstanceGroups []InstanceGroup
+	Update         UpdateConfig
+	CloudConfig    CloudConfig
+	Stemcells      []StemcellConfig
+	Variables      []Variable
 }
 
 func (i Input) FindInstanceGroupByName(instanceGroupName string) (InstanceGroup, bool) {

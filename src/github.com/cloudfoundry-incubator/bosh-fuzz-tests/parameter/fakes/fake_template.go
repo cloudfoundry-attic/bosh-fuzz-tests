@@ -4,16 +4,16 @@ import (
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )
 
-type FakeTemplate struct {
+type FakeJob struct {
 }
 
-func NewFakeTemplate() *FakeTemplate {
-	return &FakeTemplate{}
+func NewFakeJob() *FakeJob {
+	return &FakeJob{}
 }
 
-func (s *FakeTemplate) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
+func (s *FakeJob) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	for j, _ := range input.InstanceGroups {
-		input.InstanceGroups[j].Templates = []bftinput.Template{
+		input.InstanceGroups[j].Jobs = []bftinput.Job{
 			{Name: "simple"},
 		}
 	}

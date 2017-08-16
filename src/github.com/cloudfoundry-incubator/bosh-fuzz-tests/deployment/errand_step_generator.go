@@ -42,7 +42,7 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	for i := 0; i < rand.Intn(6); i++ {
 		instanceGroup := instanceGroups[rand.Intn(len(instanceGroups))]
 
-		if len(instanceGroup.Templates) > 0 && instanceGroup.Instances > 0 {
+		if len(instanceGroup.Jobs) > 0 && instanceGroup.Instances > 0 {
 			instanceFilters := []string{
 				"",
 				instanceGroup.Name,
@@ -63,7 +63,7 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 }
 
 func getErrandName(instanceGroup bftinput.InstanceGroup) string {
-	possibilities := []string{instanceGroup.Templates[rand.Intn(len(instanceGroup.Templates))].Name}
+	possibilities := []string{instanceGroup.Jobs[rand.Intn(len(instanceGroup.Jobs))].Name}
 
 	if instanceGroup.Lifecycle == "errand" {
 		possibilities = append(possibilities, instanceGroup.Name)

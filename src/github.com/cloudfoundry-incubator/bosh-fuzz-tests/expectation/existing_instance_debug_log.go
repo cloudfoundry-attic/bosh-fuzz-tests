@@ -10,15 +10,15 @@ import (
 )
 
 type existingInstanceDebugLog struct {
-	expectedString string
-	cliRunner      bltclirunner.Runner
-	instanceGroupName        string
+	expectedString    string
+	cliRunner         bltclirunner.Runner
+	instanceGroupName string
 }
 
 func NewExistingInstanceDebugLog(expectedString string, instanceGroupName string) Expectation {
 	return &existingInstanceDebugLog{
-		expectedString: expectedString,
-		instanceGroupName:        instanceGroupName,
+		expectedString:    expectedString,
+		instanceGroupName: instanceGroupName,
 	}
 }
 

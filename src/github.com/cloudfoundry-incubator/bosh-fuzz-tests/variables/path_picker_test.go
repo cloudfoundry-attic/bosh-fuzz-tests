@@ -3,9 +3,9 @@ package variables_test
 import (
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables"
 
+	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables/variablesfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables/variablesfakes"
 )
 
 var _ = Describe("Picker", func() {
@@ -37,7 +37,7 @@ var _ = Describe("Picker", func() {
 
 	Context("when paths contains only sibling entries", func() {
 		BeforeEach(func() {
-			paths = [][]interface{} {
+			paths = [][]interface{}{
 				{"a", "b", "c"},
 				{"d", "e"},
 				{"f"},
@@ -66,7 +66,7 @@ var _ = Describe("Picker", func() {
 
 		Context("when requested picks exceeds the number of provided paths", func() {
 			It("returns all of the provided paths", func() {
-				picks := pathPicker.PickPaths(paths, len(paths) * 4)
+				picks := pathPicker.PickPaths(paths, len(paths)*4)
 				Expect(len(picks)).To(Equal(len(paths)))
 				Expect(picks).To(ConsistOf(paths))
 			})
@@ -108,7 +108,7 @@ var _ = Describe("Picker", func() {
 
 	Context("when paths contains parent and child entries", func() {
 		BeforeEach(func() {
-			paths = [][]interface{} {
+			paths = [][]interface{}{
 				{"a"},
 				{"a", 0},
 				{"a", 0, "b"},
@@ -125,7 +125,7 @@ var _ = Describe("Picker", func() {
 				randomizer.IntnReturnsOnCall(1, -1)
 			})
 
-			It ("can not pick its children", func() {
+			It("can not pick its children", func() {
 				picks := pathPicker.PickPaths(paths, 2)
 
 				Expect(len(picks)).To(Equal(1))
@@ -141,7 +141,7 @@ var _ = Describe("Picker", func() {
 				randomizer.IntnReturnsOnCall(2, -1)
 			})
 
-			It ("can not pick its ancestors", func() {
+			It("can not pick its ancestors", func() {
 				picks := pathPicker.PickPaths(paths, 2)
 
 				Expect(len(picks)).To(Equal(2))

@@ -29,16 +29,16 @@ var _ = Describe("InputGenerator", func() {
 
 	BeforeEach(func() {
 		parameters = bftconfig.Parameters{
-			NameLength:                 []int{5},
-			Instances:                  []int{2},
-			AvailabilityZones:          [][]string{[]string{"z1"}},
-			PersistentDiskDefinition:   []string{"persistent_disk_size"},
-			PersistentDiskSize:         []int{0},
-			NumberOfInstanceGroups:               []int{1},
-			MigratedFromCount:          []int{1},
-			VmTypeDefinition:           []string{"vm_type"},
-			StemcellDefinition:         []string{"name"},
-			Templates:                  [][]string{[]string{"simple"}},
+			NameLength:               []int{5},
+			Instances:                []int{2},
+			AvailabilityZones:        [][]string{[]string{"z1"}},
+			PersistentDiskDefinition: []string{"persistent_disk_size"},
+			PersistentDiskSize:       []int{0},
+			NumberOfInstanceGroups:   []int{1},
+			MigratedFromCount:        []int{1},
+			VmTypeDefinition:         []string{"vm_type"},
+			StemcellDefinition:       []string{"name"},
+			Jobs:                     [][]string{[]string{"simple"}},
 			NumberOfCompilationWorkers: []int{3},
 			Canaries:                   []int{5},
 			MaxInFlight:                []int{3},
@@ -55,11 +55,11 @@ var _ = Describe("InputGenerator", func() {
 
 	It("generates requested number of inputs", func() {
 		parameters = bftconfig.Parameters{
-			NameLength:           []int{5},
-			Instances:            []int{2},
-			NumberOfInstanceGroups:         []int{2},
-			MigratedFromCount:    []int{0},
-			NumOfCloudProperties: []int{2},
+			NameLength:             []int{5},
+			Instances:              []int{2},
+			NumberOfInstanceGroups: []int{2},
+			MigratedFromCount:      []int{0},
+			NumOfCloudProperties:   []int{2},
 		}
 
 		rand.Seed(64)
@@ -81,7 +81,7 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -95,7 +95,7 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -174,7 +174,7 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -188,7 +188,7 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -260,11 +260,11 @@ var _ = Describe("InputGenerator", func() {
 
 	It("generates requested number of inputs using disk_type", func() {
 		parameters = bftconfig.Parameters{
-			NameLength:           []int{5},
-			Instances:            []int{2},
-			NumberOfInstanceGroups:         []int{1},
-			MigratedFromCount:    []int{0},
-			NumOfCloudProperties: []int{2},
+			NameLength:             []int{5},
+			Instances:              []int{2},
+			NumberOfInstanceGroups: []int{1},
+			MigratedFromCount:      []int{0},
+			NumOfCloudProperties:   []int{2},
 		}
 
 		rand.Seed(64)
@@ -287,7 +287,7 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -359,11 +359,11 @@ var _ = Describe("InputGenerator", func() {
 
 	It("generates requested number of inputs using disk_type and resource pool", func() {
 		parameters = bftconfig.Parameters{
-			NameLength:           []int{5},
-			Instances:            []int{2},
-			NumberOfInstanceGroups:         []int{1},
-			MigratedFromCount:    []int{0},
-			NumOfCloudProperties: []int{2},
+			NameLength:             []int{5},
+			Instances:              []int{2},
+			NumberOfInstanceGroups: []int{1},
+			MigratedFromCount:      []int{0},
+			NumOfCloudProperties:   []int{2},
 		}
 
 		rand.Seed(64)
@@ -386,7 +386,7 @@ var _ = Describe("InputGenerator", func() {
 							{Name: "foo-network"},
 						},
 						ResourcePool: "fake-resource-pool",
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -480,7 +480,7 @@ var _ = Describe("InputGenerator", func() {
 						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},
@@ -562,7 +562,7 @@ var _ = Describe("InputGenerator", func() {
 						MigratedFrom: []bftinput.MigratedFromConfig{
 							{Name: "vgrKicN3O2"},
 						},
-						Templates: []bftinput.Template{
+						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
 					},

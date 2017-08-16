@@ -53,8 +53,8 @@ func (p *parameterProvider) Get(name string) Parameter {
 		return NewAvailabilityZone(p.parameters.AvailabilityZones)
 	case "network":
 		return NewNetwork(p.networkAssigner)
-	case "template":
-		return NewTemplate(p.parameters.Templates)
+	case "job":
+		return NewJob(p.parameters.Jobs)
 	case "compilation":
 		return NewCompilation(p.parameters.NumberOfCompilationWorkers)
 	case "update":

@@ -6,24 +6,24 @@ import (
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 )
 
-type template struct {
-	templates [][]string
+type job struct {
+	jobs [][]string
 }
 
-func NewTemplate(templates [][]string) Parameter {
-	return &template{
-		templates: templates,
+func NewJob(jobs [][]string) Parameter {
+	return &job{
+		jobs: jobs,
 	}
 }
 
-func (t *template) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
+func (t *job) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	for j, _ := range input.InstanceGroups {
-		pickedTemplates := t.templates[rand.Intn(len(t.templates))]
-		input.InstanceGroups[j].Templates = []bftinput.Template{}
+		pickedJobs := t.jobs[rand.Intn(len(t.jobs))]
+		input.InstanceGroups[j].Jobs = []bftinput.Job{}
 
-		for _, pickedTemplateName := range pickedTemplates {
-			input.InstanceGroups[j].Templates = append(input.InstanceGroups[j].Templates, bftinput.Template{
-				Name: pickedTemplateName,
+		for _, pickedJobName := range pickedJobs {
+			input.InstanceGroups[j].Jobs = append(input.InstanceGroups[j].Jobs, bftinput.Job{
+				Name: pickedJobName,
 			})
 		}
 	}

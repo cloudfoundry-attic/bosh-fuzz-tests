@@ -117,7 +117,7 @@ func (g *inputGenerator) fuzzInput(input bftinput.Input, previousInput bftinput.
 	input = g.parameterProvider.Get("stemcell").Apply(input, previousInput)
 	input = g.parameterProvider.Get("persistent_disk").Apply(input, previousInput)
 	input = g.parameterProvider.Get("network").Apply(input, previousInput)
-	input = g.parameterProvider.Get("template").Apply(input, previousInput)
+	input = g.parameterProvider.Get("job").Apply(input, previousInput)
 	input = g.parameterProvider.Get("compilation").Apply(input, previousInput)
 	input = g.parameterProvider.Get("update").Apply(input, previousInput)
 	input = g.parameterProvider.Get("cloud_properties").Apply(input, previousInput)
