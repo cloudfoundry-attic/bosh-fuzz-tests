@@ -31,16 +31,6 @@ func NewPrepare(
 func (p *prepare) Execute() error {
 	p.cliRunner.SetEnv(p.directorInfo.URL)
 
-	stemcellPath, err := p.assetsProvider.FullPath("stemcell.tgz")
-	if err != nil {
-		return err
-	}
-
-	err = p.cliRunner.RunWithArgs("upload-stemcell", stemcellPath)
-	if err != nil {
-		return err
-	}
-
 	releaseDir, err := p.fs.TempDir("release-test")
 	if err != nil {
 		return err

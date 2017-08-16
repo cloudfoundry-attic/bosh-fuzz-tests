@@ -1,7 +1,0 @@
-language: go
-go:
-  - 1.7
-sudo : false # uses new containerized infrastructure
-go_import_path: github.com/maxbrunsfeld/counterfeiter
-install: scripts/deps.sh
-script: scripts/test.sh
