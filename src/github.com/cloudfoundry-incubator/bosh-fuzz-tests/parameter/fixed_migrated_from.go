@@ -12,13 +12,13 @@ func NewFixedMigratedFrom() Parameter {
 }
 
 func (f *fixedMigratedFrom) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
-	for foundJobIdx, job := range input.Jobs {
-		previousJob, found := previousInput.FindJobByName(job.Name)
+	for foundInstanceGroupIdx, instanceGroup := range input.InstanceGroups {
+		previousInstanceGroup, found := previousInput.FindInstanceGroupByName(instanceGroup.Name)
 		if found {
-			if len(previousJob.AvailabilityZones) == 0 && len(job.AvailabilityZones) > 0 {
-				staticIPs := f.sameStaticIps(job, previousJob, input)
+			if len(previousInstanceGroup.AvailabilityZones) == 0 && len(instanceGroup.AvailabilityZones) > 0 {
+				staticIPs := f.sameStaticIps(instanceGroup, previousInstanceGroup, input)
 				for _, ip := range staticIPs {
-					f.assignMigratedFromBasedOnIp(ip, &input.Jobs[foundJobIdx])
+					f.assignMigratedFromBasedOnIp(ip, &input.InstanceGroups[foundInstanceGroupIdx])
 				}
 			}
 		}
@@ -27,12 +27,12 @@ func (f *fixedMigratedFrom) Apply(input bftinput.Input, previousInput bftinput.I
 	return input
 }
 
-func (f *fixedMigratedFrom) assignMigratedFromBasedOnIp(ip staticIPInfo, jobToUpdate *bftinput.Job) {
+func (f *fixedMigratedFrom) assignMigratedFromBasedOnIp(ip staticIPInfo, instanceGroupToUpdate *bftinput.InstanceGroup) {
 	for _, subnet := range ip.Network.Subnets {
 		if subnet.IpPool.Contains(ip.IP) {
-			jobToUpdate.MigratedFrom = []bftinput.MigratedFromConfig{
+			instanceGroupToUpdate.MigratedFrom = []bftinput.MigratedFromConfig{
 				{
-					Name:             jobToUpdate.Name,
+					Name:             instanceGroupToUpdate.Name,
 					AvailabilityZone: subnet.AvailabilityZones[0],
 				},
 			}
@@ -47,10 +47,10 @@ type staticIPInfo struct {
 	Network bftinput.NetworkConfig
 }
 
-func (f *fixedMigratedFrom) sameStaticIps(job bftinput.Job, previousJob bftinput.Job, input bftinput.Input) []staticIPInfo {
+func (f *fixedMigratedFrom) sameStaticIps(instanceGroup bftinput.InstanceGroup, previousInstanceGroup bftinput.InstanceGroup, input bftinput.Input) []staticIPInfo {
 	ips := []staticIPInfo{}
-	for _, network := range job.Networks {
-		previousNetwork, networkFound := previousJob.FindNetworkByName(network.Name)
+	for _, network := range instanceGroup.Networks {
+		previousNetwork, networkFound := previousInstanceGroup.FindNetworkByName(network.Name)
 		if networkFound {
 			for _, currentIP := range network.StaticIps {
 				for _, prevIP := range previousNetwork.StaticIps {

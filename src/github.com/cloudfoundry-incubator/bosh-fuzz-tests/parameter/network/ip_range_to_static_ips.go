@@ -12,10 +12,10 @@ func NewIpRangeToStaticIps(input bftinput.Input) IpRangeToStaticIps {
 	for _, network := range input.CloudConfig.Networks {
 		for _, subnet := range network.Subnets {
 
-			for _, job := range input.Jobs {
-				for _, jobNetwork := range job.Networks {
-					if jobNetwork.Name == network.Name {
-						for _, ip := range jobNetwork.StaticIps {
+			for _, instanceGroup := range input.InstanceGroups {
+				for _, instanceGroupNetwork := range instanceGroup.Networks {
+					if instanceGroupNetwork.Name == network.Name {
+						for _, ip := range instanceGroupNetwork.StaticIps {
 							ipRangeToStaticIps[subnet.IpPool.IpRange] = append(ipRangeToStaticIps[subnet.IpPool.IpRange], ip)
 						}
 					}

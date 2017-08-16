@@ -12,13 +12,13 @@ import (
 type existingInstanceDebugLog struct {
 	expectedString string
 	cliRunner      bltclirunner.Runner
-	jobName        string
+	instanceGroupName        string
 }
 
-func NewExistingInstanceDebugLog(expectedString string, jobName string) Expectation {
+func NewExistingInstanceDebugLog(expectedString string, instanceGroupName string) Expectation {
 	return &existingInstanceDebugLog{
 		expectedString: expectedString,
-		jobName:        jobName,
+		instanceGroupName:        instanceGroupName,
 	}
 }
 
@@ -29,7 +29,7 @@ func (d *existingInstanceDebugLog) Run(cliRunner bltclirunner.Runner, taskId str
 		return bosherr.WrapError(err, "Getting task debug logs")
 	}
 
-	regexString := fmt.Sprintf("Existing desired instance '(%s[^']+)'", d.jobName)
+	regexString := fmt.Sprintf("Existing desired instance '(%s[^']+)'", d.instanceGroupName)
 	re := regexp.MustCompile(regexString)
 	matches := re.FindAllStringSubmatch(debugLog, -1)
 

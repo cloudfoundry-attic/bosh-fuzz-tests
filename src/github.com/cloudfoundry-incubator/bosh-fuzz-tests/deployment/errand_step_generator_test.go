@@ -18,7 +18,7 @@ var _ = Describe("ErrandStepGenerator", func() {
 	var (
 		generator deployment.ErrandStepGenerator
 		testCase  analyzer.Case
-		testJobs  []bftinput.Job
+		testInstanceGroups  []bftinput.InstanceGroup
 	)
 
 	BeforeEach(func() {
@@ -29,7 +29,7 @@ var _ = Describe("ErrandStepGenerator", func() {
 		JustBeforeEach(func() {
 			testCase = analyzer.Case{
 				Input: bftinput.Input{
-					Jobs: testJobs,
+					InstanceGroups: testInstanceGroups,
 				},
 			}
 		})
@@ -39,12 +39,12 @@ var _ = Describe("ErrandStepGenerator", func() {
 				{Name: "template-name"},
 				{Name: "other-template-name"},
 			}
-			secondJobTestTemplates := []bftinput.Template{
-				{Name: "other-job-template-name"},
+			secondInstanceGroupTestTemplates := []bftinput.Template{
+				{Name: "other-instance-group-template-name"},
 			}
-			testJobs = []bftinput.Job{
+			testInstanceGroups = []bftinput.InstanceGroup{
 				{Name: "instance-name", Templates: testTemplates, Instances: 1},
-				{Name: "other-job", Templates: secondJobTestTemplates, Instances: 1},
+				{Name: "other-instance-group", Templates: secondInstanceGroupTestTemplates, Instances: 1},
 			}
 		})
 
@@ -67,9 +67,9 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", "other-template-name", "instance-name"),
 			Entry("", "other-template-name", "instance-name/0"),
 
-			Entry("", "other-job-template-name", ""),
-			Entry("", "other-job-template-name", "other-job"),
-			Entry("", "other-job-template-name", "other-job/0"),
+			Entry("", "other-instance-group-template-name", ""),
+			Entry("", "other-instance-group-template-name", "other-instance-group"),
+			Entry("", "other-instance-group-template-name", "other-instance-group/0"),
 		)
 
 		DescribeTable("number of steps returned", func(numberOfSteps int) {
@@ -86,7 +86,7 @@ var _ = Describe("ErrandStepGenerator", func() {
 
 		Context("when instance group has lifecycle errand", func() {
 			BeforeEach(func() {
-				testJobs = []bftinput.Job{{
+				testInstanceGroups = []bftinput.InstanceGroup{{
 					Name:      "instance-name",
 					Templates: []bftinput.Template{{Name: "template-name"}},
 					Instances: 1,
@@ -111,7 +111,7 @@ var _ = Describe("ErrandStepGenerator", func() {
 
 		Context("when instance group has lifecycle service", func() {
 			BeforeEach(func() {
-				testJobs = []bftinput.Job{{
+				testInstanceGroups = []bftinput.InstanceGroup{{
 					Name:      "instance-name",
 					Templates: []bftinput.Template{{Name: "template-name"}},
 					Instances: 1,
@@ -131,9 +131,9 @@ var _ = Describe("ErrandStepGenerator", func() {
 			})
 		})
 
-		Context("when input's job has no templates", func() {
+		Context("when input's instance group has no templates", func() {
 			BeforeEach(func() {
-				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{}, Instances: 1}}
+				testInstanceGroups = []bftinput.InstanceGroup{{Name: "instance-name", Templates: []bftinput.Template{}, Instances: 1}}
 			})
 
 			It("returns an empty array of Steps", func() {
@@ -141,9 +141,9 @@ var _ = Describe("ErrandStepGenerator", func() {
 			})
 		})
 
-		Context("when input has no jobs", func() {
+		Context("when input has no instance groups", func() {
 			BeforeEach(func() {
-				testJobs = []bftinput.Job{}
+				testInstanceGroups = []bftinput.InstanceGroup{}
 			})
 
 			It("returns an empty array of Steps", func() {
@@ -151,9 +151,9 @@ var _ = Describe("ErrandStepGenerator", func() {
 			})
 		})
 
-		Context("when input's job has no instances", func() {
+		Context("when input's instance group has no instances", func() {
 			BeforeEach(func() {
-				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{{Name: "template"}}, Instances: 0}}
+				testInstanceGroups = []bftinput.InstanceGroup{{Name: "instance-name", Templates: []bftinput.Template{{Name: "template"}}, Instances: 0}}
 			})
 
 			It("returns an empty array of Steps", func() {

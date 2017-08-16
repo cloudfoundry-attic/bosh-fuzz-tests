@@ -34,24 +34,24 @@ func NewErrandStepGenerator() ErrandStepGenerator {
 func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	steps := []Step{}
 
-	jobs := testCase.Input.Jobs
-	if len(jobs) == 0 {
+	instanceGroups := testCase.Input.InstanceGroups
+	if len(instanceGroups) == 0 {
 		return steps
 	}
 
 	for i := 0; i < rand.Intn(6); i++ {
-		job := jobs[rand.Intn(len(jobs))]
+		instanceGroup := instanceGroups[rand.Intn(len(instanceGroups))]
 
-		if len(job.Templates) > 0 && job.Instances > 0 {
+		if len(instanceGroup.Templates) > 0 && instanceGroup.Instances > 0 {
 			instanceFilters := []string{
 				"",
-				job.Name,
-				fmt.Sprintf("%s/0", job.Name),
+				instanceGroup.Name,
+				fmt.Sprintf("%s/0", instanceGroup.Name),
 			}
 
 			steps = append(steps,
 				ErrandStep{
-					Name:           getErrandName(job),
+					Name:           getErrandName(instanceGroup),
 					DeploymentName: "foo-deployment",
 					InstanceFilter: instanceFilters[rand.Intn(len(instanceFilters))],
 				},
@@ -62,11 +62,11 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	return steps
 }
 
-func getErrandName(job bftinput.Job) string {
-	possibilities := []string{job.Templates[rand.Intn(len(job.Templates))].Name}
+func getErrandName(instanceGroup bftinput.InstanceGroup) string {
+	possibilities := []string{instanceGroup.Templates[rand.Intn(len(instanceGroup.Templates))].Name}
 
-	if job.Lifecycle == "errand" {
-		possibilities = append(possibilities, job.Name)
+	if instanceGroup.Lifecycle == "errand" {
+		possibilities = append(possibilities, instanceGroup.Name)
 	}
 
 	return possibilities[rand.Intn(len(possibilities))]

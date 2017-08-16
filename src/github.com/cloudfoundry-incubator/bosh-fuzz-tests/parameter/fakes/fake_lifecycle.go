@@ -12,8 +12,8 @@ func NewFakeLifecycle() *FakeLifecycle {
 }
 
 func (s *FakeLifecycle) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
-	for i := range input.Jobs {
-		input.Jobs[i].Lifecycle = "mufasa"
+	for i := range input.InstanceGroups {
+		input.InstanceGroups[i].Lifecycle = "mufasa"
 	}
 	return input
 }

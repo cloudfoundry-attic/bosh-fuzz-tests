@@ -17,12 +17,12 @@ func NewTemplate(templates [][]string) Parameter {
 }
 
 func (t *template) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
-	for j, _ := range input.Jobs {
+	for j, _ := range input.InstanceGroups {
 		pickedTemplates := t.templates[rand.Intn(len(t.templates))]
-		input.Jobs[j].Templates = []bftinput.Template{}
+		input.InstanceGroups[j].Templates = []bftinput.Template{}
 
 		for _, pickedTemplateName := range pickedTemplates {
-			input.Jobs[j].Templates = append(input.Jobs[j].Templates, bftinput.Template{
+			input.InstanceGroups[j].Templates = append(input.InstanceGroups[j].Templates, bftinput.Template{
 				Name: pickedTemplateName,
 			})
 		}

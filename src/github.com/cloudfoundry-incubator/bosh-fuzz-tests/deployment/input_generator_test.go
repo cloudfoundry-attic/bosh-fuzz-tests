@@ -34,7 +34,7 @@ var _ = Describe("InputGenerator", func() {
 			AvailabilityZones:          [][]string{[]string{"z1"}},
 			PersistentDiskDefinition:   []string{"persistent_disk_size"},
 			PersistentDiskSize:         []int{0},
-			NumberOfJobs:               []int{1},
+			NumberOfInstanceGroups:               []int{1},
 			MigratedFromCount:          []int{1},
 			VmTypeDefinition:           []string{"vm_type"},
 			StemcellDefinition:         []string{"name"},
@@ -57,7 +57,7 @@ var _ = Describe("InputGenerator", func() {
 		parameters = bftconfig.Parameters{
 			NameLength:           []int{5},
 			Instances:            []int{2},
-			NumberOfJobs:         []int{2},
+			NumberOfInstanceGroups:         []int{2},
 			MigratedFromCount:    []int{0},
 			NumOfCloudProperties: []int{2},
 		}
@@ -70,7 +70,7 @@ var _ = Describe("InputGenerator", func() {
 
 		Expect(inputs).To(Equal([]bftinput.Input{
 			{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "joNAw",
 						Instances:          2,
@@ -78,7 +78,7 @@ var _ = Describe("InputGenerator", func() {
 						Lifecycle:          "mufasa",
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						Templates: []bftinput.Template{
@@ -92,7 +92,7 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						Templates: []bftinput.Template{
@@ -163,7 +163,7 @@ var _ = Describe("InputGenerator", func() {
 				},
 			},
 			{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "joNAw",
 						Instances:          2,
@@ -171,7 +171,7 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						Templates: []bftinput.Template{
@@ -185,7 +185,7 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						Templates: []bftinput.Template{
@@ -262,7 +262,7 @@ var _ = Describe("InputGenerator", func() {
 		parameters = bftconfig.Parameters{
 			NameLength:           []int{5},
 			Instances:            []int{2},
-			NumberOfJobs:         []int{1},
+			NumberOfInstanceGroups:         []int{1},
 			MigratedFromCount:    []int{0},
 			NumOfCloudProperties: []int{2},
 		}
@@ -276,7 +276,7 @@ var _ = Describe("InputGenerator", func() {
 
 		Expect(inputs).To(Equal([]bftinput.Input{
 			{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "joNAw",
 						Instances:          2,
@@ -284,7 +284,7 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskType: "fake-persistent-disk",
 						VmType:             "fake-vm-type",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						Templates: []bftinput.Template{
@@ -361,7 +361,7 @@ var _ = Describe("InputGenerator", func() {
 		parameters = bftconfig.Parameters{
 			NameLength:           []int{5},
 			Instances:            []int{2},
-			NumberOfJobs:         []int{1},
+			NumberOfInstanceGroups:         []int{1},
 			MigratedFromCount:    []int{0},
 			NumOfCloudProperties: []int{2},
 		}
@@ -375,14 +375,14 @@ var _ = Describe("InputGenerator", func() {
 
 		Expect(inputs).To(Equal([]bftinput.Input{
 			{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "joNAw",
 						Instances:          2,
 						Lifecycle:          "mufasa",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskType: "fake-persistent-disk",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						ResourcePool: "fake-resource-pool",
@@ -460,7 +460,7 @@ var _ = Describe("InputGenerator", func() {
 		}))
 	})
 
-	It("when migrated job does not have az it sets random az in migrated_from", func() {
+	It("when migrated instance group does not have az it sets random az in migrated_from", func() {
 		rand.Seed(64)
 		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 1, nameGenerator, decider, logger)
 
@@ -469,7 +469,7 @@ var _ = Describe("InputGenerator", func() {
 
 		Expect(inputs).To(Equal([]bftinput.Input{
 			{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "vgrKicN3O2",
 						Instances:          2,
@@ -477,7 +477,7 @@ var _ = Describe("InputGenerator", func() {
 						VmType:             "fake-vm-type",
 						AvailabilityZones:  []string{"z1"},
 						PersistentDiskPool: "fake-persistent-disk",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						Templates: []bftinput.Template{
@@ -548,7 +548,7 @@ var _ = Describe("InputGenerator", func() {
 				},
 			},
 			{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "joNAw",
 						Instances:          2,
@@ -556,7 +556,7 @@ var _ = Describe("InputGenerator", func() {
 						AvailabilityZones:  []string{"z1"},
 						VmType:             "fake-vm-type",
 						PersistentDiskPool: "fake-persistent-disk",
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "foo-network"},
 						},
 						MigratedFrom: []bftinput.MigratedFromConfig{

@@ -205,8 +205,8 @@ jobs:
 				stemcellsArray := manifestMap["stemcells"].([]interface{})
 				Expect(stemcellsArray[0]).To(Equal("((placeholder4))"))
 
-				jobsMap := manifestMap["jobs"].(map[interface{}]interface{})
-				Expect(jobsMap["templates"].(string)).To(Equal("((placeholder5))"))
+				instanceGroupsMap := manifestMap["jobs"].(map[interface{}]interface{})
+				Expect(instanceGroupsMap["templates"].(string)).To(Equal("((placeholder5))"))
 			})
 
 			It("should return the placeholder map with the substituted values", func() {

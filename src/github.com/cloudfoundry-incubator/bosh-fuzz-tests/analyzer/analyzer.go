@@ -99,11 +99,11 @@ func (a *analyzer) hasVariablesCertificateWithoutCA(currentInput bftinput.Input)
 }
 
 func (a *analyzer) isMigratingFromAzsToNoAzsAndReusingStaticIps(previousInput bftinput.Input, currentInput bftinput.Input) bool {
-	for _, job := range currentInput.Jobs {
-		previousJob, found := previousInput.FindJobByName(job.Name)
-		if found && (len(previousJob.AvailabilityZones) > 0 && len(job.AvailabilityZones) == 0) {
-			for _, network := range job.Networks {
-				previousNetwork, networkFound := previousJob.FindNetworkByName(network.Name)
+	for _, instanceGroup := range currentInput.InstanceGroups {
+		previousInstanceGroup, found := previousInput.FindInstanceGroupByName(instanceGroup.Name)
+		if found && (len(previousInstanceGroup.AvailabilityZones) > 0 && len(instanceGroup.AvailabilityZones) == 0) {
+			for _, network := range instanceGroup.Networks {
+				previousNetwork, networkFound := previousInstanceGroup.FindNetworkByName(network.Name)
 				if networkFound {
 					for _, currentIP := range network.StaticIps {
 						for _, prevIP := range previousNetwork.StaticIps {
@@ -123,8 +123,8 @@ func (a *analyzer) isMigratingFromAzsToNoAzsAndReusingStaticIps(previousInput bf
 func (a *analyzer) isMovingInstancesStaticIPToAnotherAZ(previousInput bftinput.Input, currentInput bftinput.Input) bool {
 	var previouslyUsedAZs []string
 
-	for _, job := range previousInput.Jobs {
-		for _, az := range job.AvailabilityZones {
+	for _, instanceGroup := range previousInput.InstanceGroups {
+		for _, az := range instanceGroup.AvailabilityZones {
 			previouslyUsedAZs = append(previouslyUsedAZs, az)
 		}
 	}

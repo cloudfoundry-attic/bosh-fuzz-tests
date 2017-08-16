@@ -20,7 +20,7 @@ type Parameters struct {
 	AvailabilityZones          [][]string `json:"availability_zones"`
 	PersistentDiskDefinition   []string   `json:"persistent_disk_definition"`
 	PersistentDiskSize         []int      `json:"persistent_disk_size"`
-	NumberOfJobs               []int      `json:"number_of_jobs"`
+	NumberOfInstanceGroups               []int      `json:"number_of_jobs"`
 	MigratedFromCount          []int      `json:"migrated_from_count"`
 	Networks                   [][]string `json:"networks"`
 	VmTypeDefinition           []string   `json:"vm_type_definition"`

@@ -19,8 +19,8 @@ func (s *FakeAvailabilityZone) Apply(input bftinput.Input, previousInput bftinpu
 			Name: "z1",
 		},
 	}
-	for j, _ := range input.Jobs {
-		input.Jobs[j].AvailabilityZones = azs
+	for j, _ := range input.InstanceGroups {
+		input.InstanceGroups[j].AvailabilityZones = azs
 	}
 
 	return input

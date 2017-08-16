@@ -36,9 +36,9 @@ var _ = Describe("VmType", func() {
 
 		It("adds vm_types to the input", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "fake-job",
+						Name: "fake-instance-group",
 					},
 				},
 			}
@@ -46,9 +46,9 @@ var _ = Describe("VmType", func() {
 			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:   "fake-job",
+						Name:   "fake-instance-group",
 						VmType: "fake-vm-type",
 					},
 				},
@@ -71,9 +71,9 @@ var _ = Describe("VmType", func() {
 
 		It("uses previous input", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:   "fake-job",
+						Name:   "fake-instance-group",
 						VmType: "previous-vm-type",
 					},
 				},
@@ -82,9 +82,9 @@ var _ = Describe("VmType", func() {
 			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:   "fake-job",
+						Name:   "fake-instance-group",
 						VmType: "previous-vm-type",
 					},
 				},
@@ -105,14 +105,14 @@ var _ = Describe("VmType", func() {
 			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider, logger)
 		})
 
-		It("sets same vm type on input jobs", func() {
+		It("sets same vm type on input instance groups", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "fake-job-1",
+						Name: "fake-instance-group-1",
 					},
 					{
-						Name: "fake-job-2",
+						Name: "fake-instance-group-2",
 					},
 				},
 			}
@@ -120,13 +120,13 @@ var _ = Describe("VmType", func() {
 			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:   "fake-job-1",
+						Name:   "fake-instance-group-1",
 						VmType: "fake-vm-type",
 					},
 					{
-						Name:   "fake-job-2",
+						Name:   "fake-instance-group-2",
 						VmType: "fake-vm-type",
 					},
 				},
@@ -147,14 +147,14 @@ var _ = Describe("VmType", func() {
 			vmType = NewVmType("resource_pool", fakeNameGenerator, fakeDecider, logger)
 		})
 
-		It("sets same vm type on input jobs", func() {
+		It("sets same vm type on input instance groups", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "fake-job-1",
+						Name: "fake-instance-group-1",
 					},
 					{
-						Name: "fake-job-2",
+						Name: "fake-instance-group-2",
 					},
 				},
 			}
@@ -162,13 +162,13 @@ var _ = Describe("VmType", func() {
 			result := vmType.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:         "fake-job-1",
+						Name:         "fake-instance-group-1",
 						ResourcePool: "fake-vm-type",
 					},
 					{
-						Name:         "fake-job-2",
+						Name:         "fake-instance-group-2",
 						ResourcePool: "fake-vm-type",
 					},
 				},

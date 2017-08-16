@@ -24,9 +24,9 @@ var _ = Describe("PersistentDisk", func() {
 
 		It("adds disk_pools to the input", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "fake-job",
+						Name: "fake-instance-group",
 					},
 				},
 			}
@@ -34,9 +34,9 @@ var _ = Describe("PersistentDisk", func() {
 			result := persistentDisk.Apply(input, bftinput.Input{})
 
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:               "fake-job",
+						Name:               "fake-instance-group",
 						PersistentDiskPool: "fake-disk-config",
 					},
 				},

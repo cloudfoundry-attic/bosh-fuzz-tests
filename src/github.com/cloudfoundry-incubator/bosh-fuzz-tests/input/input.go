@@ -4,20 +4,20 @@ import "reflect"
 
 type Input struct {
 	DirectorUUID string
-	Jobs         []Job
+	InstanceGroups         []InstanceGroup
 	Update       UpdateConfig
 	CloudConfig  CloudConfig
 	Stemcells    []StemcellConfig
 	Variables    []Variable
 }
 
-func (i Input) FindJobByName(jobName string) (Job, bool) {
-	for _, job := range i.Jobs {
-		if job.Name == jobName {
-			return job, true
+func (i Input) FindInstanceGroupByName(instanceGroupName string) (InstanceGroup, bool) {
+	for _, instanceGroup := range i.InstanceGroups {
+		if instanceGroup.Name == instanceGroupName {
+			return instanceGroup, true
 		}
 	}
-	return Job{}, false
+	return InstanceGroup{}, false
 }
 
 func (i Input) FindAzByName(azName string) (AvailabilityZone, bool) {

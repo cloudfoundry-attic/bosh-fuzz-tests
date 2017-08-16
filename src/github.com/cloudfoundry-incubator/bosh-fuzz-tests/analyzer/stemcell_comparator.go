@@ -19,36 +19,36 @@ func NewStemcellComparator(logger boshlog.Logger) Comparator {
 func (s *stemcellComparator) Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
 	mostRecentInput := previousInputs[len(previousInputs)-1]
 	expectations := []bftexpectation.Expectation{}
-	for _, job := range currentInput.Jobs {
-		if s.jobStemcellChanged(job, currentInput, mostRecentInput) {
-			expectations = append(expectations, bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", job.Name))
+	for _, instanceGroup := range currentInput.InstanceGroups {
+		if s.instanceGroupStemcellChanged(instanceGroup, currentInput, mostRecentInput) {
+			expectations = append(expectations, bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", instanceGroup.Name))
 		}
 	}
 
 	return expectations
 }
 
-func (s *stemcellComparator) jobStemcellChanged(job bftinput.Job, currentInput bftinput.Input, mostRecentInput bftinput.Input) bool {
-	prevJob, found := mostRecentInput.FindJobByName(job.Name)
+func (s *stemcellComparator) instanceGroupStemcellChanged(instanceGroup bftinput.InstanceGroup, currentInput bftinput.Input, mostRecentInput bftinput.Input) bool {
+	prevInstanceGroup, found := mostRecentInput.FindInstanceGroupByName(instanceGroup.Name)
 	if !found {
 		return false
 	}
 
 	var currentStemcell bftinput.StemcellConfig
-	if job.Stemcell != "" {
-		currentStemcell = s.findStemcellByAlias(job.Stemcell, currentInput)
+	if instanceGroup.Stemcell != "" {
+		currentStemcell = s.findStemcellByAlias(instanceGroup.Stemcell, currentInput)
 	} else {
-		currentStemcell = s.findResourcePoolStemcell(job.ResourcePool, currentInput)
+		currentStemcell = s.findResourcePoolStemcell(instanceGroup.ResourcePool, currentInput)
 	}
 
-	if prevJob.Stemcell != "" {
-		prevStemcell := s.findStemcellByAlias(prevJob.Stemcell, mostRecentInput)
+	if prevInstanceGroup.Stemcell != "" {
+		prevStemcell := s.findStemcellByAlias(prevInstanceGroup.Stemcell, mostRecentInput)
 		if prevStemcell.Version != currentStemcell.Version {
 			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", mostRecentInput, currentInput)
 			return true
 		}
 	} else {
-		prevStemcell := s.findResourcePoolStemcell(prevJob.ResourcePool, mostRecentInput)
+		prevStemcell := s.findResourcePoolStemcell(prevInstanceGroup.ResourcePool, mostRecentInput)
 		if prevStemcell.Version != currentStemcell.Version {
 			s.logger.Debug("stemcell_comparator", "Stemcell versions don't match. Previous input: %#v, new input: %#v", mostRecentInput, currentInput)
 			return true

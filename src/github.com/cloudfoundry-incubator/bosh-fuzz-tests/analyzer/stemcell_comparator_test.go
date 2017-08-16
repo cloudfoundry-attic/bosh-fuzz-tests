@@ -23,7 +23,7 @@ var _ = Describe("StemcellComparator", func() {
 		stemcellComparator = NewStemcellComparator(logger)
 	})
 
-	Context("when there are same jobs that have different stemcell versions using vm types", func() {
+	Context("when there are same instance groups that have different stemcell versions using vm types", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
@@ -33,9 +33,9 @@ var _ = Describe("StemcellComparator", func() {
 							Version: "1",
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:     "foo-job",
+							Name:     "foo-instance-group",
 							Stemcell: "fake-stemcell",
 						},
 					},
@@ -49,9 +49,9 @@ var _ = Describe("StemcellComparator", func() {
 						Version: "2",
 					},
 				},
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:     "foo-job",
+						Name:     "foo-instance-group",
 						Stemcell: "fake-stemcell",
 					},
 				},
@@ -60,12 +60,12 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInputs, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-job")
+			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-instance-group")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
 
-	Context("when there are same jobs that have different stemcell versions using resource pools", func() {
+	Context("when there are same instance groups that have different stemcell versions using resource pools", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
@@ -87,13 +87,13 @@ var _ = Describe("StemcellComparator", func() {
 							},
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:         "foo-job",
+							Name:         "foo-instance-group",
 							ResourcePool: "fake-resource-pool",
 						},
 						{
-							Name:         "another-job",
+							Name:         "another-instance-group",
 							ResourcePool: "fake-same-pool",
 						},
 					},
@@ -119,13 +119,13 @@ var _ = Describe("StemcellComparator", func() {
 						},
 					},
 				},
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:         "foo-job",
+						Name:         "foo-instance-group",
 						ResourcePool: "fake-resource-pool",
 					},
 					{
-						Name:         "another-job",
+						Name:         "another-instance-group",
 						ResourcePool: "fake-same-pool",
 					},
 				},
@@ -134,12 +134,12 @@ var _ = Describe("StemcellComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := stemcellComparator.Compare(previousInputs, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-job")
+			expectedDebugLogExpectation := bftexpectation.NewExistingInstanceDebugLog("stemcell_changed?", "foo-instance-group")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
 
-	Context("when switching from vm type (stemcell on Job) to resource pool", func() {
+	Context("when switching from vm type (stemcell on InstanceGroup) to resource pool", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
@@ -149,9 +149,9 @@ var _ = Describe("StemcellComparator", func() {
 							Version: "1",
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:     "foo-job",
+							Name:     "foo-instance-group",
 							Stemcell: "fake-stemcell",
 						},
 					},
@@ -170,9 +170,9 @@ var _ = Describe("StemcellComparator", func() {
 						},
 					},
 				},
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:         "foo-job",
+						Name:         "foo-instance-group",
 						ResourcePool: "fake-resource-pool",
 					},
 				},

@@ -45,8 +45,8 @@ func NewInputGenerator(
 func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 	inputs := []bftinput.Input{}
 
-	jobNames := g.generateJobNames()
-	previousInput := g.generateInputWithJobNames(jobNames)
+	instanceGroupNames := g.generateInstanceGroupNames()
+	previousInput := g.generateInputWithInstanceGroupNames(instanceGroupNames)
 
 	for i := 0; i < g.numberOfConsequentDeploys; i++ {
 		reusePreviousInput := g.decider.IsYes()
@@ -56,21 +56,21 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 			input = previousInput
 		} else {
 			input = g.createInputFromPrevious(previousInput)
-			migratingJobNames := []string{}
-			for _, j := range input.Jobs {
+			migratingInstanceGroupNames := []string{}
+			for _, j := range input.InstanceGroups {
 				for _, m := range j.MigratedFrom {
-					migratingJobNames = append(migratingJobNames, m.Name)
+					migratingInstanceGroupNames = append(migratingInstanceGroupNames, m.Name)
 				}
 			}
 
-			if len(migratingJobNames) == 0 {
+			if len(migratingInstanceGroupNames) == 0 {
 				input = g.fuzzInput(input, previousInput)
 			} else {
-				migratingInput := g.generateInputWithJobNames(migratingJobNames)
+				migratingInput := g.generateInputWithInstanceGroupNames(migratingInstanceGroupNames)
 				migratingInput = g.fuzzInput(migratingInput, previousInput)
 				input = g.fuzzInput(input, migratingInput)
 
-				g.specifyAzIfMigratingJobDoesNotHaveAz(migratingInput, input)
+				g.specifyAzIfMigratingInstanceGroupDoesNotHaveAz(migratingInput, input)
 
 				inputs = append(inputs, migratingInput)
 			}
@@ -87,20 +87,20 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 func (g *inputGenerator) createInputFromPrevious(previousInput bftinput.Input) bftinput.Input {
 	input := bftinput.Input{}
 
-	for _, job := range previousInput.Jobs {
-		job.Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
-		job.MigratedFrom = nil
+	for _, instanceGroup := range previousInput.InstanceGroups {
+		instanceGroup.Instances = g.parameters.Instances[rand.Intn(len(g.parameters.Instances))]
+		instanceGroup.MigratedFrom = nil
 
-		input.Jobs = append(input.Jobs, job)
+		input.InstanceGroups = append(input.InstanceGroups, instanceGroup)
 	}
 
-	input.Jobs = g.randomizeJobs(input.Jobs)
+	input.InstanceGroups = g.randomizeInstanceGroups(input.InstanceGroups)
 
-	for j := range input.Jobs {
+	for j := range input.InstanceGroups {
 		migratedFromCount := g.parameters.MigratedFromCount[rand.Intn(len(g.parameters.MigratedFromCount))]
 		for i := 0; i < migratedFromCount; i++ {
 			migratedFromName := g.nameGenerator.Generate(10)
-			input.Jobs[j].MigratedFrom = append(input.Jobs[j].MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
+			input.InstanceGroups[j].MigratedFrom = append(input.InstanceGroups[j].MigratedFrom, bftinput.MigratedFromConfig{Name: migratedFromName})
 		}
 	}
 
@@ -127,44 +127,44 @@ func (g *inputGenerator) fuzzInput(input bftinput.Input, previousInput bftinput.
 	return input
 }
 
-func (g *inputGenerator) randomizeJobs(jobs []bftinput.Job) []bftinput.Job {
-	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
-	jobsSize := len(jobs)
-	if numberOfJobs > jobsSize {
-		for i := 0; i < numberOfJobs-jobsSize; i++ {
-			jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
-			jobs = append(jobs, bftinput.Job{
-				Name: jobName,
+func (g *inputGenerator) randomizeInstanceGroups(instanceGroups []bftinput.InstanceGroup) []bftinput.InstanceGroup {
+	numberOfInstanceGroups := g.parameters.NumberOfInstanceGroups[rand.Intn(len(g.parameters.NumberOfInstanceGroups))]
+	instanceGroupsSize := len(instanceGroups)
+	if numberOfInstanceGroups > instanceGroupsSize {
+		for i := 0; i < numberOfInstanceGroups-instanceGroupsSize; i++ {
+			instanceGroupName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
+			instanceGroups = append(instanceGroups, bftinput.InstanceGroup{
+				Name: instanceGroupName,
 			})
 		}
-	} else if numberOfJobs < jobsSize {
-		for i := 0; i < jobsSize-numberOfJobs; i++ {
-			jobIdxToRemove := rand.Intn(len(jobs))
-			if jobIdxToRemove == len(jobs)-1 {
-				jobs = jobs[:jobIdxToRemove]
+	} else if numberOfInstanceGroups < instanceGroupsSize {
+		for i := 0; i < instanceGroupsSize-numberOfInstanceGroups; i++ {
+			instanceGroupIdxToRemove := rand.Intn(len(instanceGroups))
+			if instanceGroupIdxToRemove == len(instanceGroups)-1 {
+				instanceGroups = instanceGroups[:instanceGroupIdxToRemove]
 			} else {
-				jobs = append(jobs[:jobIdxToRemove], jobs[jobIdxToRemove+1:]...)
+				instanceGroups = append(instanceGroups[:instanceGroupIdxToRemove], instanceGroups[instanceGroupIdxToRemove+1:]...)
 			}
 		}
 	}
 
-	shuffledJobs := []bftinput.Job{}
-	shuffledJobsIndeces := rand.Perm(numberOfJobs)
-	for _, jobIndex := range shuffledJobsIndeces {
-		shuffledJobs = append(shuffledJobs, jobs[jobIndex])
+	shuffledInstanceGroups := []bftinput.InstanceGroup{}
+	shuffledInstanceGroupsIndeces := rand.Perm(numberOfInstanceGroups)
+	for _, instanceGroupIndex := range shuffledInstanceGroupsIndeces {
+		shuffledInstanceGroups = append(shuffledInstanceGroups, instanceGroups[instanceGroupIndex])
 	}
 
-	return shuffledJobs
+	return shuffledInstanceGroups
 }
 
-func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.Input {
+func (g *inputGenerator) generateInputWithInstanceGroupNames(instanceGroupNames []string) bftinput.Input {
 	input := bftinput.Input{
-		Jobs: []bftinput.Job{},
+		InstanceGroups: []bftinput.InstanceGroup{},
 	}
 
-	for _, jobName := range jobNames {
-		input.Jobs = append(input.Jobs, bftinput.Job{
-			Name:      jobName,
+	for _, instanceGroupName := range instanceGroupNames {
+		input.InstanceGroups = append(input.InstanceGroups, bftinput.InstanceGroup{
+			Name:      instanceGroupName,
 			Instances: g.parameters.Instances[rand.Intn(len(g.parameters.Instances))],
 		})
 	}
@@ -172,29 +172,29 @@ func (g *inputGenerator) generateInputWithJobNames(jobNames []string) bftinput.I
 	return input
 }
 
-func (g *inputGenerator) generateJobNames() []string {
-	numberOfJobs := g.parameters.NumberOfJobs[rand.Intn(len(g.parameters.NumberOfJobs))]
-	jobNames := []string{}
+func (g *inputGenerator) generateInstanceGroupNames() []string {
+	numberOfInstanceGroups := g.parameters.NumberOfInstanceGroups[rand.Intn(len(g.parameters.NumberOfInstanceGroups))]
+	instanceGroupNames := []string{}
 
-	for j := 0; j < numberOfJobs; j++ {
-		jobName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
-		jobNames = append(jobNames, jobName)
+	for j := 0; j < numberOfInstanceGroups; j++ {
+		instanceGroupName := g.nameGenerator.Generate(g.parameters.NameLength[rand.Intn(len(g.parameters.NameLength))])
+		instanceGroupNames = append(instanceGroupNames, instanceGroupName)
 	}
 
-	return jobNames
+	return instanceGroupNames
 }
 
-func (g *inputGenerator) specifyAzIfMigratingJobDoesNotHaveAz(migratingInput bftinput.Input, currentInput bftinput.Input) {
-	for _, migratingJob := range migratingInput.Jobs {
-		if migratingJob.AvailabilityZones == nil {
-			for k, job := range currentInput.Jobs {
-				if job.AvailabilityZones == nil {
+func (g *inputGenerator) specifyAzIfMigratingInstanceGroupDoesNotHaveAz(migratingInput bftinput.Input, currentInput bftinput.Input) {
+	for _, migratingInstanceGroup := range migratingInput.InstanceGroups {
+		if migratingInstanceGroup.AvailabilityZones == nil {
+			for k, instanceGroup := range currentInput.InstanceGroups {
+				if instanceGroup.AvailabilityZones == nil {
 					continue
 				}
 
-				for m, migratedFromConfig := range job.MigratedFrom {
-					if migratedFromConfig.Name == migratingJob.Name {
-						currentInput.Jobs[k].MigratedFrom[m].AvailabilityZone = currentInput.Jobs[k].AvailabilityZones[0]
+				for m, migratedFromConfig := range instanceGroup.MigratedFrom {
+					if migratedFromConfig.Name == migratingInstanceGroup.Name {
+						currentInput.InstanceGroups[k].MigratedFrom[m].AvailabilityZone = currentInput.InstanceGroups[k].AvailabilityZones[0]
 					}
 				}
 			}

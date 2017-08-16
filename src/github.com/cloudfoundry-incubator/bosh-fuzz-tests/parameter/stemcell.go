@@ -46,9 +46,9 @@ func (s *stemcell) Apply(input bftinput.Input, previousInput bftinput.Input) bft
 			}
 			usedStemcells[stemcellConfig.Alias] = true
 
-			for j := range input.Jobs {
-				if input.Jobs[j].VmType == vmType.Name {
-					input.Jobs[j].Stemcell = stemcellConfig.Alias
+			for j := range input.InstanceGroups {
+				if input.InstanceGroups[j].VmType == vmType.Name {
+					input.InstanceGroups[j].Stemcell = stemcellConfig.Alias
 				}
 			}
 		}
@@ -58,8 +58,8 @@ func (s *stemcell) Apply(input bftinput.Input, previousInput bftinput.Input) bft
 			input.CloudConfig.ResourcePools[r].Stemcell = stemcellConfig
 		}
 
-		for j := range input.Jobs {
-			input.Jobs[j].Stemcell = ""
+		for j := range input.InstanceGroups {
+			input.InstanceGroups[j].Stemcell = ""
 		}
 	}
 

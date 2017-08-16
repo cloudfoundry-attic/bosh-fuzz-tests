@@ -25,21 +25,21 @@ var _ = Describe("AvailabilityZone", func() {
 
 		It("adds azs to the input", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
-					{Name: "fake-job-1"},
-					{Name: "fake-job-2"},
+				InstanceGroups: []bftinput.InstanceGroup{
+					{Name: "fake-instance-group-1"},
+					{Name: "fake-instance-group-2"},
 				},
 			}
 
 			result := az.Apply(input, bftinput.Input{})
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:              "fake-job-1",
+						Name:              "fake-instance-group-1",
 						AvailabilityZones: []string{"z2", "z3"},
 					},
 					{
-						Name:              "fake-job-2",
+						Name:              "fake-instance-group-2",
 						AvailabilityZones: []string{"z1", "z2"},
 					},
 				},

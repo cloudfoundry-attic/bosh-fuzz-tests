@@ -58,9 +58,9 @@ var _ = Describe("NetworksAssigner", func() {
 		networksAssigner = NewAssigner(networks, nameGenerator, ipPoolProvider, decider, logger)
 	})
 
-	It("assigns network of the given type to job and cloud config", func() {
+	It("assigns network of the given type to instance group and cloud config", func() {
 		input := bftinput.Input{
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
 					Name:              "foo",
 					Instances:         2,
@@ -77,12 +77,12 @@ var _ = Describe("NetworksAssigner", func() {
 		result := networksAssigner.Assign(input, bftinput.Input{})
 
 		Expect(result).To(BeEquivalentTo(bftinput.Input{
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
 					Name:              "foo",
 					Instances:         2,
 					AvailabilityZones: []string{"z1"},
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name:          "foo-net",
 							DefaultDNSnGW: true,
@@ -140,12 +140,12 @@ var _ = Describe("NetworksAssigner", func() {
 
 		It("reuses network name from previous input", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:              "foo",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{Name: "prev-net"},
 						},
 					},
@@ -166,12 +166,12 @@ var _ = Describe("NetworksAssigner", func() {
 			result := networksAssigner.Assign(input, bftinput.Input{})
 
 			Expect(result).To(BeEquivalentTo(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:              "foo",
 						Instances:         2,
 						AvailabilityZones: []string{"z1"},
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name:          "prev-net",
 								DefaultDNSnGW: true,
@@ -225,11 +225,11 @@ var _ = Describe("NetworksAssigner", func() {
 
 	It("does not reuse IP if IP does not belong to network subnet", func() {
 		input := bftinput.Input{
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
 					Name:      "foo",
 					Instances: 2,
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name: "default",
 						},
@@ -252,11 +252,11 @@ var _ = Describe("NetworksAssigner", func() {
 		}
 
 		previousInput := bftinput.Input{
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
 					Name:      "foo",
 					Instances: 2,
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name:      "default",
 							StaticIps: []string{"192.168.4.209", "192.168.4.254"},
@@ -280,9 +280,9 @@ var _ = Describe("NetworksAssigner", func() {
 		}
 
 		result := networksAssigner.Assign(input, previousInput)
-		Expect(len(result.Jobs[0].Networks[0].StaticIps)).To(Equal(2))
-		Expect(result.Jobs[0].Networks[0].StaticIps).ToNot(ContainElement("192.168.4.209"))
-		Expect(result.Jobs[0].Networks[0].StaticIps).ToNot(ContainElement("192.168.4.254"))
+		Expect(len(result.InstanceGroups[0].Networks[0].StaticIps)).To(Equal(2))
+		Expect(result.InstanceGroups[0].Networks[0].StaticIps).ToNot(ContainElement("192.168.4.209"))
+		Expect(result.InstanceGroups[0].Networks[0].StaticIps).ToNot(ContainElement("192.168.4.254"))
 	})
 
 	Context("when previous input has static IPs", func() {
@@ -298,14 +298,14 @@ var _ = Describe("NetworksAssigner", func() {
 		It("does not reuse those static IPs", func() {
 			// our fuzzing returns ips in order
 			// "192.168.0.252", "192.168.0.219", "192.168.0.234", "192.168.0.245"
-			// we put "192.168.0.252" on second job to make sure it is not going to be used by first job
-			// we put "192.168.0.245" on first job to make sure it is not going to be used by second job
+			// we put "192.168.0.252" on second instanceGroup to make sure it is not going to be used by first instanceGroup
+			// we put "192.168.0.245" on first instanceGroup to make sure it is not going to be used by second instanceGroup
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:      "foo",
 						Instances: 2,
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name:      "prev-net",
 								StaticIps: []string{"192.168.0.219", "192.168.0.245"},
@@ -315,7 +315,7 @@ var _ = Describe("NetworksAssigner", func() {
 					{
 						Name:      "bar",
 						Instances: 2,
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name:      "prev-net",
 								StaticIps: []string{"192.168.0.252", "192.168.0.236"},
@@ -341,11 +341,11 @@ var _ = Describe("NetworksAssigner", func() {
 			result := networksAssigner.Assign(input, input)
 
 			Expect(result).To(BeEquivalentTo(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:      "foo",
 						Instances: 2,
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name:          "prev-net",
 								DefaultDNSnGW: true,
@@ -356,7 +356,7 @@ var _ = Describe("NetworksAssigner", func() {
 					{
 						Name:      "bar",
 						Instances: 2,
-						Networks: []bftinput.JobNetworkConfig{
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name:          "prev-net",
 								DefaultDNSnGW: true,

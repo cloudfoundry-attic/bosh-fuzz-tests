@@ -21,14 +21,14 @@ var _ = Describe("NothingChangedComparator", func() {
 		nothingChangedComparator = NewNothingChangedComparator()
 	})
 
-	Context("when there are same jobs", func() {
+	Context("when there are same instance groups", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "network-1",
 								},
@@ -39,10 +39,10 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "foo-job",
-						Networks: []bftinput.JobNetworkConfig{
+						Name: "foo-instance-group",
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name: "network-1",
 							},
@@ -54,19 +54,19 @@ var _ = Describe("NothingChangedComparator", func() {
 
 		It("returns debug log expectation", func() {
 			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
-			expectedDebugLogExpectation := bftexpectation.NewDebugLog("No instances to update for 'foo-job'")
+			expectedDebugLogExpectation := bftexpectation.NewDebugLog("No instances to update for 'foo-instance-group'")
 			Expect(expectations).To(ContainElement(expectedDebugLogExpectation))
 		})
 	})
 
-	Context("when there are jobs that have different properties", func() {
+	Context("when there are instance groups that have different properties", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "network-1",
 								},
@@ -77,10 +77,10 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "foo-job",
-						Networks: []bftinput.JobNetworkConfig{
+						Name: "foo-instance-group",
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name: "network-2",
 							},
@@ -100,9 +100,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:              "foo-job",
+							Name:              "foo-instance-group",
 							AvailabilityZones: []string{"z1", "z2"},
 						},
 					},
@@ -116,9 +116,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:              "foo-job",
+						Name:              "foo-instance-group",
 						AvailabilityZones: []string{"z1", "z2"},
 					},
 				},
@@ -146,9 +146,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:               "foo-job",
+							Name:               "foo-instance-group",
 							PersistentDiskPool: "foo-disk-pool",
 						},
 					},
@@ -161,9 +161,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:               "foo-job",
+						Name:               "foo-instance-group",
 						PersistentDiskPool: "foo-disk-pool",
 					},
 				},
@@ -185,9 +185,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:               "foo-job",
+							Name:               "foo-instance-group",
 							PersistentDiskType: "foo-disk-type",
 						},
 					},
@@ -200,9 +200,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:               "foo-job",
+						Name:               "foo-instance-group",
 						PersistentDiskType: "foo-disk-type",
 					},
 				},
@@ -224,10 +224,10 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 								},
@@ -252,10 +252,10 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "foo-job",
-						Networks: []bftinput.JobNetworkConfig{
+						Name: "foo-instance-group",
+						Networks: []bftinput.InstanceGroupNetworkConfig{
 							{
 								Name: "foo-network",
 							},
@@ -289,9 +289,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:         "foo-job",
+							Name:         "foo-instance-group",
 							ResourcePool: "foo-resource-pool",
 						},
 					},
@@ -309,9 +309,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:         "foo-job",
+						Name:         "foo-instance-group",
 						ResourcePool: "foo-resource-pool",
 					},
 				},
@@ -338,9 +338,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:   "foo-job",
+							Name:   "foo-instance-group",
 							VmType: "foo-vm-type",
 						},
 					},
@@ -358,9 +358,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:   "foo-job",
+						Name:   "foo-instance-group",
 						VmType: "foo-vm-type",
 					},
 				},
@@ -387,9 +387,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:     "foo-job",
+							Name:     "foo-instance-group",
 							Stemcell: "foo-stemcell",
 						},
 					},
@@ -403,9 +403,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:     "foo-job",
+						Name:     "foo-instance-group",
 						Stemcell: "foo-stemcell",
 					},
 				},
@@ -428,9 +428,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:               "foo-job",
+							Name:               "foo-instance-group",
 							PersistentDiskPool: "foo-disk-pool",
 						},
 					},
@@ -444,18 +444,18 @@ var _ = Describe("NothingChangedComparator", func() {
 					},
 				},
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
+							Name: "foo-instance-group",
 						},
 					},
 				},
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "foo-job",
+						Name: "foo-instance-group",
 					},
 				},
 			}
@@ -467,13 +467,13 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 	})
 
-	Context("when persistent disk was removed and job was migrated in previous input", func() {
+	Context("when persistent disk was removed and instance group was migrated in previous input", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:               "bar-job",
+							Name:               "bar-instance-group",
 							PersistentDiskPool: "foo-disk-pool",
 						},
 					},
@@ -487,12 +487,12 @@ var _ = Describe("NothingChangedComparator", func() {
 					},
 				},
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
+							Name: "foo-instance-group",
 							MigratedFrom: []bftinput.MigratedFromConfig{
 								{
-									Name: "bar-job",
+									Name: "bar-instance-group",
 								},
 							},
 						},
@@ -501,12 +501,12 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name: "foo-job",
+						Name: "foo-instance-group",
 						MigratedFrom: []bftinput.MigratedFromConfig{
 							{
-								Name: "bar-job",
+								Name: "bar-instance-group",
 							},
 						},
 					},
@@ -524,9 +524,9 @@ var _ = Describe("NothingChangedComparator", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
 				{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:      "foo-job",
+							Name:      "foo-instance-group",
 							Lifecycle: "errand",
 						},
 					},
@@ -534,9 +534,9 @@ var _ = Describe("NothingChangedComparator", func() {
 			}
 
 			currentInput = bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:      "foo-job",
+						Name:      "foo-instance-group",
 						Lifecycle: "errand",
 					},
 				},

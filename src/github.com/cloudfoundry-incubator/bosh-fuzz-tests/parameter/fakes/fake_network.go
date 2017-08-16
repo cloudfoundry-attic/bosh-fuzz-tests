@@ -23,8 +23,8 @@ func (s *FakeNetwork) Apply(input bftinput.Input, previousInput bftinput.Input) 
 			},
 		},
 	}
-	for j, _ := range input.Jobs {
-		input.Jobs[j].Networks = []bftinput.JobNetworkConfig{
+	for j, _ := range input.InstanceGroups {
+		input.InstanceGroups[j].Networks = []bftinput.InstanceGroupNetworkConfig{
 			{
 				Name: "foo-network",
 			},

@@ -18,8 +18,8 @@ var _ = Describe("Analyzer", func() {
 	})
 
 	Context("when previous input has azs and current input does not have azs", func() {
-		Context("when they have the same job that is using the same static IP", func() {
-			It("specifies migrated_from on a job without an azs", func() {
+		Context("when they have the same instance group that is using the same static IP", func() {
+			It("specifies migrated_from on an instance group without an azs", func() {
 				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						AvailabilityZones: nil,
@@ -34,10 +34,10 @@ var _ = Describe("Analyzer", func() {
 							},
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 									StaticIps: []string{
@@ -74,11 +74,11 @@ var _ = Describe("Analyzer", func() {
 							},
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:              "foo-job",
+							Name:              "foo-instance-group",
 							AvailabilityZones: []string{"z1", "z2"},
-							Networks: []bftinput.JobNetworkConfig{
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 									StaticIps: []string{
@@ -243,11 +243,11 @@ var _ = Describe("Analyzer", func() {
 					},
 				},
 			},
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name:              "foo-job",
+					Name:              "foo-instance-group",
 					AvailabilityZones: []string{"z1"},
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name: "foo-network",
 							StaticIps: []string{
@@ -278,11 +278,11 @@ var _ = Describe("Analyzer", func() {
 					},
 				},
 			},
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name:              "foo-job",
+					Name:              "foo-instance-group",
 					AvailabilityZones: []string{"z2"},
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name: "foo-network",
 							StaticIps: []string{

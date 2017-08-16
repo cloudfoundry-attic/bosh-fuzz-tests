@@ -26,9 +26,9 @@ var _ = Describe("Manifest/Renderer", func() {
 	It("creates manifest based on input values", func() {
 		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name:               "foo-job",
+					Name:               "foo-instance-group",
 					Instances:          5,
 					Lifecycle:          "service",
 					AvailabilityZones:  []string{"z1", "z2"},
@@ -38,7 +38,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					Templates: []bftinput.Template{
 						{Name: "simple"},
 					},
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name:          "default",
 							StaticIps:     []string{"192.168.1.5"},
@@ -47,7 +47,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					},
 				},
 				{
-					Name:               "bar-job",
+					Name:               "bar-instance-group",
 					Instances:          2,
 					Lifecycle:          "errand",
 					AvailabilityZones:  []string{"z3", "z4"},
@@ -57,14 +57,14 @@ var _ = Describe("Manifest/Renderer", func() {
 					Templates: []bftinput.Template{
 						{Name: "simple"},
 					},
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name:          "default",
 							DefaultDNSnGW: true,
 						},
 					},
 					MigratedFrom: []bftinput.MigratedFromConfig{
-						{Name: "baz-job", AvailabilityZone: "z5"},
+						{Name: "baz-instance-group", AvailabilityZone: "z5"},
 					},
 				},
 			},
@@ -201,7 +201,7 @@ update:
   serial: true
 
 jobs:
-- name: foo-job
+- name: foo-instance-group
   instances: 5
   lifecycle: service
   vm_type: default
@@ -218,14 +218,14 @@ jobs:
     default: [dns, gateway]
     static_ips:
     - 192.168.1.5
-- name: bar-job
+- name: bar-instance-group
   instances: 2
   lifecycle: errand
   vm_type: default
   persistent_disk_pool: fast-disks
   stemcell: default
   migrated_from:
-  - name: baz-job
+  - name: baz-instance-group
     az: z5
   azs:
   - z3
@@ -325,11 +325,11 @@ disk_pools:
 		It("does not specify az key in manifest", func() {
 			input := bftinput.Input{
 				DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:      "foo-job",
+						Name:      "foo-instance-group",
 						Instances: 5,
-						Networks:  []bftinput.JobNetworkConfig{{Name: "default"}},
+						Networks:  []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
 						Templates: []bftinput.Template{
 							{Name: "simple"},
 						},
@@ -382,7 +382,7 @@ update:
   update_watch_time: 20
 
 jobs:
-- name: foo-job
+- name: foo-instance-group
   instances: 5
   templates:
   - name: simple
@@ -421,15 +421,15 @@ compilation:
 		})
 	})
 
-	It("uses the disk pool specified for job", func() {
+	It("uses the disk pool specified for instance group", func() {
 		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name:               "foo-job",
+					Name:               "foo-instance-group",
 					Instances:          5,
 					PersistentDiskPool: "fast-disks",
-					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
+					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
 					Templates: []bftinput.Template{
 						{Name: "simple"},
 					},
@@ -489,7 +489,7 @@ update:
   serial: true
 
 jobs:
-- name: foo-job
+- name: foo-instance-group
   instances: 5
   persistent_disk_pool: fast-disks
   templates:
@@ -536,12 +536,12 @@ disk_pools:
 	It("uses the disk type", func() {
 		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name:               "foo-job",
+					Name:               "foo-instance-group",
 					Instances:          5,
 					PersistentDiskType: "fast-disks",
-					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
+					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
 					Templates: []bftinput.Template{
 						{Name: "simple"},
 					},
@@ -605,7 +605,7 @@ update:
   serial: false
 
 jobs:
-- name: foo-job
+- name: foo-instance-group
   instances: 5
   persistent_disk_type: fast-disks
   templates:
@@ -651,16 +651,16 @@ disk_types:
 		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
 	})
 
-	It("uses the resource pool specified for job", func() {
+	It("uses the resource pool specified for instance group", func() {
 		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name:               "foo-job",
+					Name:               "foo-instance-group",
 					Instances:          5,
 					ResourcePool:       "foo-pool",
 					PersistentDiskPool: "fast-disks",
-					Networks:           []bftinput.JobNetworkConfig{{Name: "default"}},
+					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
 					Templates: []bftinput.Template{
 						{Name: "simple"},
 					},
@@ -733,7 +733,7 @@ update:
   serial: true
 
 jobs:
-- name: foo-job
+- name: foo-instance-group
   instances: 5
   resource_pool: foo-pool
   persistent_disk_pool: fast-disks

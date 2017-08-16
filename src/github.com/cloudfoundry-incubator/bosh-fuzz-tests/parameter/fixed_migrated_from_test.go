@@ -18,8 +18,8 @@ var _ = Describe("FixedMigratedFrom", func() {
 	})
 
 	Context("when previous input does not have azs and current input has azs", func() {
-		Context("when they have the same job that is using the same static IP", func() {
-			It("specifies migrated_from on a job with an az to which that static IP belongs", func() {
+		Context("when they have the same instance group that is using the same static IP", func() {
+			It("specifies migrated_from on an instance group with an az to which that static IP belongs", func() {
 				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						AvailabilityZones: []bftinput.AvailabilityZone{
@@ -46,11 +46,11 @@ var _ = Describe("FixedMigratedFrom", func() {
 							},
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:              "foo-job",
+							Name:              "foo-instance-group",
 							AvailabilityZones: []string{"z1", "z2"},
-							Networks: []bftinput.JobNetworkConfig{
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 									StaticIps: []string{
@@ -62,10 +62,10 @@ var _ = Describe("FixedMigratedFrom", func() {
 					},
 				}
 				previousInput := bftinput.Input{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 									StaticIps: []string{
@@ -78,16 +78,16 @@ var _ = Describe("FixedMigratedFrom", func() {
 				}
 				result := fixedMigratedFrom.Apply(input, previousInput)
 
-				Expect(result.Jobs[0]).To(Equal(bftinput.Job{
-					Name:              "foo-job",
+				Expect(result.InstanceGroups[0]).To(Equal(bftinput.InstanceGroup{
+					Name:              "foo-instance-group",
 					AvailabilityZones: []string{"z1", "z2"},
 					MigratedFrom: []bftinput.MigratedFromConfig{
 						{
-							Name:             "foo-job",
+							Name:             "foo-instance-group",
 							AvailabilityZone: "z2",
 						},
 					},
-					Networks: []bftinput.JobNetworkConfig{
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name: "foo-network",
 							StaticIps: []string{
@@ -99,8 +99,8 @@ var _ = Describe("FixedMigratedFrom", func() {
 			})
 		})
 
-		Context("when current job does not have any azs", func() {
-			It("specifies migrated_from on a job with az to which that static IP belongs", func() {
+		Context("when current instance group does not have any azs", func() {
+			It("specifies migrated_from on an instance group with az to which that static IP belongs", func() {
 				input := bftinput.Input{
 					CloudConfig: bftinput.CloudConfig{
 						Networks: []bftinput.NetworkConfig{
@@ -117,10 +117,10 @@ var _ = Describe("FixedMigratedFrom", func() {
 							},
 						},
 					},
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 									StaticIps: []string{
@@ -132,10 +132,10 @@ var _ = Describe("FixedMigratedFrom", func() {
 					},
 				}
 				previousInput := bftinput.Input{
-					Jobs: []bftinput.Job{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "foo-job",
-							Networks: []bftinput.JobNetworkConfig{
+							Name: "foo-instance-group",
+							Networks: []bftinput.InstanceGroupNetworkConfig{
 								{
 									Name: "foo-network",
 									StaticIps: []string{
@@ -148,9 +148,9 @@ var _ = Describe("FixedMigratedFrom", func() {
 				}
 				result := fixedMigratedFrom.Apply(input, previousInput)
 
-				Expect(result.Jobs[0]).To(Equal(bftinput.Job{
-					Name: "foo-job",
-					Networks: []bftinput.JobNetworkConfig{
+				Expect(result.InstanceGroups[0]).To(Equal(bftinput.InstanceGroup{
+					Name: "foo-instance-group",
+					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name: "foo-network",
 							StaticIps: []string{

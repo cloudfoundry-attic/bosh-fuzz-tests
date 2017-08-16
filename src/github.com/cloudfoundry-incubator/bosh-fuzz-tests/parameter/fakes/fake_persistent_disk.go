@@ -21,8 +21,8 @@ func (s *FakePersistentDisk) Apply(input bftinput.Input, previousInput bftinput.
 		input.CloudConfig.PersistentDiskPools = []bftinput.DiskConfig{
 			persistentDiskPool,
 		}
-		for j, _ := range input.Jobs {
-			input.Jobs[j].PersistentDiskPool = persistentDiskPool.Name
+		for j, _ := range input.InstanceGroups {
+			input.InstanceGroups[j].PersistentDiskPool = persistentDiskPool.Name
 		}
 	} else if s.definition == "disk_type" {
 		persistentDiskType := bftinput.DiskConfig{Name: "fake-persistent-disk", Size: 1}
@@ -30,12 +30,12 @@ func (s *FakePersistentDisk) Apply(input bftinput.Input, previousInput bftinput.
 		input.CloudConfig.PersistentDiskTypes = []bftinput.DiskConfig{
 			persistentDiskType,
 		}
-		for j, _ := range input.Jobs {
-			input.Jobs[j].PersistentDiskType = persistentDiskType.Name
+		for j, _ := range input.InstanceGroups {
+			input.InstanceGroups[j].PersistentDiskType = persistentDiskType.Name
 		}
 	} else {
-		for j, _ := range input.Jobs {
-			input.Jobs[j].PersistentDiskSize = 10
+		for j, _ := range input.InstanceGroups {
+			input.InstanceGroups[j].PersistentDiskSize = 10
 		}
 	}
 

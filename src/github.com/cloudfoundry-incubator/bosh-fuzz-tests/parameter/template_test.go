@@ -20,15 +20,15 @@ var _ = Describe("Template", func() {
 		template = NewTemplate([][]string{[]string{"foo", "bar"}, []string{"simple"}})
 	})
 
-	It("assigns randomly picked template to job", func() {
+	It("assigns randomly picked template to instance group", func() {
 		rand.Seed(64)
 		input := bftinput.Input{
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name: "fake-job-1",
+					Name: "fake-instance-group-1",
 				},
 				{
-					Name: "fake-job-2",
+					Name: "fake-instance-group-2",
 				},
 			},
 		}
@@ -36,15 +36,15 @@ var _ = Describe("Template", func() {
 		result := template.Apply(input, bftinput.Input{})
 
 		Expect(result).To(Equal(bftinput.Input{
-			Jobs: []bftinput.Job{
+			InstanceGroups: []bftinput.InstanceGroup{
 				{
-					Name: "fake-job-1",
+					Name: "fake-instance-group-1",
 					Templates: []bftinput.Template{
 						{Name: "simple"},
 					},
 				},
 				{
-					Name: "fake-job-2",
+					Name: "fake-instance-group-2",
 					Templates: []bftinput.Template{
 						{Name: "foo"},
 						{Name: "bar"},

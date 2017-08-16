@@ -128,21 +128,21 @@ var _ = Describe("Stemcell", func() {
 		})
 	})
 
-	Context("with multiple vm types and jobs", func() {
+	Context("with multiple vm types and instance groups", func() {
 		BeforeEach(func() {
 			rand.Seed(32)
 			stemcell = NewStemcell("name", []string{"1", "2"})
 		})
 
-		It("generates stemcell version for each vm type and assigns stemcell to corresponding job", func() {
+		It("generates stemcell version for each vm type and assigns stemcell to corresponding instance group", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:   "fake-job-1",
+						Name:   "fake-instance-group-1",
 						VmType: "fake-vm-type-1",
 					},
 					{
-						Name:   "fake-job-2",
+						Name:   "fake-instance-group-2",
 						VmType: "fake-vm-type-2",
 					},
 				},
@@ -156,14 +156,14 @@ var _ = Describe("Stemcell", func() {
 
 			result := stemcell.Apply(input, bftinput.Input{})
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:     "fake-job-1",
+						Name:     "fake-instance-group-1",
 						VmType:   "fake-vm-type-1",
 						Stemcell: "stemcell-1",
 					},
 					{
-						Name:     "fake-job-2",
+						Name:     "fake-instance-group-2",
 						VmType:   "fake-vm-type-2",
 						Stemcell: "stemcell-2",
 					},
@@ -181,15 +181,15 @@ var _ = Describe("Stemcell", func() {
 			}))
 		})
 
-		It("generates stemcell version for each resource pool and assigns stemcell to corresponding job", func() {
+		It("generates stemcell version for each resource pool and assigns stemcell to corresponding instance group", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:         "fake-job-1",
+						Name:         "fake-instance-group-1",
 						ResourcePool: "fake-resource-pool-1",
 					},
 					{
-						Name:         "fake-job-2",
+						Name:         "fake-instance-group-2",
 						ResourcePool: "fake-resource-pool-2",
 						Stemcell:     "unused-stemcell-from-previous-input",
 					},
@@ -204,13 +204,13 @@ var _ = Describe("Stemcell", func() {
 
 			result := stemcell.Apply(input, bftinput.Input{})
 			Expect(result).To(Equal(bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:         "fake-job-1",
+						Name:         "fake-instance-group-1",
 						ResourcePool: "fake-resource-pool-1",
 					},
 					{
-						Name:         "fake-job-2",
+						Name:         "fake-instance-group-2",
 						ResourcePool: "fake-resource-pool-2",
 					},
 				},

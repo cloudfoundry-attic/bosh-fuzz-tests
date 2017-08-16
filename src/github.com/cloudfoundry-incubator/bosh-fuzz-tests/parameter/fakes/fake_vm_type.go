@@ -21,8 +21,8 @@ func (s *FakeVmType) Apply(input bftinput.Input, previousInput bftinput.Input) b
 		input.CloudConfig.VmTypes = []bftinput.VmTypeConfig{
 			vmType,
 		}
-		for j, _ := range input.Jobs {
-			input.Jobs[j].VmType = vmType.Name
+		for j, _ := range input.InstanceGroups {
+			input.InstanceGroups[j].VmType = vmType.Name
 		}
 	} else if s.definition == "resource_pool" {
 		resourcePool := bftinput.ResourcePoolConfig{
@@ -36,8 +36,8 @@ func (s *FakeVmType) Apply(input bftinput.Input, previousInput bftinput.Input) b
 		input.CloudConfig.ResourcePools = []bftinput.ResourcePoolConfig{
 			resourcePool,
 		}
-		for j, _ := range input.Jobs {
-			input.Jobs[j].ResourcePool = resourcePool.Name
+		for j, _ := range input.InstanceGroups {
+			input.InstanceGroups[j].ResourcePool = resourcePool.Name
 		}
 	}
 

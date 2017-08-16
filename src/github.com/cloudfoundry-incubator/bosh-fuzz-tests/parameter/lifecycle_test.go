@@ -18,122 +18,122 @@ var _ = Describe("Lifecycle", func() {
 	})
 
 	It("randomly chooses errand or service", func() {
-		input := bftinput.Input{Jobs: []bftinput.Job{{}}}
+		input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{}}}
 
 		Eventually(func() string {
 			newInput := lifecycle.Apply(input, bftinput.Input{})
-			return newInput.Jobs[0].Lifecycle
+			return newInput.InstanceGroups[0].Lifecycle
 		}).Should(Equal("errand"))
 
 		Eventually(func() string {
 			newInput := lifecycle.Apply(input, bftinput.Input{})
-			return newInput.Jobs[0].Lifecycle
+			return newInput.InstanceGroups[0].Lifecycle
 		}).Should(Equal("service"))
 	})
 
-	It("adds a lifecycle to all jobs", func() {
-		input := bftinput.Input{Jobs: []bftinput.Job{{}, {}, {}, {}}}
+	It("adds a lifecycle to all instance groups", func() {
+		input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{}, {}, {}, {}}}
 		newInput := lifecycle.Apply(input, bftinput.Input{})
-		for _, job := range newInput.Jobs {
-			Expect([]string{"errand", "service"}).To(ContainElement(job.Lifecycle))
+		for _, instanceGroup := range newInput.InstanceGroups {
+			Expect([]string{"errand", "service"}).To(ContainElement(instanceGroup.Lifecycle))
 		}
 	})
 
-	Context("when job has a persistent disk pool", func() {
+	Context("when instance group has a persistent disk pool", func() {
 		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{Jobs: []bftinput.Job{{PersistentDiskPool: "diskpool"}}}
+			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{PersistentDiskPool: "diskpool"}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, bftinput.Input{}).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, bftinput.Input{}).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when job has a persistent disk type", func() {
+	Context("when instance group has a persistent disk type", func() {
 		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{Jobs: []bftinput.Job{{PersistentDiskType: "diskpool"}}}
+			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{PersistentDiskType: "diskpool"}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, bftinput.Input{}).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, bftinput.Input{}).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when job has a persistent disk size", func() {
+	Context("when instance group has a persistent disk size", func() {
 		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{Jobs: []bftinput.Job{{PersistentDiskSize: 100}}}
+			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{PersistentDiskSize: 100}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, bftinput.Input{}).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, bftinput.Input{}).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when previous job has a persistent disk pool", func() {
+	Context("when previous instance group has a persistent disk pool", func() {
 		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo"}}}
-			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskPool: "diskpool"}}}
+			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo"}}}
+			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskPool: "diskpool"}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when previous job has a persistent disk type", func() {
+	Context("when previous instance group has a persistent disk type", func() {
 		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo"}}}
-			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskType: "diskpool"}}}
+			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo"}}}
+			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskType: "diskpool"}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when previous job has a persistent disk size", func() {
+	Context("when previous instance group has a persistent disk size", func() {
 		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo"}}}
-			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskSize: 100}}}
+			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo"}}}
+			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskSize: 100}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when previous migrated from job has a persistent disk pool", func() {
+	Context("when previous migrated from instance group has a persistent disk pool", func() {
 		It("always sets lifecycle to service, never to errand", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
 				},
 			}
-			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskPool: "diskpool"}}}
+			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskPool: "diskpool"}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when previous migrated from job has a persistent disk type", func() {
+	Context("when previous migrated from instance group has a persistent disk type", func() {
 		It("always sets lifecycle to service, never to errand", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
 				},
 			}
-			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskType: "diskpool"}}}
+			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskType: "diskpool"}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})
 
-	Context("when previous migrated from job has a persistent disk size", func() {
+	Context("when previous migrated from instance group has a persistent disk size", func() {
 		It("always sets lifecycle to service, never to errand", func() {
 			input := bftinput.Input{
-				Jobs: []bftinput.Job{
+				InstanceGroups: []bftinput.InstanceGroup{
 					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
 				},
 			}
-			previousInput := bftinput.Input{Jobs: []bftinput.Job{{Name: "foo", PersistentDiskSize: 100}}}
+			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskSize: 100}}}
 			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).Jobs[0].Lifecycle
+				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))
 		})
 	})

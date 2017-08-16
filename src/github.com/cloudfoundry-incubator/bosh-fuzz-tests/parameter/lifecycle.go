@@ -8,12 +8,12 @@ import (
 
 type Lifecycle struct{}
 
-func lifecycles(job, previousJob bftinput.Job) []string {
+func lifecycles(instanceGroup, previousInstanceGroup bftinput.InstanceGroup) []string {
 	lifecycles := []string{"service"}
 
-	if job.PersistentDiskPool == "" && previousJob.PersistentDiskPool == "" &&
-		job.PersistentDiskType == "" && previousJob.PersistentDiskType == "" &&
-		job.PersistentDiskSize == 0 && previousJob.PersistentDiskSize == 0 {
+	if instanceGroup.PersistentDiskPool == "" && previousInstanceGroup.PersistentDiskPool == "" &&
+		instanceGroup.PersistentDiskType == "" && previousInstanceGroup.PersistentDiskType == "" &&
+		instanceGroup.PersistentDiskSize == 0 && previousInstanceGroup.PersistentDiskSize == 0 {
 		lifecycles = append(lifecycles, "errand")
 	}
 
@@ -27,35 +27,35 @@ func NewLifecycle() Parameter {
 func (l Lifecycle) Apply(input, previousInput bftinput.Input) bftinput.Input {
 	newInput := bftinput.Input{
 		DirectorUUID: input.DirectorUUID,
-		Jobs:         input.Jobs,
+		InstanceGroups:         input.InstanceGroups,
 		Update:       input.Update,
 		CloudConfig:  input.CloudConfig,
 		Stemcells:    input.Stemcells,
 		Variables:    input.Variables,
 	}
 
-	for i, job := range newInput.Jobs {
-		previousJob := findJobFromInput(job, previousInput)
+	for i, instanceGroup := range newInput.InstanceGroups {
+		previousInstanceGroup := findInstanceGroupFromInput(instanceGroup, previousInput)
 
-		cycles := lifecycles(job, previousJob)
-		newInput.Jobs[i].Lifecycle = cycles[rand.Intn(len(cycles))]
+		cycles := lifecycles(instanceGroup, previousInstanceGroup)
+		newInput.InstanceGroups[i].Lifecycle = cycles[rand.Intn(len(cycles))]
 	}
 
 	return newInput
 }
 
-func findJobFromInput(desiredJob bftinput.Job, input bftinput.Input) bftinput.Job {
-	for _, job := range input.Jobs {
-		if job.Name == desiredJob.Name {
-			return job
+func findInstanceGroupFromInput(desiredInstanceGroup bftinput.InstanceGroup, input bftinput.Input) bftinput.InstanceGroup {
+	for _, instanceGroup := range input.InstanceGroups {
+		if instanceGroup.Name == desiredInstanceGroup.Name {
+			return instanceGroup
 		} else {
-			for _, migratedJob := range desiredJob.MigratedFrom {
-				if job.Name == migratedJob.Name {
-					return job
+			for _, migratedInstanceGroup := range desiredInstanceGroup.MigratedFrom {
+				if instanceGroup.Name == migratedInstanceGroup.Name {
+					return instanceGroup
 				}
 			}
 		}
 	}
 
-	return bftinput.Job{}
+	return bftinput.InstanceGroup{}
 }

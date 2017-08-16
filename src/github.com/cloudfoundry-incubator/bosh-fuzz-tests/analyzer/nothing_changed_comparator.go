@@ -15,43 +15,43 @@ func NewNothingChangedComparator() Comparator {
 
 func (n *nothingChangedComparator) Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
 	expectations := []bftexpectation.Expectation{}
-	for _, job := range currentInput.Jobs {
-		if n.nothingChanged(job, currentInput, previousInputs) && n.isNotErrand(job) {
-			expectations = append(expectations, bftexpectation.NewDebugLog(fmt.Sprintf("No instances to update for '%s'", job.Name)))
+	for _, instanceGroup := range currentInput.InstanceGroups {
+		if n.nothingChanged(instanceGroup, currentInput, previousInputs) && n.isNotErrand(instanceGroup) {
+			expectations = append(expectations, bftexpectation.NewDebugLog(fmt.Sprintf("No instances to update for '%s'", instanceGroup.Name)))
 		}
 	}
 
 	return expectations
 }
 
-func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput bftinput.Input, previousInputs []bftinput.Input) bool {
+func (n *nothingChangedComparator) nothingChanged(instanceGroup bftinput.InstanceGroup, currentInput bftinput.Input, previousInputs []bftinput.Input) bool {
 	mostRecentInput := previousInputs[len(previousInputs)-1]
 
-	prevJob, found := mostRecentInput.FindJobByName(job.Name)
+	prevInstanceGroup, found := mostRecentInput.FindInstanceGroupByName(instanceGroup.Name)
 	if !found {
 		return false
 	}
 
 	if len(previousInputs) > 1 {
 		inputBeforePrevious := previousInputs[len(previousInputs)-2]
-		jobBeforePrevious, found := inputBeforePrevious.FindJobByName(job.Name)
-		if found && jobBeforePrevious.HasPersistentDisk() && !prevJob.HasPersistentDisk() {
+		instanceGroupBeforePrevious, found := inputBeforePrevious.FindInstanceGroupByName(instanceGroup.Name)
+		if found && instanceGroupBeforePrevious.HasPersistentDisk() && !prevInstanceGroup.HasPersistentDisk() {
 			return false
 		}
 
-		for _, migratedFromConfig := range prevJob.MigratedFrom {
-			jobBeforePrevious, found := inputBeforePrevious.FindJobByName(migratedFromConfig.Name)
-			if found && jobBeforePrevious.HasPersistentDisk() && !prevJob.HasPersistentDisk() {
+		for _, migratedFromConfig := range prevInstanceGroup.MigratedFrom {
+			instanceGroupBeforePrevious, found := inputBeforePrevious.FindInstanceGroupByName(migratedFromConfig.Name)
+			if found && instanceGroupBeforePrevious.HasPersistentDisk() && !prevInstanceGroup.HasPersistentDisk() {
 				return false
 			}
 		}
 	}
 
-	if !prevJob.IsEqual(job) {
+	if !prevInstanceGroup.IsEqual(instanceGroup) {
 		return false
 	}
 
-	for _, azName := range job.AvailabilityZones {
+	for _, azName := range instanceGroup.AvailabilityZones {
 		currentAz, _ := currentInput.FindAzByName(azName)
 		prevAz, _ := mostRecentInput.FindAzByName(azName)
 		if !currentAz.IsEqual(prevAz) {
@@ -59,49 +59,49 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 		}
 	}
 
-	if job.PersistentDiskPool != "" {
-		currentPersistentDiskPool, _ := currentInput.FindDiskPoolByName(job.PersistentDiskPool)
-		prevPersistentDiskPool, _ := mostRecentInput.FindDiskPoolByName(job.PersistentDiskPool)
+	if instanceGroup.PersistentDiskPool != "" {
+		currentPersistentDiskPool, _ := currentInput.FindDiskPoolByName(instanceGroup.PersistentDiskPool)
+		prevPersistentDiskPool, _ := mostRecentInput.FindDiskPoolByName(instanceGroup.PersistentDiskPool)
 		if !currentPersistentDiskPool.IsEqual(prevPersistentDiskPool) {
 			return false
 		}
 	}
 
-	if job.PersistentDiskType != "" {
-		currentPersistentDiskType, _ := currentInput.FindDiskTypeByName(job.PersistentDiskType)
-		prevPersistentDiskType, _ := mostRecentInput.FindDiskTypeByName(job.PersistentDiskType)
+	if instanceGroup.PersistentDiskType != "" {
+		currentPersistentDiskType, _ := currentInput.FindDiskTypeByName(instanceGroup.PersistentDiskType)
+		prevPersistentDiskType, _ := mostRecentInput.FindDiskTypeByName(instanceGroup.PersistentDiskType)
 		if !currentPersistentDiskType.IsEqual(prevPersistentDiskType) {
 			return false
 		}
 	}
 
-	if job.ResourcePool != "" {
-		currentResourcePool, _ := currentInput.FindResourcePoolByName(job.ResourcePool)
-		prevResourcePool, _ := mostRecentInput.FindResourcePoolByName(job.ResourcePool)
+	if instanceGroup.ResourcePool != "" {
+		currentResourcePool, _ := currentInput.FindResourcePoolByName(instanceGroup.ResourcePool)
+		prevResourcePool, _ := mostRecentInput.FindResourcePoolByName(instanceGroup.ResourcePool)
 		if !currentResourcePool.IsEqual(prevResourcePool) {
 			return false
 		}
 	}
 
-	if job.VmType != "" {
-		currentVmType, _ := currentInput.FindVmTypeByName(job.VmType)
-		prevVmType, _ := mostRecentInput.FindVmTypeByName(job.VmType)
+	if instanceGroup.VmType != "" {
+		currentVmType, _ := currentInput.FindVmTypeByName(instanceGroup.VmType)
+		prevVmType, _ := mostRecentInput.FindVmTypeByName(instanceGroup.VmType)
 		if !currentVmType.IsEqual(prevVmType) {
 			return false
 		}
 	}
 
-	if job.Stemcell != "" {
-		currentStemcell, _ := currentInput.FindStemcellByName(job.Stemcell)
-		prevStemcell, _ := mostRecentInput.FindStemcellByName(job.Stemcell)
+	if instanceGroup.Stemcell != "" {
+		currentStemcell, _ := currentInput.FindStemcellByName(instanceGroup.Stemcell)
+		prevStemcell, _ := mostRecentInput.FindStemcellByName(instanceGroup.Stemcell)
 		if !currentStemcell.IsEqual(prevStemcell) {
 			return false
 		}
 	}
 
-	for _, jobNetwork := range job.Networks {
-		currentNetwork, _ := currentInput.FindNetworkByName(jobNetwork.Name)
-		prevNetwork, _ := mostRecentInput.FindNetworkByName(jobNetwork.Name)
+	for _, instanceGroupNetwork := range instanceGroup.Networks {
+		currentNetwork, _ := currentInput.FindNetworkByName(instanceGroupNetwork.Name)
+		prevNetwork, _ := mostRecentInput.FindNetworkByName(instanceGroupNetwork.Name)
 		if !currentNetwork.IsEqual(prevNetwork) {
 			return false
 		}
@@ -110,6 +110,6 @@ func (n *nothingChangedComparator) nothingChanged(job bftinput.Job, currentInput
 	return true
 }
 
-func (n *nothingChangedComparator) isNotErrand(job bftinput.Job) bool {
-	return job.Lifecycle != "errand"
+func (n *nothingChangedComparator) isNotErrand(instanceGroup bftinput.InstanceGroup) bool {
+	return instanceGroup.Lifecycle != "errand"
 }

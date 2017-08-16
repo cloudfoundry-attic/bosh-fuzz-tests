@@ -2,14 +2,14 @@ package input
 
 import "reflect"
 
-type Job struct {
+type InstanceGroup struct {
 	Name               string
 	Instances          int
 	AvailabilityZones  []string
 	PersistentDiskSize int
 	PersistentDiskPool string
 	PersistentDiskType string
-	Networks           []JobNetworkConfig
+	Networks           []InstanceGroupNetworkConfig
 	MigratedFrom       []MigratedFromConfig
 	VmType             string
 	ResourcePool       string
@@ -18,28 +18,28 @@ type Job struct {
 	Lifecycle          string
 }
 
-func (j Job) IsEqual(other Job) bool {
+func (j InstanceGroup) IsEqual(other InstanceGroup) bool {
 	return reflect.DeepEqual(j, other)
 }
 
-func (j Job) HasPersistentDisk() bool {
+func (j InstanceGroup) HasPersistentDisk() bool {
 	return j.PersistentDiskSize != 0 || j.PersistentDiskPool != "" || j.PersistentDiskType != ""
 }
 
-func (j Job) FindNetworkByName(networkName string) (JobNetworkConfig, bool) {
+func (j InstanceGroup) FindNetworkByName(networkName string) (InstanceGroupNetworkConfig, bool) {
 	for _, network := range j.Networks {
 		if network.Name == networkName {
 			return network, true
 		}
 	}
-	return JobNetworkConfig{}, false
+	return InstanceGroupNetworkConfig{}, false
 }
 
 type Template struct {
 	Name string
 }
 
-type JobNetworkConfig struct {
+type InstanceGroupNetworkConfig struct {
 	Name          string
 	DefaultDNSnGW bool
 	StaticIps     []string

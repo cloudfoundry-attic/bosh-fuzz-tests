@@ -22,7 +22,7 @@ update:
   update_watch_time: 20{{ if ne .Update.Serial "not_specified" }}
   serial: {{ .Update.Serial }}{{ end }}
 
-jobs:{{ range .Jobs }}
+jobs:{{ range .InstanceGroups }}
 - name: {{ .Name }}
   instances: {{ .Instances }}{{ if .VmType }}
   lifecycle: {{ .Lifecycle }}

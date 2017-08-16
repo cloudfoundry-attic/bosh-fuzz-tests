@@ -36,54 +36,54 @@ func (s *vmType) Apply(input bftinput.Input, previousInput bftinput.Input) bftin
 
 	usedVmTypes := map[string]bool{}
 
-	for j, _ := range input.Jobs {
+	for j, _ := range input.InstanceGroups {
 		if s.definition == "vm_type" {
-			input.Jobs[j].ResourcePool = ""
+			input.InstanceGroups[j].ResourcePool = ""
 
-			reuseFromOtherJob := s.reuseDecider.IsYes()
-			if reuseFromOtherJob && j > 0 {
-				previousJob := input.Jobs[rand.Intn(j)]
-				input.Jobs[j].VmType = previousJob.VmType
+			reuseFromOtherInstanceGroup := s.reuseDecider.IsYes()
+			if reuseFromOtherInstanceGroup && j > 0 {
+				previousInstanceGroup := input.InstanceGroups[rand.Intn(j)]
+				input.InstanceGroups[j].VmType = previousInstanceGroup.VmType
 
 			} else {
 				reuseFromPreviousDeploy := s.reuseDecider.IsYes()
-				if !reuseFromPreviousDeploy || input.Jobs[j].VmType == "" {
-					input.Jobs[j].VmType = s.nameGenerator.Generate(10)
+				if !reuseFromPreviousDeploy || input.InstanceGroups[j].VmType == "" {
+					input.InstanceGroups[j].VmType = s.nameGenerator.Generate(10)
 				}
 			}
 
-			if usedVmTypes[input.Jobs[j].VmType] != true {
+			if usedVmTypes[input.InstanceGroups[j].VmType] != true {
 				input.CloudConfig.VmTypes = append(
 					input.CloudConfig.VmTypes,
-					bftinput.VmTypeConfig{Name: input.Jobs[j].VmType},
+					bftinput.VmTypeConfig{Name: input.InstanceGroups[j].VmType},
 				)
 			}
-			usedVmTypes[input.Jobs[j].VmType] = true
+			usedVmTypes[input.InstanceGroups[j].VmType] = true
 
 		} else if s.definition == "resource_pool" {
-			input.Jobs[j].VmType = ""
+			input.InstanceGroups[j].VmType = ""
 
-			reuseFromOtherJob := s.reuseDecider.IsYes()
-			if reuseFromOtherJob && j > 0 {
-				previousJob := input.Jobs[rand.Intn(j)]
-				input.Jobs[j].ResourcePool = previousJob.ResourcePool
+			reuseFromOtherInstanceGroup := s.reuseDecider.IsYes()
+			if reuseFromOtherInstanceGroup && j > 0 {
+				previousInstanceGroup := input.InstanceGroups[rand.Intn(j)]
+				input.InstanceGroups[j].ResourcePool = previousInstanceGroup.ResourcePool
 
 			} else {
 				reuseFromPreviousDeploy := s.reuseDecider.IsYes()
-				if !reuseFromPreviousDeploy || input.Jobs[j].ResourcePool == "" {
-					input.Jobs[j].ResourcePool = s.nameGenerator.Generate(10)
+				if !reuseFromPreviousDeploy || input.InstanceGroups[j].ResourcePool == "" {
+					input.InstanceGroups[j].ResourcePool = s.nameGenerator.Generate(10)
 				}
 			}
 
-			if usedVmTypes[input.Jobs[j].ResourcePool] != true {
+			if usedVmTypes[input.InstanceGroups[j].ResourcePool] != true {
 				input.CloudConfig.ResourcePools = append(
 					input.CloudConfig.ResourcePools,
 					bftinput.ResourcePoolConfig{
-						Name: input.Jobs[j].ResourcePool,
+						Name: input.InstanceGroups[j].ResourcePool,
 					},
 				)
 			}
-			usedVmTypes[input.Jobs[j].ResourcePool] = true
+			usedVmTypes[input.InstanceGroups[j].ResourcePool] = true
 		}
 	}
 
