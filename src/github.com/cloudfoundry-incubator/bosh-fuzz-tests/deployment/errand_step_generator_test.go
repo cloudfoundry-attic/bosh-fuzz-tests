@@ -86,6 +86,8 @@ var _ = Describe("ErrandStepGenerator", func() {
 		},
 			Entry("can be empty", []string{}),
 			Entry("can have keep-alive", []string{"keep-alive"}),
+			Entry("can have when-changed", []string{"when-changed"}),
+			Entry("can have keep-alive and when-changed", []string{"keep-alive", "when-changed"}),
 		)
 
 		DescribeTable("number of steps returned", func(numberOfSteps int) {

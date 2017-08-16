@@ -34,7 +34,7 @@ func NewErrandStepGenerator() ErrandStepGenerator {
 
 func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	steps := []Step{}
-	cliFlagPossibilities := []string{"keep-alive"}
+	cliFlagPossibilities := []string{"keep-alive", "when-changed"}
 
 	instanceGroups := testCase.Input.InstanceGroups
 	if len(instanceGroups) == 0 {
