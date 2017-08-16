@@ -84,6 +84,53 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", 4),
 		)
 
+		Context("when instance group has lifecycle errand", func() {
+			BeforeEach(func() {
+				testJobs = []bftinput.Job{{
+					Name:      "instance-name",
+					Templates: []bftinput.Template{{Name: "template-name"}},
+					Instances: 1,
+					Lifecycle: "errand",
+				}}
+			})
+
+			DescribeTable("name of errand step", func(name string) {
+				Eventually(func() []deployment.Step {
+					return generator.Steps(testCase)
+				}, time.Second, time.Microsecond).Should(ContainElement(
+					deployment.ErrandStep{
+						Name:           name,
+						DeploymentName: "foo-deployment",
+					},
+				))
+			},
+				Entry("is sometimes instance group", "instance-name"),
+				Entry("is sometimes template name", "template-name"),
+			)
+		})
+
+		Context("when instance group has lifecycle service", func() {
+			BeforeEach(func() {
+				testJobs = []bftinput.Job{{
+					Name:      "instance-name",
+					Templates: []bftinput.Template{{Name: "template-name"}},
+					Instances: 1,
+					Lifecycle: "service",
+				}}
+			})
+
+			It("should never set errand step name to the instance group name", func() {
+				Consistently(func() []deployment.Step {
+					return generator.Steps(testCase)
+				}, 50*time.Millisecond, time.Microsecond).ShouldNot(ContainElement(
+					deployment.ErrandStep{
+						Name:           "instance-name",
+						DeploymentName: "foo-deployment",
+					},
+				))
+			})
+		})
+
 		Context("when input's job has no templates", func() {
 			BeforeEach(func() {
 				testJobs = []bftinput.Job{{Name: "instance-name", Templates: []bftinput.Template{}, Instances: 1}}

@@ -5,6 +5,7 @@ import (
 	"math/rand"
 
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 )
 
@@ -50,7 +51,7 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 
 			steps = append(steps,
 				ErrandStep{
-					Name:           job.Templates[rand.Intn(len(job.Templates))].Name,
+					Name:           getErrandName(job),
 					DeploymentName: "foo-deployment",
 					InstanceFilter: instanceFilters[rand.Intn(len(instanceFilters))],
 				},
@@ -59,6 +60,16 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 	}
 
 	return steps
+}
+
+func getErrandName(job bftinput.Job) string {
+	possibilities := []string{job.Templates[rand.Intn(len(job.Templates))].Name}
+
+	if job.Lifecycle == "errand" {
+		possibilities = append(possibilities, job.Name)
+	}
+
+	return possibilities[rand.Intn(len(possibilities))]
 }
 
 func (es ErrandStep) Run(runner clirunner.Runner) error {
