@@ -126,6 +126,22 @@ var _ = Describe("ErrandStepGenerator", func() {
 				Entry("is sometimes instance group", "instance-name"),
 				Entry("is sometimes job name", "job-name"),
 			)
+
+			DescribeTable("never adds instance filters", func(filter string) {
+				Consistently(func() []deployment.Step {
+					return generator.Steps(testCase)
+				}, 50*time.Millisecond, time.Microsecond).ShouldNot(ContainElement(
+					deployment.ErrandStep{
+						Name:             "instance-name",
+						InstanceFilter:   filter,
+						DeploymentName:   "foo-deployment",
+						CommandLineFlags: []string{},
+					},
+				))
+			},
+				Entry("", "instance-name"),
+				Entry("", "instance-name/0"),
+			)
 		})
 
 		Context("when instance group has lifecycle service", func() {
