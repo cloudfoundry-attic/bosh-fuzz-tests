@@ -3,8 +3,9 @@ package action
 import (
 	"encoding/json"
 	"errors"
-	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 	"strings"
+
+	bltclirunner "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner"
 )
 
 type InstancesInfo struct {
@@ -35,7 +36,7 @@ func NewInstances(directorInfo DirectorInfo, deploymentName string, cliRunner bl
 func (i *InstancesInfo) GetInstances() (map[string][]Instance, error) {
 	instances := map[string][]Instance{}
 
-	output, err := i.cliRunner.RunWithOutput("-d", "my-deployment", "instances", "--json")
+	output, err := i.cliRunner.RunWithOutput("-d", i.deploymentName, "instances", "--json")
 	if err != nil {
 		return instances, err
 	}
@@ -58,5 +59,5 @@ func (i *InstancesInfo) GetInstances() (map[string][]Instance, error) {
 		}
 	}
 
-	return instances, nil
+	return instances, err
 }

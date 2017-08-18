@@ -17,6 +17,7 @@ import (
 	fakesys "github.com/cloudfoundry/bosh-utils/system/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gstruct"
 )
 
 var _ = Describe("Deployer", func() {
@@ -117,6 +118,49 @@ var _ = Describe("Deployer", func() {
 		})
 
 		Context("when trying to deploy", func() {
+			Context("when deploying succeeds in creating instances", func() {
+				BeforeEach(func() {
+					cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
+						if strings.Join(args[:3], " ") == "-d foo-deployment deploy" {
+							return "Task 1", nil
+						} else if strings.Join(args[:3], " ") == "-d foo-deployment instances" {
+							return `{"Tables":[{"Rows":[{"instance":"foo/some-uuid"},{"instance":"bar/other-uuid"}]}]}`, nil
+						}
+						return "", nil
+					}
+				})
+
+				It("sets InstancesAfterDeploy on the test cases for the deployer", func() {
+					err := deployer.RunDeploys()
+					Expect(err).ToNot(HaveOccurred())
+					Expect(deployer.CasesRun()[0]).To(MatchFields(IgnoreExtras, Fields{
+						"InstancesAfterDeploy": Equal(map[string][]bltaction.Instance{
+							"foo": {{Name: "foo", ID: "some-uuid"}},
+							"bar": {{Name: "bar", ID: "other-uuid"}},
+						}),
+					}))
+				})
+
+				Context("when listing instances fails", func() {
+					BeforeEach(func() {
+						cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
+							if strings.Join(args[:3], " ") == "-d foo-deployment deploy" {
+								return "Task 1", nil
+							} else if strings.Join(args[:3], " ") == "-d foo-deployment instances" {
+								return "", errors.New("NO INSTANCES FOR YOU")
+							}
+							return "", nil
+						}
+					})
+
+					It("returns error", func() {
+						err := deployer.RunDeploys()
+						Expect(err).To(HaveOccurred())
+						Expect(err.Error()).To(Equal("Listing instances: NO INSTANCES FOR YOU"))
+					})
+				})
+			})
+
 			Context("when cli runner fails", func() {
 				BeforeEach(func() {
 					cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
@@ -148,10 +192,17 @@ var _ = Describe("Deployer", func() {
 
 		Context("when the test cases have expectations", func() {
 			BeforeEach(func() {
-				cliRunner.RunWithOutputReturns("Task 1", nil)
+				cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
+					if strings.Join(args[:3], " ") == "-d foo-deployment deploy" {
+						return "Task 1", nil
+					} else if strings.Join(args[:3], " ") == "-d foo-deployment instances" {
+						return `{"Tables":[{"Rows":[{"instance":"foo/some-uuid"},{"instance":"bar/other-uuid"}]}]}`, nil
+					}
+					return "", nil
+				}
 			})
 
-			Context("when expecatation fails", func() {
+			Context("when expectation fails", func() {
 				BeforeEach(func() {
 					fakeExpectation := &expectationfakes.FakeExpectation{}
 					fakeExpectation.RunReturns(errors.New("error"))
@@ -168,7 +219,14 @@ var _ = Describe("Deployer", func() {
 
 		Context("when there are errand steps", func() {
 			BeforeEach(func() {
-				cliRunner.RunWithOutputReturns("Task 1", nil)
+				cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
+					if strings.Join(args[:3], " ") == "-d foo-deployment deploy" {
+						return "Task 1", nil
+					} else if strings.Join(args[:3], " ") == "-d foo-deployment instances" {
+						return `{"Tables":[{"Rows":[{"instance":"foo/some-uuid"},{"instance":"bar/other-uuid"}]}]}`, nil
+					}
+					return "", nil
+				}
 			})
 
 			var fakeStep *deploymentfakes.FakeStep

@@ -48,7 +48,7 @@ func (g ErrandStepGenerator) Steps(testCase analyzer.Case) []Step {
 			step := ErrandStep{
 				Name:             getErrandName(instanceGroup),
 				DeploymentName:   "foo-deployment",
-				InstanceFilter:   getInstanceFilters(instanceGroup),
+				InstanceFilter:   getInstanceFilters(instanceGroup, testCase),
 				CommandLineFlags: []string{},
 			}
 
@@ -75,14 +75,19 @@ func getErrandName(instanceGroup bftinput.InstanceGroup) string {
 	return possibilities[rand.Intn(len(possibilities))]
 }
 
-func getInstanceFilters(instanceGroup bftinput.InstanceGroup) string {
+func getInstanceFilters(instanceGroup bftinput.InstanceGroup, testCase analyzer.Case) string {
 	instanceFilters := []string{
 		"",
 	}
 
 	if instanceGroup.Lifecycle != "errand" {
 		instanceFilters = append(instanceFilters, instanceGroup.Name)
-		instanceFilters = append(instanceFilters, fmt.Sprintf("%s/0", instanceGroup.Name))
+
+		myInstances := testCase.InstancesAfterDeploy[instanceGroup.Name]
+		if len(myInstances) > 0 {
+			instanceFilters = append(instanceFilters, fmt.Sprintf("%s/%s", instanceGroup.Name, myInstances[rand.Intn(len(myInstances))].ID))
+		}
+
 	}
 
 	return instanceFilters[rand.Intn(len(instanceFilters))]

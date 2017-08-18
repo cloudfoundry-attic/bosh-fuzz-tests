@@ -24,7 +24,7 @@ var _ = Describe("GetInstances", func() {
 			URL:  "https://example.com",
 			Name: "My Little Director",
 		}
-		deploymentName = "my-deployment"
+		deploymentName = "your-deployment"
 
 		instancesInfo = action.NewInstances(directorInfo, deploymentName, cliRunner)
 	})
