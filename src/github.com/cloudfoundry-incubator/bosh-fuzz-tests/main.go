@@ -26,7 +26,6 @@ import (
 	bltassets "github.com/cloudfoundry-incubator/bosh-load-tests/assets"
 	bltconfig "github.com/cloudfoundry-incubator/bosh-load-tests/config"
 	bltenv "github.com/cloudfoundry-incubator/bosh-load-tests/environment"
-	"runtime"
 )
 
 func main() {
