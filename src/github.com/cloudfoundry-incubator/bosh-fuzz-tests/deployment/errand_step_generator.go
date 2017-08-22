@@ -76,9 +76,7 @@ func getErrandName(instanceGroup bftinput.InstanceGroup) string {
 }
 
 func getInstanceFilters(instanceGroup bftinput.InstanceGroup, testCase analyzer.Case) string {
-	instanceFilters := []string{
-		"",
-	}
+	instanceFilters := []string{""}
 
 	if instanceGroup.Lifecycle != "errand" {
 		instanceFilters = append(instanceFilters, instanceGroup.Name)
@@ -87,7 +85,6 @@ func getInstanceFilters(instanceGroup bftinput.InstanceGroup, testCase analyzer.
 		if len(myInstances) > 0 {
 			instanceFilters = append(instanceFilters, fmt.Sprintf("%s/%s", instanceGroup.Name, myInstances[rand.Intn(len(myInstances))].ID))
 		}
-
 	}
 
 	return instanceFilters[rand.Intn(len(instanceFilters))]
