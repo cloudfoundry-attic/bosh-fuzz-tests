@@ -70,15 +70,18 @@ var _ = Describe("ErrandStepGenerator", func() {
 			Entry("", "job-name", "instance-name"),
 			Entry("", "job-name", "instance-name/1-2-3"),
 			Entry("", "job-name", "instance-name/4-5-6"),
+			Entry("", "job-name", "instance-name/first"),
 
 			Entry("", "other-job-name", ""),
 			Entry("", "other-job-name", "instance-name"),
 			Entry("", "other-job-name", "instance-name/1-2-3"),
 			Entry("", "other-job-name", "instance-name/4-5-6"),
+			Entry("", "other-job-name", "instance-name/first"),
 
 			Entry("", "other-instance-group-job-name", ""),
 			Entry("", "other-instance-group-job-name", "other-instance-group"),
 			Entry("", "other-instance-group-job-name", "other-instance-group/7-8-9"),
+			Entry("", "other-instance-group-job-name", "other-instance-group/first"),
 		)
 
 		DescribeTable("command line options", func(flags []string) {

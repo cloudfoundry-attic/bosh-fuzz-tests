@@ -85,6 +85,8 @@ func getInstanceFilters(instanceGroup bftinput.InstanceGroup, testCase analyzer.
 		if len(myInstances) > 0 {
 			instanceFilters = append(instanceFilters, fmt.Sprintf("%s/%s", instanceGroup.Name, myInstances[rand.Intn(len(myInstances))].ID))
 		}
+
+		instanceFilters = append(instanceFilters, fmt.Sprintf("%s/first", instanceGroup.Name))
 	}
 
 	return instanceFilters[rand.Intn(len(instanceFilters))]
