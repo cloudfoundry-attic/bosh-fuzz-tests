@@ -26,12 +26,15 @@ func NewLifecycle() Parameter {
 
 func (l Lifecycle) Apply(input, previousInput bftinput.Input) bftinput.Input {
 	newInput := bftinput.Input{
-		DirectorUUID:   input.DirectorUUID,
-		InstanceGroups: input.InstanceGroups,
-		Update:         input.Update,
-		CloudConfig:    input.CloudConfig,
-		Stemcells:      input.Stemcells,
-		Variables:      input.Variables,
+		DirectorUUID: input.DirectorUUID,
+		Update:       input.Update,
+		CloudConfig:  input.CloudConfig,
+		Stemcells:    input.Stemcells,
+		Variables:    input.Variables,
+	}
+
+	for _, group := range input.InstanceGroups {
+		newInput.InstanceGroups = append(newInput.InstanceGroups, group)
 	}
 
 	for i, instanceGroup := range newInput.InstanceGroups {
