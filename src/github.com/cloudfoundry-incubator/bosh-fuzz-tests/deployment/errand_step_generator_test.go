@@ -7,6 +7,8 @@ import (
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/analyzer"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
+
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner/clirunnerfakes"
 
 	. "github.com/onsi/ginkgo"
@@ -30,6 +32,10 @@ var _ = Describe("ErrandStepGenerator", func() {
 			testCase = analyzer.Case{
 				Input: bftinput.Input{
 					InstanceGroups: testInstanceGroups,
+				},
+				InstancesAfterDeploy: map[string][]bltaction.Instance{
+					"instance-name":        {{Name: "instance-name", ID: "1-2-3"}, {Name: "instance-name", ID: "4-5-6"}},
+					"other-instance-group": {{Name: "other-instance-group", ID: "7-8-9"}},
 				},
 			}
 		})
@@ -62,15 +68,20 @@ var _ = Describe("ErrandStepGenerator", func() {
 		},
 			Entry("", "job-name", ""),
 			Entry("", "job-name", "instance-name"),
-			Entry("", "job-name", "instance-name/0"),
+			Entry("", "job-name", "instance-name/1-2-3"),
+			Entry("", "job-name", "instance-name/4-5-6"),
+			Entry("", "job-name", "instance-name/first"),
 
 			Entry("", "other-job-name", ""),
 			Entry("", "other-job-name", "instance-name"),
-			Entry("", "other-job-name", "instance-name/0"),
+			Entry("", "other-job-name", "instance-name/1-2-3"),
+			Entry("", "other-job-name", "instance-name/4-5-6"),
+			Entry("", "other-job-name", "instance-name/first"),
 
 			Entry("", "other-instance-group-job-name", ""),
 			Entry("", "other-instance-group-job-name", "other-instance-group"),
-			Entry("", "other-instance-group-job-name", "other-instance-group/0"),
+			Entry("", "other-instance-group-job-name", "other-instance-group/7-8-9"),
+			Entry("", "other-instance-group-job-name", "other-instance-group/first"),
 		)
 
 		DescribeTable("command line options", func(flags []string) {
@@ -127,21 +138,15 @@ var _ = Describe("ErrandStepGenerator", func() {
 				Entry("is sometimes job name", "job-name"),
 			)
 
-			DescribeTable("never adds instance filters", func(filter string) {
-				Consistently(func() []deployment.Step {
-					return generator.Steps(testCase)
-				}, 50*time.Millisecond, time.Microsecond).ShouldNot(ContainElement(
-					deployment.ErrandStep{
-						Name:             "instance-name",
-						InstanceFilter:   filter,
-						DeploymentName:   "foo-deployment",
-						CommandLineFlags: []string{},
-					},
-				))
-			},
-				Entry("", "instance-name"),
-				Entry("", "instance-name/0"),
-			)
+			It("never adds instance filters", func() {
+				Consistently(func() bool {
+					steps := generator.Steps(testCase)
+					for _, step := range steps {
+						Expect(step.(deployment.ErrandStep).InstanceFilter).To(Equal(""))
+					}
+					return true
+				}, 50*time.Millisecond, time.Microsecond).Should(BeTrue())
+			})
 		})
 
 		Context("when instance group has lifecycle service", func() {

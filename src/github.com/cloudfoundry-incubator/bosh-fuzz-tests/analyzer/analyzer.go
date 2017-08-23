@@ -3,6 +3,7 @@ package analyzer
 import (
 	bftexpectation "github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation"
 	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
+	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	boshlog "github.com/cloudfoundry/bosh-utils/logger"
 )
 
@@ -11,9 +12,10 @@ type Analyzer interface {
 }
 
 type Case struct {
-	Input              bftinput.Input
-	Expectations       []bftexpectation.Expectation
-	DeploymentWillFail bool
+	Input                bftinput.Input
+	Expectations         []bftexpectation.Expectation
+	DeploymentWillFail   bool
+	InstancesAfterDeploy map[string][]bltaction.Instance
 }
 
 type analyzer struct {

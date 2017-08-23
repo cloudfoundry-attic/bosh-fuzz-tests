@@ -31,6 +31,14 @@ var _ = Describe("Lifecycle", func() {
 		}).Should(Equal("service"))
 	})
 
+	It("does not change underlying slice", func() {
+		instanceGroups := []bftinput.InstanceGroup{{}}
+		input := bftinput.Input{InstanceGroups: instanceGroups}
+
+		lifecycle.Apply(input, bftinput.Input{})
+		Expect(instanceGroups[0].Lifecycle).To(Equal(""))
+	})
+
 	It("adds a lifecycle to all instance groups", func() {
 		input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{}, {}, {}, {}}}
 		newInput := lifecycle.Apply(input, bftinput.Input{})

@@ -17,6 +17,7 @@ import (
 
 type Deployer interface {
 	RunDeploys() error
+	CasesRun() []bftanalyzer.Case
 }
 
 type deployer struct {
@@ -31,6 +32,7 @@ type deployer struct {
 	fs                   boshsys.FileSystem
 	logger               boshlog.Logger
 	generateManifestOnly bool
+	casesRun						 []bftanalyzer.Case
 }
 
 func NewDeployer(
@@ -82,6 +84,7 @@ func (d *deployer) RunDeploys() error {
 	}
 
 	cases := d.analyzer.Analyze(inputs)
+	d.casesRun = []bftanalyzer.Case{}
 
 	for _, testCase := range cases {
 		input := testCase.Input
@@ -150,6 +153,15 @@ func (d *deployer) RunDeploys() error {
 				return bosherr.WrapError(err, "Running deploy")
 			}
 
+			instancesCaller := bltaction.NewInstances(d.directorInfo, "foo-deployment", d.cliRunner)
+			instances, err := instancesCaller.GetInstances()
+			if err != nil {
+				return bosherr.WrapError(err, "Listing instances")
+			}
+			testCase.InstancesAfterDeploy = instances
+
+			d.casesRun = append(d.casesRun, testCase)
+
 			for _, expectation := range testCase.Expectations {
 				err := expectation.Run(d.cliRunner, taskId)
 				if err != nil {
@@ -172,6 +184,10 @@ func (d *deployer) RunDeploys() error {
 	}
 
 	return nil
+}
+
+func (d deployer) CasesRun() []bftanalyzer.Case {
+	return d.casesRun
 }
 
 func (d deployer) convertToStringMap(obj interface{}) interface{} {
