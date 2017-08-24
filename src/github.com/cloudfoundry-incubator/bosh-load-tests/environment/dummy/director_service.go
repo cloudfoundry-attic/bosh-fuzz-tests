@@ -76,7 +76,7 @@ func (s *DirectorService) Start() error {
 
 	for i := 1; i <= s.numWorkers; i++ {
 		workerStartCommand := bltcom.CreateCommand(s.workerStartCommand)
-		workerStartCommand.Env["QUEUE"] = "normal"
+		workerStartCommand.Env["QUEUES"] = "normal,urgent"
 		workerStartCommand.Args = append(workerStartCommand.Args, "-c", s.directorConfig.WorkerConfigPath(i), "-i", strconv.Itoa(i))
 
 		workerProcess, err := s.cmdRunner.RunComplexCommandAsync(workerStartCommand)

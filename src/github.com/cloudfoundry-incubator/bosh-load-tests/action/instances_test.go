@@ -4,9 +4,10 @@ import (
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
 
+	"errors"
+
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner/clirunnerfakes"
-	"errors"
 )
 
 var _ = Describe("GetInstances", func() {
@@ -71,7 +72,7 @@ var _ = Describe("GetInstances", func() {
 		Expect(cliRunner.RunWithOutputCallCount()).To(Equal(1))
 		Expect(cliRunner.RunWithOutputArgsForCall(0)).To(Equal([]string{
 			"-d",
-			"my-deployment",
+			"your-deployment",
 			"instances",
 			"--json",
 		}))

@@ -59,5 +59,5 @@ func (i *InstancesInfo) GetInstances() (map[string][]Instance, error) {
 		}
 	}
 
-	return instances, err
+	return instances, nil
 }
