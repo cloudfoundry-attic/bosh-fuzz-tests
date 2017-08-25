@@ -24,8 +24,8 @@ update:
 
 jobs:{{ range .InstanceGroups }}
 - name: {{ .Name }}
-  instances: {{ .Instances }}{{ if .VmType }}
-  lifecycle: {{ .Lifecycle }}
+  instances: {{ .Instances }}{{ if .Lifecycle }}
+  lifecycle: {{ .Lifecycle }}{{ end }}{{ if .VmType }}
   vm_type: {{ .VmType }}{{ end }}{{ if .ResourcePool }}
   resource_pool: {{ .ResourcePool }}{{ end }}{{ if .PersistentDiskPool }}
   persistent_disk_pool: {{ .PersistentDiskPool }}{{ else if .PersistentDiskType }}
