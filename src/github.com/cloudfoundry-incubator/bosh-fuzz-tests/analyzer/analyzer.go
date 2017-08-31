@@ -35,22 +35,26 @@ func NewAnalyzer(logger boshlog.Logger) Analyzer {
 func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 	cases := []Case{}
 
-	for i := range inputs {
+	for i, input := range inputs {
 		expectations := []bftexpectation.Expectation{}
 		deploymentWillFail := false
 
-		if i != 0 {
-			expectations = append(expectations, a.stemcellComparator.Compare(inputs[:i], inputs[i])...)
-			expectations = append(expectations, a.nothingChangedComparator.Compare(inputs[:i], inputs[i])...)
+		if !input.IsDryRun {
+			if i != 0 {
+				filteredInputs := filterDryRun(inputs[:i])
+				expectations = append(expectations, a.stemcellComparator.Compare(filteredInputs, input)...)
+				expectations = append(expectations, a.nothingChangedComparator.Compare(filteredInputs, input)...)
 
-			deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(inputs[i-1], inputs[i])
-			deploymentWillFail = deploymentWillFail || a.isMovingInstancesStaticIPToAnotherAZ(inputs[i-1], inputs[i])
+				filteredLastInput := filteredInputs[len(filteredInputs)-1]
+				deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(filteredLastInput, input)
+				deploymentWillFail = deploymentWillFail || a.isMovingInstancesStaticIPToAnotherAZ(filteredLastInput, input)
+			}
+			expectations = append(expectations, a.variablesComparator.Compare(nil, input)...)
+			deploymentWillFail = deploymentWillFail || a.hasVariablesCertificateWithoutCA(input)
 		}
-		expectations = append(expectations, a.variablesComparator.Compare(nil, inputs[i])...)
-		deploymentWillFail = deploymentWillFail || a.hasVariablesCertificateWithoutCA(inputs[i])
 
 		cases = append(cases, Case{
-			Input:              inputs[i],
+			Input:              input,
 			Expectations:       expectations,
 			DeploymentWillFail: deploymentWillFail,
 		})
@@ -58,6 +62,17 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 
 	return cases
 }
+
+func filterDryRun(inputs []bftinput.Input) []bftinput.Input {
+	output := []bftinput.Input{}
+	for _, input := range inputs {
+		if !input.IsDryRun {
+			output = append(output, input)
+		}
+	}
+	return output
+}
+
 func (a *analyzer) hasVariablesCertificateWithoutCA(currentInput bftinput.Input) bool {
 	for _, variable := range currentInput.Variables {
 		if variable.Type != "certificate" {

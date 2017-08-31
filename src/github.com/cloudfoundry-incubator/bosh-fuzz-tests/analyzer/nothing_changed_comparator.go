@@ -15,6 +15,11 @@ func NewNothingChangedComparator() Comparator {
 
 func (n *nothingChangedComparator) Compare(previousInputs []bftinput.Input, currentInput bftinput.Input) []bftexpectation.Expectation {
 	expectations := []bftexpectation.Expectation{}
+
+	if currentInput.IsDryRun {
+		return []bftexpectation.Expectation{}
+	}
+
 	for _, instanceGroup := range currentInput.InstanceGroups {
 		if n.nothingChanged(instanceGroup, currentInput, previousInputs) && n.isNotErrand(instanceGroup) {
 			expectations = append(expectations, bftexpectation.NewDebugLog(fmt.Sprintf("No instances to update for '%s'", instanceGroup.Name)))

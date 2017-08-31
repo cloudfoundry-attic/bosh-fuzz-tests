@@ -258,6 +258,25 @@ var _ = Describe("InputGenerator", func() {
 		}))
 	})
 
+	It("generates manifest for dry run", func() {
+		decider = &fakebftdecider.FakeDecider{IsYesYes: true}
+		parameters = bftconfig.Parameters{
+			NameLength:             []int{5},
+			Instances:              []int{2},
+			NumberOfInstanceGroups: []int{2},
+			MigratedFromCount:      []int{0},
+			NumOfCloudProperties:   []int{2},
+		}
+
+		rand.Seed(64)
+		inputGenerator = NewInputGenerator(parameters, fakeParameterProvider, 2, nameGenerator, decider, logger)
+
+		inputs, err := inputGenerator.Generate()
+		Expect(err).ToNot(HaveOccurred())
+
+		Expect(inputs[1].IsDryRun).To(BeTrue())
+	})
+
 	It("generates requested number of inputs using disk_type", func() {
 		parameters = bftconfig.Parameters{
 			NameLength:             []int{5},

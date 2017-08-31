@@ -32,7 +32,7 @@ type deployer struct {
 	fs                   boshsys.FileSystem
 	logger               boshlog.Logger
 	generateManifestOnly bool
-	casesRun						 []bftanalyzer.Case
+	casesRun             []bftanalyzer.Case
 }
 
 func NewDeployer(
@@ -145,7 +145,12 @@ func (d *deployer) RunDeploys() error {
 			}
 
 			deployWrapper := bltaction.NewDeployWrapper(d.cliRunner)
-			taskId, err := deployWrapper.RunWithDebug("-d", "foo-deployment", "deploy", manifestPath.Name())
+			runArg := []string{"-d", "foo-deployment", "deploy", manifestPath.Name()}
+			if testCase.Input.IsDryRun {
+				runArg = append(runArg, "--dry-run")
+			}
+
+			taskId, err := deployWrapper.RunWithDebug(runArg...)
 			if err != nil {
 				if testCase.DeploymentWillFail {
 					continue
@@ -169,15 +174,17 @@ func (d *deployer) RunDeploys() error {
 				}
 			}
 
-			steps := []Step{}
-			for _, stepGenerator := range d.stepGenerators {
-				steps = append(steps, stepGenerator.Steps(testCase)...)
-			}
+			if !testCase.Input.IsDryRun {
+				steps := []Step{}
+				for _, stepGenerator := range d.stepGenerators {
+					steps = append(steps, stepGenerator.Steps(testCase)...)
+				}
 
-			for _, step := range steps {
-				err = step.Run(d.cliRunner)
-				if err != nil {
-					return bosherr.WrapError(err, "Running step")
+				for _, step := range steps {
+					err = step.Run(d.cliRunner)
+					if err != nil {
+						return bosherr.WrapError(err, "Running step")
+					}
 				}
 			}
 		}

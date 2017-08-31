@@ -223,6 +223,37 @@ var _ = Describe("Analyzer", func() {
 		})
 	})
 
+	Context("when some of the inputs are dry-run", func() {
+		It("only considers non dry-run inputs when building expectations", func(){
+			normalInput1 := bftinput.Input{
+				InstanceGroups: []bftinput.InstanceGroup{
+					{
+						Name: "ig1",
+					},
+				},
+			}
+			normalInput2 := bftinput.Input{
+				InstanceGroups: []bftinput.InstanceGroup{
+					{
+						Name: "ig1",
+					},
+				},
+			}
+			dryRunInput := bftinput.Input{
+				IsDryRun: true,
+				InstanceGroups: []bftinput.InstanceGroup{
+					{
+						Name: "other-ig",
+					},
+				},
+			}
+
+			result := analyzer.Analyze([]bftinput.Input{normalInput1, dryRunInput, normalInput2})
+			Expect(result[1].Expectations).To(BeEmpty())
+			Expect(result[2].Expectations).To(HaveLen(2))
+		})
+	})
+
 	It("It does not move an existing instance's static IP to another AZ", func() {
 		previousInput := bftinput.Input{
 			CloudConfig: bftinput.CloudConfig{

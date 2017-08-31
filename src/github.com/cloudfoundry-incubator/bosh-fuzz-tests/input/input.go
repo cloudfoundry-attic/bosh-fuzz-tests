@@ -9,6 +9,8 @@ type Input struct {
 	CloudConfig    CloudConfig
 	Stemcells      []StemcellConfig
 	Variables      []Variable
+	AvailableErrand []string
+	IsDryRun bool
 }
 
 func (i Input) FindInstanceGroupByName(instanceGroupName string) (InstanceGroup, bool) {

@@ -47,9 +47,12 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 
 	instanceGroupNames := g.generateInstanceGroupNames()
 	previousInput := g.generateInputWithInstanceGroupNames(instanceGroupNames)
-
 	for i := 0; i < g.numberOfConsequentDeploys; i++ {
 		reusePreviousInput := g.decider.IsYes()
+		var isDryRun bool
+		if i > 0 {
+			isDryRun = g.decider.IsYes()
+		}
 		var input bftinput.Input
 
 		if i > 0 && reusePreviousInput {
@@ -76,6 +79,7 @@ func (g *inputGenerator) Generate() ([]bftinput.Input, error) {
 			}
 		}
 
+		input.IsDryRun = isDryRun
 		inputs = append(inputs, input)
 
 		previousInput = input

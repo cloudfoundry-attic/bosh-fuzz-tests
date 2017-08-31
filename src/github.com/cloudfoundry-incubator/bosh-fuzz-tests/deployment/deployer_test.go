@@ -10,6 +10,7 @@ import (
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/deployment/deploymentfakes"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/expectation/expectationfakes"
+	bftinput "github.com/cloudfoundry-incubator/bosh-fuzz-tests/input"
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables/variablesfakes"
 	bltaction "github.com/cloudfoundry-incubator/bosh-load-tests/action"
 	"github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner/clirunnerfakes"
@@ -30,8 +31,9 @@ var _ = Describe("Deployer", func() {
 		fs              *fakesys.FakeFileSystem
 		sprinkler       *variablesfakes.FakeSprinkler
 		errandGenerator *deploymentfakes.FakeStepGenerator
-
-		deployer Deployer
+		directorInfo    bltaction.DirectorInfo
+		logger          boshlog.Logger
+		deployer        Deployer
 	)
 
 	BeforeEach(func() {
@@ -44,15 +46,19 @@ var _ = Describe("Deployer", func() {
 		sprinkler = &variablesfakes.FakeSprinkler{}
 		errandGenerator = &deploymentfakes.FakeStepGenerator{}
 
-		directorInfo := bltaction.DirectorInfo{
+		directorInfo = bltaction.DirectorInfo{
 			Name: "fake-director",
 			UUID: "fake-director-uuid",
 			URL:  "fake-director-url",
 		}
 
-		logger := boshlog.NewLogger(boshlog.LevelNone)
+		logger = boshlog.NewLogger(boshlog.LevelNone)
 
+	})
+
+	JustBeforeEach(func() {
 		deployer = NewDeployer(cliRunner, uaaRunner, directorInfo, renderer, inputGenerator, []StepGenerator{errandGenerator}, analyzer, sprinkler, fs, logger, false)
+
 	})
 
 	Context("when fs errors when creating temporary file", func() {
@@ -120,6 +126,15 @@ var _ = Describe("Deployer", func() {
 		Context("when trying to deploy", func() {
 			Context("when deploying succeeds in creating instances", func() {
 				BeforeEach(func() {
+					input := bftinput.Input{
+						InstanceGroups: []bftinput.InstanceGroup{
+							{
+								Name: "foo",
+							},
+						},
+					}
+					cases[0].Input = input
+
 					cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
 						if strings.Join(args[:3], " ") == "-d foo-deployment deploy" {
 							return "Task 1", nil
@@ -158,6 +173,39 @@ var _ = Describe("Deployer", func() {
 						Expect(err).To(HaveOccurred())
 						Expect(err.Error()).To(Equal("Listing instances: NO INSTANCES FOR YOU"))
 					})
+				})
+			})
+
+			Context("when there are dry-run deploy flags passed in", func() {
+				BeforeEach(func() {
+					analyzeStub := func(inputs []bftinput.Input) []bftanalyzer.Case {
+						return []bftanalyzer.Case{
+							{
+								Input: bftinput.Input{
+									IsDryRun: true,
+								},
+							},
+						}
+					}
+
+					analyzer = &analyzerfakes.FakeAnalyzer{
+						AnalyzeStub: analyzeStub,
+					}
+
+					cliRunner.RunWithOutputStub = func(args ...string) (string, error) {
+						if strings.Join(args, " ") == "-d foo-deployment deploy /dev/null --dry-run" {
+							return "Task 1", nil
+						} else if strings.Join(args[:3], " ") == "-d foo-deployment instances" {
+							return `{}`, nil
+						}
+						return "", nil
+					}
+				})
+
+				It("runs a dry-run deploy", func() {
+					err := deployer.RunDeploys()
+					Expect(err).NotTo(HaveOccurred())
+					Expect(deployer.CasesRun()[0].Input.IsDryRun).To(BeTrue())
 				})
 			})
 

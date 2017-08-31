@@ -548,4 +548,32 @@ var _ = Describe("NothingChangedComparator", func() {
 			Expect(expectations).To(BeEmpty())
 		})
 	})
+
+	Context("when the input is dry run", func() {
+		BeforeEach(func() {
+			previousInputs = []bftinput.Input{
+				{
+					InstanceGroups: []bftinput.InstanceGroup{
+						{
+							Name:      "foo-instance-group",
+						},
+					},
+				},
+			}
+
+			currentInput = bftinput.Input{
+				InstanceGroups: []bftinput.InstanceGroup{
+					{
+						Name:      "foo-instance-group",
+					},
+				},
+				IsDryRun: true,
+			}
+		})
+
+		It("returns no expectations", func() {
+			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
+			Expect(expectations).To(BeEmpty())
+		})
+	})
 })
