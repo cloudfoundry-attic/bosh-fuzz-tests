@@ -52,11 +52,9 @@ sed -i s#PWD#${PWD}#g bosh-fuzz-tests/ci/concourse-config.json
 
 cp bosh-fuzz-tests/assets/ssl/* /tmp/
 
-pushd bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/
-	go install github.com/onsi/ginkgo/ginkgo
-	ginkgo -r -p -randomizeAllSpecs -randomizeSuites -race
-popd
+cd bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/
 
-go run bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/main.go bosh-fuzz-tests/ci/concourse-config.json ${SEED:-}
+go install ./vendor/github.com/onsi/ginkgo/ginkgo
+ginkgo -r -p -randomizeAllSpecs -randomizeSuites -race
 
-true
+go run main.go ../../../../ci/concourse-config.json ${SEED:-}
