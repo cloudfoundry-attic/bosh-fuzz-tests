@@ -1,7 +1,7 @@
 #!/bin/bash
 
 source /etc/profile.d/chruby.sh
-chruby ruby-2.4.1
+chruby {{ .RubyVersion }}
 
 read INPUT
 
