@@ -6,7 +6,7 @@
   "worker_start_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/bosh/src/bosh-director/bin/bosh-director-worker",
   "nginx_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/integration-nginx/sbin/nginx",
   "verify_multidigest": "/Users/pivotal/workspace/bosh/src/tmp/verify-multidigest",
-  "nats_start_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/bosh/src/Gemfile bundle exec nats-server",
+  "nats_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/gnatsd/gnatsd",
   "uaa": {
     "enabled": true,
     "tomcat_path": "/Users/pivotal/workspace/bosh/src/tmp/integration-uaa/cloudfoundry-identity-uaa-3.5.0/apache-tomcat-8.0.21"

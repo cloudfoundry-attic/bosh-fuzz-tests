@@ -1,7 +1,7 @@
 ---
 name: TestDirector
 port: {{ .Port }}
-mbus: nats://localhost:65010
+mbus: nats://127.0.0.1:65010
 
 record_events: true
 
@@ -69,7 +69,7 @@ cloud:
     name: test-cpi
     path: {{ .BaseDir }}/cpi
   properties:
-    nats: nats://localhost:65010
+    nats: nats://127.0.0.1:65010
     dir: {{ .BaseDir }}/boshcloud
     agent:
       blobstore:
@@ -109,3 +109,10 @@ config_server:
     client_secret: secret
     ca_cert_path: /tmp/cert
 {{end}}
+
+nats:
+  server_ca_path: "{{ .AssetsPath }}/nats/certs/rootCA.pem"
+  client_certificate_path: "{{ .AssetsPath }}/nats/certs/director/certificate.pem"
+  client_private_key_path: "{{ .AssetsPath }}/nats/certs/director/private_key"
+  client_ca_certificate_path: "{{ .AssetsPath }}/nats/certs/rootCA.pem"
+  client_ca_private_key_path: "{{ .AssetsPath }}/nats/certs/rootCA.key"

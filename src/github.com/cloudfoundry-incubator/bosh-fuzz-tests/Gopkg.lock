@@ -14,10 +14,10 @@
   revision = "7dc373669fa10ddf827c37c595dee30a2f001be9"
 
 [[projects]]
-  branch = "master"
+  branch = "nats-tls"
   name = "github.com/cloudfoundry-incubator/bosh-load-tests"
   packages = ["action","action/clirunner","action/clirunner/clirunnerfakes","assets","command","config","environment","environment/dummy"]
-  revision = "1aefa8754625a5f33fa0690de5e95c9e726b142e"
+  revision = "463160dd2c25bd6268b5f08fbbb632d0bf177200"
 
 [[projects]]
   branch = "blobmanager-checksum-verify-135454241"
@@ -70,6 +70,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bff9a6f097592769866f09b53f7e2606dc1033fb7662b9c6b51aecc9ead2cd53"
+  inputs-digest = "d819a30775830a0ef41543fed89353fe99469f4f5d9f1dae6a18fbe9a0da6b99"
   solver-name = "gps-cdcl"
   solver-version = 1

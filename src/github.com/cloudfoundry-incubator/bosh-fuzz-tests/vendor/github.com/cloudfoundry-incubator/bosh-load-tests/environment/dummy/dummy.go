@@ -66,7 +66,12 @@ func (d *dummy) Setup() error {
 
 	portWaiter := NewPortWaiter(30, 1*time.Second)
 
-	d.natsService = NewNatsService(d.config.NatsStartCommand, 65010, d.cmdRunner, portWaiter)
+	natsServerOptions := NatsServerOptions{
+		AssetsPath: d.config.AssetsPath,
+		Port:       65010,
+	}
+
+	d.natsService = NewNatsService(natsServerOptions, d.config.NatsStartCommand, d.cmdRunner, d.assetsProvider, d.fs, portWaiter)
 	err = d.natsService.Start()
 	if err != nil {
 		return err
