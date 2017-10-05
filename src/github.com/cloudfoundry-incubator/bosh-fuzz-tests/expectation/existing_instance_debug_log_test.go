@@ -19,10 +19,10 @@ var _ = Describe("ExistingInstanceDebugLog", func() {
 		cliRunner = &clirunnerfakes.FakeRunner{}
 	})
 
-	Context("when debug logs contain expected string for existing instance", func() {
+	Context("when debug logs contain expected 'stemcell_changed?' line", func() {
 		BeforeEach(func() {
 			debugLog := `
-			Existing desired instance 'etcd/0' in az 'z1'
+			Existing desired instance 'etcd/0' in az 'z1' with active vm
 			stemcell_changed? changed FROM: version: 1 TO: version: 2 on etcd/c42ab873-6f46-4273-be13-1286ba96464c (0)
 			`
 			cliRunner.RunWithOutputReturns(debugLog, nil)
@@ -34,16 +34,29 @@ var _ = Describe("ExistingInstanceDebugLog", func() {
 		})
 	})
 
-	Context("when debug logs do not contain expected string", func() {
+	Context("when debug logs do not contain expected 'stemcell_changed?' line", func() {
 		BeforeEach(func() {
 			debugLog := `
-			Existing desired instance 'etcd/0'
+			Existing desired instance 'etcd/0' in az 'z1' with active vm
 			`
 			cliRunner.RunWithOutputReturns(debugLog, nil)
 		})
 		It("returns an error", func() {
 			err := existingInstanceDebugLog.Run(cliRunner, "1")
 			Expect(err).To(HaveOccurred())
+		})
+	})
+
+	Context("when debug logs have no active vm", func() {
+		BeforeEach(func() {
+			debugLog := `
+			Existing desired instance 'etcd/0' in az 'z1' with no active vm
+			`
+			cliRunner.RunWithOutputReturns(debugLog, nil)
+		})
+		It("returns no error", func() {
+			err := existingInstanceDebugLog.Run(cliRunner, "1")
+			Expect(err).ToNot(HaveOccurred())
 		})
 	})
 

@@ -29,7 +29,7 @@ func (d *existingInstanceDebugLog) Run(cliRunner bltclirunner.Runner, taskId str
 		return bosherr.WrapError(err, "Getting task debug logs")
 	}
 
-	regexString := fmt.Sprintf("Existing desired instance '(%s[^']+)'", d.instanceGroupName)
+	regexString := fmt.Sprintf(`Existing desired instance '(%s[^']+)'.*with active vm`, d.instanceGroupName)
 	re := regexp.MustCompile(regexString)
 	matches := re.FindAllStringSubmatch(debugLog, -1)
 
