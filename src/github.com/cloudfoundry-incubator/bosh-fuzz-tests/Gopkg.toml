@@ -1,7 +1,7 @@
 required = ["github.com/onsi/ginkgo/ginkgo"]
 
 [[constraint]]
-  branch = "nats-tls"
+  branch = "master"
   name = "github.com/cloudfoundry-incubator/bosh-load-tests"
 
 [[constraint]]
