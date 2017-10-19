@@ -17,7 +17,7 @@
   branch = "master"
   name = "github.com/cloudfoundry-incubator/bosh-load-tests"
   packages = ["action","action/clirunner","action/clirunner/clirunnerfakes","assets","command","config","environment","environment/dummy"]
-  revision = "1fb63ecbce1abddfb3283114cda6f7b6bcf0f27b"
+  revision = "4ea64b98fd15a6d9f2ac606239f56757ad84d21b"
 
 [[projects]]
   branch = "blobmanager-checksum-verify-135454241"

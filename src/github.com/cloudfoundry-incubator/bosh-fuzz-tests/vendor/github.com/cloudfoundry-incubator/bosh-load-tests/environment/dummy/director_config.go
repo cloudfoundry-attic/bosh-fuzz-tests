@@ -143,12 +143,12 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 func (c *DirectorConfig) writeCPIConfig(cpiConfigpath string) error {
 	content, err := json.Marshal(CPIConfig{
 		Dir:  filepath.Join(c.options.BaseDir, "boshcloud"),
-		Nats: "nats:/127.0.0.1:65010",
+		NATS: "nats:/127.0.0.1:65010",
 		Agent: Agent{
 			Blobs: Blobs{
 				Provider: "local",
 				Options: map[string]string{
-					"blobstore_path": filepath.Join(c.options.BaseDir(), "blobstore"),
+					"blobstore_path": filepath.Join(c.options.BaseDir, "blobstore"),
 				},
 			},
 		},
@@ -161,6 +161,8 @@ func (c *DirectorConfig) writeCPIConfig(cpiConfigpath string) error {
 	if err != nil {
 		return err
 	}
+
+	return nil
 }
 
 func (c *DirectorConfig) saveCPI(cpiPath string, t *template.Template) error {
