@@ -2,6 +2,7 @@ package dummy
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -34,6 +35,21 @@ type DirectorConfig struct {
 	assetsProvider bltassets.Provider
 }
 
+type CPIConfig struct {
+	Dir   string `json:"dir"`
+	NATS  string `json:"nats"`
+	Agent Agent  `json:"agent"`
+}
+
+type Agent struct {
+	Blobs Blobs `json:"blobstore"`
+}
+
+type Blobs struct {
+	Provider string            `json:"provider"`
+	Options  map[string]string `json:"options"`
+}
+
 func NewDirectorConfig(
 	options DirectorOptions,
 	fs boshsys.FileSystem,
@@ -56,6 +72,10 @@ func (c *DirectorConfig) CPIPath() string {
 	return filepath.Join(c.options.BaseDir, "cpi")
 }
 
+func (c *DirectorConfig) CPIConfigPath() string {
+	return filepath.Join(c.options.BaseDir, "cpi_config.json")
+}
+
 func (c *DirectorConfig) WorkerConfigPath(index int) string {
 	return filepath.Join(c.options.BaseDir, fmt.Sprintf("worker-%d.yml", index))
 }
@@ -71,8 +91,13 @@ func (c *DirectorConfig) Write() error {
 	}
 
 	t := template.Must(template.ParseFiles(directorTemplatePath))
-	err = c.saveConfig(c.options.Port, c.DirectorConfigPath(), t)
 
+	err = c.writeCPIConfig(c.CPIConfigPath())
+	if err != nil {
+		return err
+	}
+
+	err = c.saveConfig(c.options.Port, c.DirectorConfigPath(), t)
 	if err != nil {
 		return err
 	}
@@ -84,8 +109,7 @@ func (c *DirectorConfig) Write() error {
 
 	cpiTemplate := template.Must(template.ParseFiles(cpiTemplatePath))
 
-	err = c.saveCPIConfig(c.CPIPath(), cpiTemplate)
-
+	err = c.saveCPI(c.CPIPath(), cpiTemplate)
 	if err != nil {
 		return err
 	}
@@ -116,7 +140,30 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 	return nil
 }
 
-func (c *DirectorConfig) saveCPIConfig(cpiPath string, t *template.Template) error {
+func (c *DirectorConfig) writeCPIConfig(cpiConfigpath string) error {
+	content, err := json.Marshal(CPIConfig{
+		Dir:  filepath.Join(c.options.BaseDir, "boshcloud"),
+		Nats: "nats:/127.0.0.1:65010",
+		Agent: Agent{
+			Blobs: Blobs{
+				Provider: "local",
+				Options: map[string]string{
+					"blobstore_path": filepath.Join(c.options.BaseDir(), "blobstore"),
+				},
+			},
+		},
+	})
+	if err != nil {
+		return err
+	}
+
+	err = c.fs.WriteFile(cpiConfigpath, content)
+	if err != nil {
+		return err
+	}
+}
+
+func (c *DirectorConfig) saveCPI(cpiPath string, t *template.Template) error {
 	buffer := bytes.NewBuffer([]byte{})
 	context := c.options
 

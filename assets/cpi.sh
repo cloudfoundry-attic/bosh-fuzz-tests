@@ -5,4 +5,4 @@ chruby {{ .RubyVersion }}
 
 read -r INPUT
 
-echo $INPUT | {{ .DummyCPIPath }} {{ .BaseDir }}/director.yml
+echo $INPUT | {{ .DummyCPIPath }} {{ .BaseDir }}/cpi_config.json

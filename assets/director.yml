@@ -69,15 +69,9 @@ cloud:
     name: test-cpi
     path: {{ .BaseDir }}/cpi
   properties:
-    nats: nats://127.0.0.1:65010
-    dir: {{ .BaseDir }}/boshcloud
     agent:
       blobstore:
         <<: *director_blobstore
-      server:
-        host: 127.0.0.1
-        host: 127.0.0.1
-        password:
 
 user_management:
 {{if .UAAEnabled}}
