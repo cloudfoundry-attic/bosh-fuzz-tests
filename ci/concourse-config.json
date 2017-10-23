@@ -1,5 +1,5 @@
 {
-  "assets_path" : "PWD/bosh-fuzz-tests/assets",
+  "assets_path": "PWD/assets",
   "environment": "dummy",
   "director_migration_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director-migrate",
   "director_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director",
@@ -7,7 +7,7 @@
   "nginx_start_cmd": "BOSH_SRC_PATH/tmp/integration-nginx/sbin/nginx",
   "verify_multidigest": "BOSH_SRC_PATH/tmp/verify-multidigest",
   "nats_start_cmd": "BOSH_SRC_PATH/tmp/gnatsd/gnatsd",
-  "uaa" : {
+  "uaa": {
     "enabled": true,
     "tomcat_path": "BOSH_SRC_PATH/tmp/integration-uaa/cloudfoundry-identity-uaa-3.5.0/apache-tomcat-8.0.21"
   },
