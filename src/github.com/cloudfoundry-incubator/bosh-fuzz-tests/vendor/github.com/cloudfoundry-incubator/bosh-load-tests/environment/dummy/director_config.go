@@ -143,7 +143,7 @@ func (c *DirectorConfig) saveConfig(port int, path string, t *template.Template)
 func (c *DirectorConfig) writeCPIConfig(cpiConfigpath string) error {
 	content, err := json.Marshal(CPIConfig{
 		Dir:  filepath.Join(c.options.BaseDir, "boshcloud"),
-		NATS: "nats:/127.0.0.1:65010",
+		NATS: "nats://127.0.0.1:65010",
 		Agent: Agent{
 			Blobs: Blobs{
 				Provider: "local",
