@@ -3,8 +3,8 @@
 set -e
 set -x
 
-cp $(ls $CLI_DIR_PATH/alpha-bosh-cli-*-linux-amd64) "/usr/local/bin/gobosh"
-chmod a+x "/usr/local/bin/gobosh"
+cp $(ls $CLI_DIR_PATH/alpha-bosh-cli-*-linux-amd64) "/usr/local/bin/bosh"
+chmod a+x "/usr/local/bin/bosh"
 
 export PATH=/usr/local/ruby/bin:/usr/local/go/bin:$PATH
 export DB='postgresql'

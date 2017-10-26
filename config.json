@@ -15,7 +15,7 @@
     "enabled": true,
     "config_server_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/integration-config-server/bosh-config-server-executable"
   },
-  "cli_cmd": "gobosh",
+  "cli_cmd": "bosh",
   "dummy_cpi_path": "/Users/pivotal/workspace/bosh/src/bosh-director/bin/dummy_cpi",
   "number_of_workers": 3,
   "placeholder_exclusions": ["jobs", "jobs.templates", "jobs.templates.properties"],
