@@ -10,20 +10,17 @@ import (
 )
 
 type vmType struct {
-	definition    string
 	nameGenerator bftnamegen.NameGenerator
 	reuseDecider  bftdecider.Decider
 	logger        boshlog.Logger
 }
 
 func NewVmType(
-	definition string,
 	nameGenerator bftnamegen.NameGenerator,
 	reuseDecider bftdecider.Decider,
 	logger boshlog.Logger,
 ) Parameter {
 	return &vmType{
-		definition:    definition,
 		nameGenerator: nameGenerator,
 		reuseDecider:  reuseDecider,
 		logger:        logger,
@@ -37,7 +34,7 @@ func (s *vmType) Apply(input bftinput.Input, previousInput bftinput.Input) bftin
 	usedVmTypes := map[string]bool{}
 
 	for j, _ := range input.InstanceGroups {
-		if s.definition == "vm_type" {
+		if input.IsV2() {
 			input.InstanceGroups[j].ResourcePool = ""
 
 			reuseFromOtherInstanceGroup := s.reuseDecider.IsYes()
@@ -60,7 +57,7 @@ func (s *vmType) Apply(input bftinput.Input, previousInput bftinput.Input) bftin
 			}
 			usedVmTypes[input.InstanceGroups[j].VmType] = true
 
-		} else if s.definition == "resource_pool" {
+		} else {
 			input.InstanceGroups[j].VmType = ""
 
 			reuseFromOtherInstanceGroup := s.reuseDecider.IsYes()

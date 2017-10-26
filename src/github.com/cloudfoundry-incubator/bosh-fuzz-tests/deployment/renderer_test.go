@@ -248,6 +248,13 @@ variables:
   type: certificate
   options:
     is_ca: true
+
+disk_pools:
+- name: fast-disks
+  disk_size: 200
+  cloud_properties:
+    baz: qux
+    foo: bar
 `
 
 		manifestContents, err := fs.ReadFileString(manifestPath)
@@ -304,13 +311,6 @@ compilation:
 
 vm_types:
 - name: default
-  cloud_properties:
-    baz: qux
-    foo: bar
-
-disk_pools:
-- name: fast-disks
-  disk_size: 200
   cloud_properties:
     baz: qux
     foo: bar
@@ -389,13 +389,6 @@ jobs:
     release: foo-release
   networks:
   - name: default
-`
-
-			manifestContents, err := fs.ReadFileString(manifestPath)
-			Expect(err).ToNot(HaveOccurred())
-			Expect(manifestContents).To(Equal(expectedManifestContents))
-
-			expectedCloudConfigContents := `---
 
 networks:
 - name: default
@@ -413,6 +406,13 @@ compilation:
   workers: 3
   network: default
   cloud_properties: {}
+`
+
+			manifestContents, err := fs.ReadFileString(manifestPath)
+			Expect(err).ToNot(HaveOccurred())
+			Expect(manifestContents).To(Equal(expectedManifestContents))
+
+			expectedCloudConfigContents := `---
 `
 
 			cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
@@ -497,13 +497,11 @@ jobs:
     release: foo-release
   networks:
   - name: default
-`
 
-		manifestContents, err := fs.ReadFileString(manifestPath)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(manifestContents).To(Equal(expectedManifestContents))
-
-		expectedCloudConfigContents := `---
+disk_pools:
+- name: fast-disks
+  disk_size: 100
+  cloud_properties: {}
 
 networks:
 - name: default
@@ -521,11 +519,13 @@ compilation:
   workers: 3
   network: default
   cloud_properties: {}
+`
 
-disk_pools:
-- name: fast-disks
-  disk_size: 100
-  cloud_properties: {}
+		manifestContents, err := fs.ReadFileString(manifestPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(manifestContents).To(Equal(expectedManifestContents))
+
+		expectedCloudConfigContents := `---
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
@@ -553,6 +553,9 @@ disk_pools:
 				Serial:      "false",
 			},
 			CloudConfig: bftinput.CloudConfig{
+				AvailabilityZones: []bftinput.AvailabilityZone{
+					{Name: "az1"},
+				},
 				PersistentDiskTypes: []bftinput.DiskConfig{
 					{
 						Name: "fast-disks",
@@ -620,6 +623,9 @@ jobs:
 		Expect(manifestContents).To(Equal(expectedManifestContents))
 
 		expectedCloudConfigContents := `---
+azs:
+- name: az1
+  cloud_properties: {}
 
 networks:
 - name: default
@@ -742,13 +748,20 @@ jobs:
     release: foo-release
   networks:
   - name: default
-`
 
-		manifestContents, err := fs.ReadFileString(manifestPath)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(manifestContents).To(Equal(expectedManifestContents))
+resource_pools:
+- name: foo-pool
+  stemcell:
+    version: 1
+    name: foo
+  cloud_properties:
+    baz: qux
+    foo: bar
 
-		expectedCloudConfigContents := `---
+disk_pools:
+- name: fast-disks
+  disk_size: 100
+  cloud_properties: {}
 
 networks:
 - name: default
@@ -766,20 +779,13 @@ compilation:
   workers: 3
   network: default
   cloud_properties: {}
+`
 
-resource_pools:
-- name: foo-pool
-  stemcell:
-    version: 1
-    name: foo
-  cloud_properties:
-    baz: qux
-    foo: bar
+		manifestContents, err := fs.ReadFileString(manifestPath)
+		Expect(err).ToNot(HaveOccurred())
+		Expect(manifestContents).To(Equal(expectedManifestContents))
 
-disk_pools:
-- name: fast-disks
-  disk_size: 100
-  cloud_properties: {}
+		expectedCloudConfigContents := `---
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)

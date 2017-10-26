@@ -3,14 +3,27 @@ package input
 import "reflect"
 
 type Input struct {
-	DirectorUUID   string
-	InstanceGroups []InstanceGroup
-	Update         UpdateConfig
-	CloudConfig    CloudConfig
-	Stemcells      []StemcellConfig
-	Variables      []Variable
+	DirectorUUID    string
+	InstanceGroups  []InstanceGroup
+	Update          UpdateConfig
+	CloudConfig     CloudConfig
+	Stemcells       []StemcellConfig
+	Variables       []Variable
 	AvailableErrand []string
-	IsDryRun bool
+	IsDryRun        bool
+}
+
+func (i *Input) IsV2() bool {
+	return len(i.CloudConfig.AvailabilityZones) > 0
+}
+
+func (i Input) HasMigratedInstances() bool {
+	for _, m := range i.InstanceGroups {
+		if len(m.MigratedFrom) > 0 {
+			return true
+		}
+	}
+	return false
 }
 
 func (i Input) FindInstanceGroupByName(instanceGroupName string) (InstanceGroup, bool) {

@@ -4,7 +4,7 @@ var CloudTemplate = `---{{ if .CloudConfig.AvailabilityZones }}
 azs:{{ range .CloudConfig.AvailabilityZones }}
 - name: {{ .Name }}
   cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}
+    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}
 
 networks:{{ range .CloudConfig.Networks }}
 - name: {{ .Name }}
@@ -34,27 +34,11 @@ compilation:
 vm_types:{{ range .CloudConfig.VmTypes }}
 - name: {{ .Name }}
   cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.ResourcePools }}
-
-resource_pools:{{ range .CloudConfig.ResourcePools }}
-- name: {{ .Name }}
-  stemcell:
-    version: {{ .Stemcell.Version }}{{ if .Stemcell.Name }}
-    name: {{ .Stemcell.Name }}{{ end }}{{ if .Stemcell.Alias }}
-    alias: {{ .Stemcell.Alias }}{{ end }}{{ if .Stemcell.OS }}
-    os: {{ .Stemcell.OS }}{{ end }}
-  cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskPools }}
-
-disk_pools:{{ range .CloudConfig.PersistentDiskPools }}
-- name: {{ .Name }}
-  disk_size: {{ .Size }}
-  cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
     {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskTypes }}
 
 disk_types:{{ range .CloudConfig.PersistentDiskTypes }}
 - name: {{ .Name }}
   disk_size: {{ .Size }}
   cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}
+    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ end }}
 `

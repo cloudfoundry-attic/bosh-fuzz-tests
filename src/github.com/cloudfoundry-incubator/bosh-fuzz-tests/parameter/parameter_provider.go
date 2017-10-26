@@ -47,8 +47,7 @@ func (p *parameterProvider) Get(name string) Parameter {
 		persistentDiskDefinition := p.parameters.PersistentDiskDefinition[rand.Intn(len(p.parameters.StemcellDefinition))]
 		return NewPersistentDisk(persistentDiskDefinition, p.parameters.PersistentDiskSize, p.nameGenerator)
 	case "vm_type":
-		vmTypeDefinition := p.parameters.VmTypeDefinition[rand.Intn(len(p.parameters.VmTypeDefinition))]
-		return NewVmType(vmTypeDefinition, p.nameGenerator, p.reuseDecider, p.logger)
+		return NewVmType(p.nameGenerator, p.reuseDecider, p.logger)
 	case "availability_zone":
 		return NewAvailabilityZone(p.parameters.AvailabilityZones)
 	case "network":

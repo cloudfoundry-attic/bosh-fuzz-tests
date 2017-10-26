@@ -18,6 +18,7 @@ var _ = Describe("VmType", func() {
 		fakeDecider       *fakebftdecider.FakeDecider
 		logger            boshlog.Logger
 		vmType            Parameter
+		availabilityZones []bftinput.AvailabilityZone
 	)
 
 	BeforeEach(func() {
@@ -28,10 +29,11 @@ var _ = Describe("VmType", func() {
 		logger = boshlog.NewLogger(boshlog.LevelNone)
 	})
 
-	Context("when definition is vm_type", func() {
+	Context("when using cloud-config for vm_type", func() {
 		BeforeEach(func() {
 			fakeDecider.IsYesYes = false
-			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider, logger)
+			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
+			availabilityZones = []bftinput.AvailabilityZone{{Name: "z1"}}
 		})
 
 		It("adds vm_types to the input", func() {
@@ -40,6 +42,9 @@ var _ = Describe("VmType", func() {
 					{
 						Name: "fake-instance-group",
 					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: availabilityZones,
 				},
 			}
 
@@ -53,6 +58,7 @@ var _ = Describe("VmType", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: availabilityZones,
 					VmTypes: []bftinput.VmTypeConfig{
 						{
 							Name: "fake-vm-type",
@@ -66,7 +72,7 @@ var _ = Describe("VmType", func() {
 	Context("when it is decided to keep previous input", func() {
 		BeforeEach(func() {
 			fakeDecider.IsYesYes = true
-			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider, logger)
+			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
 		})
 
 		It("uses previous input", func() {
@@ -75,6 +81,14 @@ var _ = Describe("VmType", func() {
 					{
 						Name:   "fake-instance-group",
 						VmType: "previous-vm-type",
+					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: availabilityZones,
+					VmTypes: []bftinput.VmTypeConfig{
+						{
+							Name: "previous-vm-type",
+						},
 					},
 				},
 			}
@@ -89,6 +103,7 @@ var _ = Describe("VmType", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: availabilityZones,
 					VmTypes: []bftinput.VmTypeConfig{
 						{
 							Name: "previous-vm-type",
@@ -102,7 +117,7 @@ var _ = Describe("VmType", func() {
 	Context("when it is decided to share vm types", func() {
 		BeforeEach(func() {
 			fakeDecider.IsYesYes = true
-			vmType = NewVmType("vm_type", fakeNameGenerator, fakeDecider, logger)
+			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
 		})
 
 		It("sets same vm type on input instance groups", func() {
@@ -114,6 +129,9 @@ var _ = Describe("VmType", func() {
 					{
 						Name: "fake-instance-group-2",
 					},
+				},
+				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: availabilityZones,
 				},
 			}
 
@@ -131,6 +149,7 @@ var _ = Describe("VmType", func() {
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
+					AvailabilityZones: availabilityZones,
 					VmTypes: []bftinput.VmTypeConfig{
 						{
 							Name: "fake-vm-type",
@@ -144,7 +163,7 @@ var _ = Describe("VmType", func() {
 	Context("when it is decided to share resource pool", func() {
 		BeforeEach(func() {
 			fakeDecider.IsYesYes = true
-			vmType = NewVmType("resource_pool", fakeNameGenerator, fakeDecider, logger)
+			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
 		})
 
 		It("sets same vm type on input instance groups", func() {

@@ -20,8 +20,20 @@ func (a *availabilityZone) Apply(input bftinput.Input, previousInput bftinput.In
 	azs := map[string]bool{}
 	input.CloudConfig.AvailabilityZones = nil
 
+	azsList := [][]string{}
+	if input.HasMigratedInstances() {
+		for _, a := range a.azs {
+			if len(a) == 0 {
+				continue
+			}
+			azsList = append(azsList, a)
+		}
+	} else {
+		azsList = a.azs
+	}
+
 	for j := range input.InstanceGroups {
-		input.InstanceGroups[j].AvailabilityZones = a.azs[rand.Intn(len(a.azs))]
+		input.InstanceGroups[j].AvailabilityZones = azsList[rand.Intn(len(azsList))]
 
 		for _, name := range input.InstanceGroups[j].AvailabilityZones {
 			if azs[name] != true {

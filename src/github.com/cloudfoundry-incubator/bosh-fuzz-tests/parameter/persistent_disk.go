@@ -33,18 +33,20 @@ func (s *persistentDisk) Apply(input bftinput.Input, previousInput bftinput.Inpu
 		input.InstanceGroups[j].PersistentDiskType = ""
 
 		if persistentDiskSize != 0 {
-			if s.definition == "disk_pool" {
-				input.InstanceGroups[j].PersistentDiskPool = s.nameGenerator.Generate(10)
-				input.CloudConfig.PersistentDiskPools = append(
-					input.CloudConfig.PersistentDiskPools,
-					bftinput.DiskConfig{Name: input.InstanceGroups[j].PersistentDiskPool, Size: persistentDiskSize},
-				)
-			} else if s.definition == "disk_type" {
-				input.InstanceGroups[j].PersistentDiskType = s.nameGenerator.Generate(10)
-				input.CloudConfig.PersistentDiskTypes = append(
-					input.CloudConfig.PersistentDiskTypes,
-					bftinput.DiskConfig{Name: input.InstanceGroups[j].PersistentDiskType, Size: persistentDiskSize},
-				)
+			if s.definition == "disk_pool" || s.definition == "disk_type" {
+				if input.IsV2() {
+					input.InstanceGroups[j].PersistentDiskType = s.nameGenerator.Generate(10)
+					input.CloudConfig.PersistentDiskTypes = append(
+						input.CloudConfig.PersistentDiskTypes,
+						bftinput.DiskConfig{Name: input.InstanceGroups[j].PersistentDiskType, Size: persistentDiskSize},
+					)
+				} else {
+					input.InstanceGroups[j].PersistentDiskPool = s.nameGenerator.Generate(10)
+					input.CloudConfig.PersistentDiskPools = append(
+						input.CloudConfig.PersistentDiskPools,
+						bftinput.DiskConfig{Name: input.InstanceGroups[j].PersistentDiskPool, Size: persistentDiskSize},
+					)
+				}
 			} else {
 				input.InstanceGroups[j].PersistentDiskSize = persistentDiskSize
 			}
