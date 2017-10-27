@@ -27,136 +27,142 @@ var _ = Describe("VmType", func() {
 		}
 		fakeDecider = &fakebftdecider.FakeDecider{}
 		logger = boshlog.NewLogger(boshlog.LevelNone)
+		availabilityZones = []bftinput.AvailabilityZone{}
 	})
 
-	Context("when using cloud-config for vm_type", func() {
+	Context("cloud-config for vm_type", func() {
 		BeforeEach(func() {
-			fakeDecider.IsYesYes = false
-			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
 			availabilityZones = []bftinput.AvailabilityZone{{Name: "z1"}}
 		})
 
-		It("adds vm_types to the input", func() {
-			input := bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name: "fake-instance-group",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: availabilityZones,
-				},
-			}
+		Context("when using cloud-config for vm_type", func() {
+			BeforeEach(func() {
+				fakeDecider.IsYesYes = false
+				vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
+			})
 
-			result := vmType.Apply(input, bftinput.Input{})
-
-			Expect(result).To(Equal(bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:   "fake-instance-group",
-						VmType: "fake-vm-type",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: availabilityZones,
-					VmTypes: []bftinput.VmTypeConfig{
+			It("adds vm_types to the input", func() {
+				input := bftinput.Input{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "fake-vm-type",
+							Name: "fake-instance-group",
 						},
 					},
-				},
-			}))
-		})
-	})
-
-	Context("when it is decided to keep previous input", func() {
-		BeforeEach(func() {
-			fakeDecider.IsYesYes = true
-			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
-		})
-
-		It("uses previous input", func() {
-			input := bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:   "fake-instance-group",
-						VmType: "previous-vm-type",
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: availabilityZones,
 					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: availabilityZones,
-					VmTypes: []bftinput.VmTypeConfig{
+				}
+
+				result := vmType.Apply(input, bftinput.Input{})
+
+				Expect(result).To(Equal(bftinput.Input{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "previous-vm-type",
+							Name:   "fake-instance-group",
+							VmType: "fake-vm-type",
 						},
 					},
-				},
-			}
-
-			result := vmType.Apply(input, bftinput.Input{})
-
-			Expect(result).To(Equal(bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:   "fake-instance-group",
-						VmType: "previous-vm-type",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: availabilityZones,
-					VmTypes: []bftinput.VmTypeConfig{
-						{
-							Name: "previous-vm-type",
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: availabilityZones,
+						VmTypes: []bftinput.VmTypeConfig{
+							{
+								Name: "fake-vm-type",
+							},
 						},
 					},
-				},
-			}))
-		})
-	})
-
-	Context("when it is decided to share vm types", func() {
-		BeforeEach(func() {
-			fakeDecider.IsYesYes = true
-			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
+				}))
+			})
 		})
 
-		It("sets same vm type on input instance groups", func() {
-			input := bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name: "fake-instance-group-1",
-					},
-					{
-						Name: "fake-instance-group-2",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: availabilityZones,
-				},
-			}
+		Context("when it is decided to keep previous input", func() {
+			BeforeEach(func() {
+				fakeDecider.IsYesYes = true
+				vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
+			})
 
-			result := vmType.Apply(input, bftinput.Input{})
-
-			Expect(result).To(Equal(bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:   "fake-instance-group-1",
-						VmType: "fake-vm-type",
-					},
-					{
-						Name:   "fake-instance-group-2",
-						VmType: "fake-vm-type",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					AvailabilityZones: availabilityZones,
-					VmTypes: []bftinput.VmTypeConfig{
+			It("uses previous input", func() {
+				input := bftinput.Input{
+					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name: "fake-vm-type",
+							Name:   "fake-instance-group",
+							VmType: "previous-vm-type",
 						},
 					},
-				},
-			}))
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: availabilityZones,
+						VmTypes: []bftinput.VmTypeConfig{
+							{
+								Name: "previous-vm-type",
+							},
+						},
+					},
+				}
+
+				result := vmType.Apply(input, bftinput.Input{})
+
+				Expect(result).To(Equal(bftinput.Input{
+					InstanceGroups: []bftinput.InstanceGroup{
+						{
+							Name:   "fake-instance-group",
+							VmType: "previous-vm-type",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: availabilityZones,
+						VmTypes: []bftinput.VmTypeConfig{
+							{
+								Name: "previous-vm-type",
+							},
+						},
+					},
+				}))
+			})
+		})
+
+		Context("when it is decided to share vm types", func() {
+			BeforeEach(func() {
+				fakeDecider.IsYesYes = true
+				vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
+			})
+
+			It("sets same vm type on input instance groups", func() {
+				input := bftinput.Input{
+					InstanceGroups: []bftinput.InstanceGroup{
+						{
+							Name: "fake-instance-group-1",
+						},
+						{
+							Name: "fake-instance-group-2",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: availabilityZones,
+					},
+				}
+
+				result := vmType.Apply(input, bftinput.Input{})
+
+				Expect(result).To(Equal(bftinput.Input{
+					InstanceGroups: []bftinput.InstanceGroup{
+						{
+							Name:   "fake-instance-group-1",
+							VmType: "fake-vm-type",
+						},
+						{
+							Name:   "fake-instance-group-2",
+							VmType: "fake-vm-type",
+						},
+					},
+					CloudConfig: bftinput.CloudConfig{
+						AvailabilityZones: availabilityZones,
+						VmTypes: []bftinput.VmTypeConfig{
+							{
+								Name: "fake-vm-type",
+							},
+						},
+					},
+				}))
+			})
 		})
 	})
 
