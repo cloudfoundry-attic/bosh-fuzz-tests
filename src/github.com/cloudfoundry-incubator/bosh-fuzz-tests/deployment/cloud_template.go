@@ -40,5 +40,5 @@ disk_types:{{ range .CloudConfig.PersistentDiskTypes }}
 - name: {{ .Name }}
   disk_size: {{ .Size }}
   cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ end }}
+    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ else }} {}{{ end }}
 `
