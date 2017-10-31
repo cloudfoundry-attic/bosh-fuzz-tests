@@ -412,7 +412,7 @@ compilation:
 			Expect(err).ToNot(HaveOccurred())
 			Expect(manifestContents).To(Equal(expectedManifestContents))
 
-			expectedCloudConfigContents := `---
+			expectedCloudConfigContents := `--- {}
 `
 
 			cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
@@ -525,7 +525,7 @@ compilation:
 		Expect(err).ToNot(HaveOccurred())
 		Expect(manifestContents).To(Equal(expectedManifestContents))
 
-		expectedCloudConfigContents := `---
+		expectedCloudConfigContents := `--- {}
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
@@ -785,7 +785,7 @@ compilation:
 		Expect(err).ToNot(HaveOccurred())
 		Expect(manifestContents).To(Equal(expectedManifestContents))
 
-		expectedCloudConfigContents := `---
+		expectedCloudConfigContents := `--- {}
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
