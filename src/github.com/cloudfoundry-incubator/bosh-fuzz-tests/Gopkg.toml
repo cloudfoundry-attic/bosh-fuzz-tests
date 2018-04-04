@@ -1,12 +1,13 @@
 required = ["github.com/onsi/ginkgo/ginkgo"]
 
+[prune]
+  go-tests = true
+  non-go = true
+  unused-packages = true
+
 [[constraint]]
   branch = "master"
   name = "github.com/cloudfoundry-incubator/bosh-load-tests"
-
-[[constraint]]
-  branch = "blobmanager-checksum-verify-135454241"
-  name = "github.com/cloudfoundry/bosh-utils"
 
 [[constraint]]
   name = "github.com/onsi/ginkgo"
