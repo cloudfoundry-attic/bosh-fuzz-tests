@@ -12,12 +12,12 @@ import (
 	"strings"
 	"sync"
 	"syscall"
+	"time"
 
 	gouuid "github.com/nu7hatch/gouuid"
 
 	bosherr "github.com/cloudfoundry/bosh-utils/errors"
 	boshsys "github.com/cloudfoundry/bosh-utils/system"
-	"time"
 )
 
 type FakeFileType string
@@ -46,20 +46,27 @@ type FakeFileSystem struct {
 	openFileRegistry *FakeFileRegistry
 	OpenFileErr      error
 
-	ReadFileError       error
-	readFileErrorByPath map[string]error
+	ReadFileError             error
+	ReadFileWithOptsCallCount int
+	readFileErrorByPath       map[string]error
 
-	WriteFileError  error
-	WriteFileErrors map[string]error
-	SymlinkError    error
+	WriteFileError            error
+	WriteFileErrors           map[string]error
+	WriteFileCallCount        int
+	WriteFileQuietlyCallCount int
+
+	SymlinkError error
 
 	MkdirAllError       error
 	mkdirAllErrorByPath map[string]error
+	MkdirAllCallCount   int
 
 	ChangeTempRootErr error
 
-	ChownErr error
-	ChmodErr error
+	ChownErr       error
+	ChownCallCount int
+	ChmodErr       error
+	ChmodCallCount int
 
 	CopyFileError     error
 	CopyFileCallCount int
@@ -73,6 +80,9 @@ type FakeFileSystem struct {
 	RemoveAllStub removeAllFn
 
 	ReadAndFollowLinkError error
+
+	StatWithOptsCallCount int
+	StatCallCount         int
 
 	TempFileError           error
 	TempFileErrorsByPrefix  map[string]error
@@ -263,6 +273,7 @@ func (fs *FakeFileSystem) RegisterMkdirAllError(path string, err error) {
 }
 
 func (fs *FakeFileSystem) MkdirAll(path string, perm os.FileMode) error {
+	fs.MkdirAllCallCount++
 	fs.filesLock.Lock()
 	defer fs.filesLock.Unlock()
 
@@ -321,6 +332,16 @@ func (fs *FakeFileSystem) OpenFile(path string, flag int, perm os.FileMode) (bos
 }
 
 func (fs *FakeFileSystem) Stat(path string) (os.FileInfo, error) {
+	fs.StatCallCount++
+	return fs.StatHelper(path)
+}
+
+func (fs *FakeFileSystem) StatWithOpts(path string, opts boshsys.StatOpts) (os.FileInfo, error) {
+	fs.StatWithOptsCallCount++
+	return fs.StatHelper(path)
+}
+
+func (fs *FakeFileSystem) StatHelper(path string) (os.FileInfo, error) {
 	fs.filesLock.Lock()
 	defer fs.filesLock.Unlock()
 
@@ -380,6 +401,7 @@ func (fs *FakeFileSystem) Lstat(path string) (os.FileInfo, error) {
 }
 
 func (fs *FakeFileSystem) Chown(path, username string) error {
+	fs.ChownCallCount++
 	fs.filesLock.Lock()
 	defer fs.filesLock.Unlock()
 
@@ -403,6 +425,7 @@ func (fs *FakeFileSystem) Chown(path, username string) error {
 }
 
 func (fs *FakeFileSystem) Chmod(path string, perm os.FileMode) error {
+	fs.ChmodCallCount++
 	fs.filesLock.Lock()
 	defer fs.filesLock.Unlock()
 
@@ -424,7 +447,17 @@ func (fs *FakeFileSystem) WriteFileString(path, content string) error {
 	return fs.WriteFile(path, []byte(content))
 }
 
+func (fs *FakeFileSystem) WriteFileQuietly(path string, content []byte) error {
+	fs.WriteFileQuietlyCallCount++
+	return fs.writeFile(path, content)
+}
+
 func (fs *FakeFileSystem) WriteFile(path string, content []byte) error {
+	fs.WriteFileCallCount++
+	return fs.writeFile(path, content)
+}
+
+func (fs *FakeFileSystem) writeFile(path string, content []byte) error {
 	fs.filesLock.Lock()
 	defer fs.filesLock.Unlock()
 
@@ -463,7 +496,7 @@ func (fs *FakeFileSystem) writeDir(path string) error {
 	return nil
 }
 
-func (fs *FakeFileSystem) ConvergeFileContents(path string, content []byte) (bool, error) {
+func (fs *FakeFileSystem) ConvergeFileContents(path string, content []byte, opts ...boshsys.ConvergeFileContentsOpts) (bool, error) {
 	fs.filesLock.Lock()
 	defer fs.filesLock.Unlock()
 
@@ -474,6 +507,14 @@ func (fs *FakeFileSystem) ConvergeFileContents(path string, content []byte) (boo
 	err := fs.WriteFileErrors[path]
 	if err != nil {
 		return false, err
+	}
+
+	if len(opts) > 0 && opts[0].DryRun {
+		stats := fs.fileRegistry.Get(path)
+		if stats == nil {
+			return true, nil
+		}
+		return bytes.Compare(stats.Content, content) != 0, nil
 	}
 
 	stats := fs.getOrCreateFile(path)
@@ -505,6 +546,11 @@ func (fs *FakeFileSystem) RegisterReadFileError(path string, err error) {
 
 func (fs *FakeFileSystem) UnregisterReadFileError(path string) {
 	delete(fs.readFileErrorByPath, path)
+}
+
+func (fs *FakeFileSystem) ReadFileWithOpts(path string, opts boshsys.ReadOpts) ([]byte, error) {
+	fs.ReadFileWithOptsCallCount++
+	return fs.ReadFile(path)
 }
 
 func (fs *FakeFileSystem) ReadFile(path string) ([]byte, error) {
@@ -563,6 +609,8 @@ func (fs *FakeFileSystem) Rename(oldPath, newPath string) error {
 	newStats.Content = stats.Content
 	newStats.FileMode = stats.FileMode
 	newStats.FileType = stats.FileType
+	newStats.Username = stats.Username
+	newStats.Groupname = stats.Groupname
 	newStats.Flags = stats.Flags
 
 	// Ignore error from RemoveAll
@@ -781,9 +829,11 @@ func (fs *FakeFileSystem) removeAll(path string) error {
 
 func (fs *FakeFileSystem) Glob(pattern string) (matches []string, err error) {
 	if fs.GlobStub != nil {
-		_, err = fs.GlobStub(pattern)
+		matches, err = fs.GlobStub(pattern)
 		if err != nil {
 			return nil, err
+		} else {
+			return matches, nil
 		}
 	}
 

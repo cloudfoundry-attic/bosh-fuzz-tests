@@ -51,7 +51,7 @@ func (f *factory) Create(
 	case "upload_cloud_config":
 		return NewUploadCloudConfig(f.directorInfo, boshRunner, f.assetsProvider), nil
 	case "deploy_with_dynamic":
-		return NewDeployWithDynamic(f.directorInfo, deploymentName, boshRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
+		return NewDeployWithDynamic(f.directorInfo, flowNumber, deploymentName, boshRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
 	case "deploy_with_static":
 		return NewDeployWithStatic(f.directorInfo, flowNumber, deploymentName, boshRunner, f.fs, f.assetsProvider, usingLegacyManifest), nil
 	case "deploy_with_variables":

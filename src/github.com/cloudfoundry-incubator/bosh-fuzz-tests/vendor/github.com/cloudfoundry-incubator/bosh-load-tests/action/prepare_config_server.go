@@ -46,7 +46,7 @@ func (p *prepareConfigServer) Execute() error {
 		return err
 	}
 
-	if err := p.setValue("/num_instances", 10); nil != err {
+	if err := p.setValue("/num_instances", 5); nil != err {
 		return err
 	}
 

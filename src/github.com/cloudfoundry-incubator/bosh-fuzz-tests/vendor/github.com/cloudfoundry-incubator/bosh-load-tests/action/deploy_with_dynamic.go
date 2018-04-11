@@ -11,6 +11,7 @@ import (
 
 type deployWithDynamic struct {
 	directorInfo        DirectorInfo
+	flowNumber          int
 	deploymentName      string
 	cliRunner           bltclirunner.Runner
 	fs                  boshsys.FileSystem
@@ -20,6 +21,7 @@ type deployWithDynamic struct {
 
 func NewDeployWithDynamic(
 	directorInfo DirectorInfo,
+	flowNumber int,
 	deploymentName string,
 	cliRunner bltclirunner.Runner,
 	fs boshsys.FileSystem,
@@ -28,6 +30,7 @@ func NewDeployWithDynamic(
 ) *deployWithDynamic {
 	return &deployWithDynamic{
 		directorInfo:        directorInfo,
+		flowNumber:          flowNumber,
 		deploymentName:      deploymentName,
 		cliRunner:           cliRunner,
 		fs:                  fs,
@@ -58,8 +61,9 @@ func (d *deployWithDynamic) Execute() error {
 	t := template.Must(template.ParseFiles(manifestTemplatePath))
 	buffer := bytes.NewBuffer([]byte{})
 	data := manifestData{
-		DeploymentName: d.deploymentName,
-		DirectorUUID:   d.directorInfo.UUID,
+		DeploymentIndex: d.flowNumber,
+		DeploymentName:  d.deploymentName,
+		DirectorUUID:    d.directorInfo.UUID,
 	}
 	err = t.Execute(buffer, data)
 	if err != nil {

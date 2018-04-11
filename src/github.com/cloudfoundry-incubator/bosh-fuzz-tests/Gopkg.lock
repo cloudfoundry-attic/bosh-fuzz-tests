@@ -26,21 +26,33 @@
     "environment",
     "environment/dummy"
   ]
-  revision = "e6d7dcd1afea88d4daf22a644dba5846e319aaf8"
+  revision = "d2f43f49563d445fe9d32fc8b838acc1e0bb6c3c"
 
 [[projects]]
-  branch = "disable-http2"
+  branch = "master"
   name = "github.com/cloudfoundry/bosh-utils"
   packages = [
     "errors",
-    "http",
+    "httpclient",
     "logger",
     "retrystrategy",
     "system",
     "system/fakes",
     "uuid"
   ]
-  revision = "7ac6210580f67fd79ca925953a4ee380be39d123"
+  revision = "87d3668a74af6d395aae97a3764aac279abbaf42"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/cloudfoundry/go-socks5"
+  packages = ["."]
+  revision = "54f73bdb8a8e85a6611d3d29ab9bbf98c2a060d7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/cloudfoundry/socks5-proxy"
+  packages = ["."]
+  revision = "3c6b4eec9c2d16c1dac4c42bdb5f755ba09daff8"
 
 [[projects]]
   branch = "master"
@@ -104,11 +116,32 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/pivotal-cf/paraphernalia"
+  packages = ["secure/tlsconfig"]
+  revision = "a64ae2051c20c5cde13292a41db01029566134ba"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/crypto"
+  packages = [
+    "curve25519",
+    "ed25519",
+    "ed25519/internal/edwards25519",
+    "internal/chacha20",
+    "poly1305",
+    "ssh"
+  ]
+  revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/net"
   packages = [
+    "context",
     "html",
     "html/atom",
-    "html/charset"
+    "html/charset",
+    "proxy"
   ]
   revision = "8351a756f30f1297fe94bbf4b767ec589c6ea6d0"
 
