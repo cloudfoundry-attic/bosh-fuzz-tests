@@ -5,7 +5,7 @@
   "director_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director",
   "worker_start_cmd": "BUNDLE_GEMFILE=BOSH_SRC_PATH/Gemfile bundle exec BOSH_SRC_PATH/bosh-director/bin/bosh-director-worker",
   "nginx_start_cmd": "BOSH_SRC_PATH/tmp/integration-nginx/sbin/nginx",
-  "verify_multidigest": "BOSH_SRC_PATH/tmp/verify-multidigest",
+  "verify_multidigest": "BOSH_SRC_PATH/tmp/verify-multidigest/verify-multidigest",
   "nats_start_cmd": "BOSH_SRC_PATH/tmp/gnatsd/gnatsd",
   "uaa" : {
     "enabled": true,
