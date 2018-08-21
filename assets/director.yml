@@ -15,7 +15,7 @@ redis:
 
 dir: {{ .BaseDir }}/boshdir
 
-audit_log_path: {{ .BaseDir }}/logs
+audit_log_path: {{ .BaseDir }}
 
 scheduled_jobs:
   - command: SnapshotDeployments
