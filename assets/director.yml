@@ -106,6 +106,10 @@ config_server:
     ca_cert_path: /tmp/cert
 {{end}}
 
+cpi:
+  max_supported_api_version: 2
+  preferred_api_version: {{ .preferred_cpi_api_version }}
+
 nats:
   server_ca_path: "{{ .AssetsPath }}/nats/certs/rootCA.pem"
   client_certificate_path: "{{ .AssetsPath }}/nats/certs/director/certificate.pem"
