@@ -16,7 +16,7 @@ var _ = Describe("AvailabilityZone", func() {
 		az Parameter
 	)
 
-	Context("when definition is os", func() {
+	Context("when azs is defined", func() {
 		BeforeEach(func() {
 			rand.Seed(63)
 
