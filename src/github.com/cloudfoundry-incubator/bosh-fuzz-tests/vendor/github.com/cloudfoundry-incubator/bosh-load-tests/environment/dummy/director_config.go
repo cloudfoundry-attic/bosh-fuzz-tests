@@ -13,19 +13,21 @@ import (
 )
 
 type DirectorOptions struct {
-	Port                  int
-	DatabaseName          string
-	DatabaseServer        string
-	DatabaseUser          string
-	DatabasePassword      string
-	DatabasePort          int
-	BaseDir               string
-	DummyCPIPath          string
-	RubyVersion           string
-	VerifyMultidigestPath string
-	UAAEnabled            bool
-	ConfigServerEnabled   bool
-	AssetsPath            string
+	Port                   int
+	DatabaseName           string
+	DatabaseServer         string
+	DatabaseUser           string
+	DatabasePassword       string
+	DatabasePort           int
+	BaseDir                string
+	DummyCPIPath           string
+	RubyVersion            string
+	VerifyMultidigestPath  string
+	UAAEnabled             bool
+	ConfigServerEnabled    bool
+	AssetsPath             string
+	MaxCpiAPIVersion       int
+	PreferredCpiAPIVersion int
 }
 
 type DirectorConfig struct {

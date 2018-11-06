@@ -35,6 +35,7 @@ type Parameters struct {
 	NumOfVariables             []int      `json:"num_of_variables"`
 	VariableTypes              []string   `json:"variable_types"`
 	NumOfSubstitutions         []int      `json:"num_of_substitutions"`
+	CpiAPIVersion              []int      `json:"preferred_cpi_api_version"`
 }
 
 func NewConfig(fs boshsys.FileSystem) *Config {

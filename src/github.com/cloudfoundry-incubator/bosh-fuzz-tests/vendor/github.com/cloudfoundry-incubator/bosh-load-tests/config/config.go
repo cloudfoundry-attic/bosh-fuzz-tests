@@ -25,8 +25,14 @@ type Config struct {
 	NumberOfWorkers          int                `json:"number_of_workers"`
 	NumberOfDeployments      int                `json:"number_of_deployments"`
 	UsingLegacyManifest      bool               `json:"using_legacy_manifest"`
+	CpiConfig                CpiConfig          `json:"cpi"`
 
 	fs boshsys.FileSystem
+}
+
+type CpiConfig struct {
+	MaxCpiAPIVersion       int `json:"max_cpi_api_version"`
+	PreferredCpiAPIVersion int `json:"preferred_cpi_api_version"`
 }
 
 type UAAConfig struct {

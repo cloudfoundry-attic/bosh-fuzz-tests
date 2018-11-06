@@ -2,19 +2,24 @@
 
 
 [[projects]]
+  digest = "1:69b95d47eef70cba62af2aa3d33bd5f9ffe9fa0be66d79d79150c38796c6eac1"
   name = "github.com/bmatcuk/doublestar"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "b3608229437ba4dc33dae64d56a79a2a73f1f6b2"
   version = "v1.0.9"
 
 [[projects]]
   branch = "master"
+  digest = "1:58927c45bfdcd6550e5f1ab008eeeb6951474a232afa1dc690583f26c5f92cbd"
   name = "github.com/charlievieth/fs"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "7dc373669fa10ddf827c37c595dee30a2f001be9"
 
 [[projects]]
   branch = "master"
+  digest = "1:410465c6f3284c2c8b5eb2d3e98811b3019753332e0a5f7e306c7907e7b9f99d"
   name = "github.com/cloudfoundry-incubator/bosh-load-tests"
   packages = [
     "action",
@@ -24,12 +29,14 @@
     "command",
     "config",
     "environment",
-    "environment/dummy"
+    "environment/dummy",
   ]
-  revision = "d2f43f49563d445fe9d32fc8b838acc1e0bb6c3c"
+  pruneopts = "NUT"
+  revision = "8f56700c73a79c53a78cfca13e79ea8059084a60"
 
 [[projects]]
   branch = "master"
+  digest = "1:ddedd47ed183feb1ae746a50aafd11ebcc89e6c73be3c50e0153b4e0190daa8c"
   name = "github.com/cloudfoundry/bosh-utils"
   packages = [
     "errors",
@@ -38,29 +45,37 @@
     "retrystrategy",
     "system",
     "system/fakes",
-    "uuid"
+    "uuid",
   ]
+  pruneopts = "NUT"
   revision = "87d3668a74af6d395aae97a3764aac279abbaf42"
 
 [[projects]]
   branch = "master"
+  digest = "1:3d3a6beb04065e29628f9d4f8fefeca4cc96932a8b0b83a03e9a3405b3538c11"
   name = "github.com/cloudfoundry/go-socks5"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "54f73bdb8a8e85a6611d3d29ab9bbf98c2a060d7"
 
 [[projects]]
   branch = "master"
+  digest = "1:59947b4e4884947608f78e6835925a276504e16439f3cb9198d13f3a35233ea3"
   name = "github.com/cloudfoundry/socks5-proxy"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "3c6b4eec9c2d16c1dac4c42bdb5f755ba09daff8"
 
 [[projects]]
   branch = "master"
+  digest = "1:16bbae9910129be5a18b951eabacd54414d3faea094dfab92bb3c84884d46b11"
   name = "github.com/nu7hatch/gouuid"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "179d4d0c4d8d407a32af483c2354df1d2c91e6c3"
 
 [[projects]]
+  digest = "1:831e7951ac89dbdbddac0e1a92e2af9bc4ffe7982117d0624e9a06e2ad12cbb4"
   name = "github.com/onsi/ginkgo"
   packages = [
     ".",
@@ -88,12 +103,14 @@
     "reporters/stenographer",
     "reporters/stenographer/support/go-colorable",
     "reporters/stenographer/support/go-isatty",
-    "types"
+    "types",
   ]
+  pruneopts = "NUT"
   revision = "9eda700730cba42af70d53180f9dcce9266bc2bc"
   version = "v1.4.0"
 
 [[projects]]
+  digest = "1:71d4d2f1df9677af37e4baa528aec35d27063f08207ccaef662bb9b5a0a88829"
   name = "github.com/onsi/gomega"
   packages = [
     ".",
@@ -109,19 +126,23 @@
     "matchers/support/goraph/edge",
     "matchers/support/goraph/node",
     "matchers/support/goraph/util",
-    "types"
+    "types",
   ]
+  pruneopts = "NUT"
   revision = "c893efa28eb45626cdaa76c9f653b62488858837"
   version = "v1.2.0"
 
 [[projects]]
   branch = "master"
+  digest = "1:13979d473f6b97aeadb4a882bf4c519324ced3975479e54686e08c3e9e50bc25"
   name = "github.com/pivotal-cf/paraphernalia"
   packages = ["secure/tlsconfig"]
+  pruneopts = "NUT"
   revision = "a64ae2051c20c5cde13292a41db01029566134ba"
 
 [[projects]]
   branch = "master"
+  digest = "1:7e900feb2744cfc971aa7f1ac717ccf5924c6c18c438d0c944778a9360d861fa"
   name = "golang.org/x/crypto"
   packages = [
     "curve25519",
@@ -129,30 +150,36 @@
     "ed25519/internal/edwards25519",
     "internal/chacha20",
     "poly1305",
-    "ssh"
+    "ssh",
   ]
+  pruneopts = "NUT"
   revision = "d6449816ce06963d9d136eee5a56fca5b0616e7e"
 
 [[projects]]
   branch = "master"
+  digest = "1:999702ee97ddbb8b1192176a1aadd3ee3eb2d523e0452d9a48cfed0184ba3df2"
   name = "golang.org/x/net"
   packages = [
     "context",
     "html",
     "html/atom",
     "html/charset",
-    "proxy"
+    "proxy",
   ]
+  pruneopts = "NUT"
   revision = "8351a756f30f1297fe94bbf4b767ec589c6ea6d0"
 
 [[projects]]
   branch = "master"
+  digest = "1:f43298f87d6e65ecf12fc5fae1ebca1779bafbe92efbe5e2304ee813293c3224"
   name = "golang.org/x/sys"
   packages = ["unix"]
+  pruneopts = "NUT"
   revision = "062cd7e4e68206d8bab9b18396626e855c992658"
 
 [[projects]]
   branch = "master"
+  digest = "1:9bd4be0519c74c08b9c7a57bf432979afc4640c3c08c504ec61990a11721b203"
   name = "golang.org/x/text"
   packages = [
     "encoding",
@@ -171,19 +198,39 @@
     "language",
     "runes",
     "transform",
-    "unicode/cldr"
+    "unicode/cldr",
   ]
+  pruneopts = "NUT"
   revision = "1cbadb444a806fd9430d14ad08967ed91da4fa0a"
 
 [[projects]]
   branch = "v2"
+  digest = "1:c85dc78b3426641ebf2a0bbf5b731b5c4613ddb5987dbe218f7e75468dcd56f5"
   name = "gopkg.in/yaml.v2"
   packages = ["."]
+  pruneopts = "NUT"
   revision = "eb3733d160e74a9c7e442f435eb3bea458e1d19f"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "88001700f4b1323eb4c843e617f22f42d84b2b067bef2ea0fd90ca089bb93963"
+  input-imports = [
+    "github.com/cloudfoundry-incubator/bosh-load-tests/action",
+    "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner",
+    "github.com/cloudfoundry-incubator/bosh-load-tests/action/clirunner/clirunnerfakes",
+    "github.com/cloudfoundry-incubator/bosh-load-tests/assets",
+    "github.com/cloudfoundry-incubator/bosh-load-tests/config",
+    "github.com/cloudfoundry-incubator/bosh-load-tests/environment",
+    "github.com/cloudfoundry/bosh-utils/errors",
+    "github.com/cloudfoundry/bosh-utils/logger",
+    "github.com/cloudfoundry/bosh-utils/system",
+    "github.com/cloudfoundry/bosh-utils/system/fakes",
+    "github.com/onsi/ginkgo",
+    "github.com/onsi/ginkgo/extensions/table",
+    "github.com/onsi/ginkgo/ginkgo",
+    "github.com/onsi/gomega",
+    "github.com/onsi/gomega/gstruct",
+    "gopkg.in/yaml.v2",
+  ]
   solver-name = "gps-cdcl"
   solver-version = 1

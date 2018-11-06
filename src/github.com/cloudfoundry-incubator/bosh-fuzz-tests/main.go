@@ -61,6 +61,9 @@ func main() {
 		panic(err)
 	}
 
+	setup(logger)
+	envConfig.CpiConfig.PreferredCpiAPIVersion = testConfig.Parameters.CpiAPIVersion[rand.Intn(len(testConfig.Parameters.CpiAPIVersion))]
+
 	assetsProvider := bltassets.NewProvider(envConfig.AssetsPath)
 
 	logger.Debug("main", "Setting up environment")
@@ -123,16 +126,6 @@ func main() {
 	logger.Debug("main", "Starting deploy")
 	renderer := bftdeployment.NewRenderer(fs)
 
-	var seed int64
-	if len(os.Args) == 3 {
-		seed, _ = strconv.ParseInt(os.Args[2], 10, 64)
-	} else {
-		seed = time.Now().Unix()
-	}
-
-	logger.Info("main", "Seeding with %d", seed)
-	rand.Seed(seed)
-
 	nameGenerator := bftnamegen.NewNameGenerator()
 	decider := bftdecider.NewRandomDecider()
 
@@ -177,4 +170,16 @@ func main() {
 	}
 
 	println("Done!")
+}
+
+func setup(logger boshlog.Logger) {
+	var seed int64
+	if len(os.Args) == 3 {
+		seed, _ = strconv.ParseInt(os.Args[2], 10, 64)
+	} else {
+		seed = time.Now().Unix()
+	}
+
+	logger.Info("main", "Seeding with %d", seed)
+	rand.Seed(seed)
 }

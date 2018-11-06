@@ -107,8 +107,8 @@ config_server:
 {{end}}
 
 cpi:
-  max_supported_api_version: 2
-  preferred_api_version: 2
+  max_supported_api_version: {{.MaxCpiAPIVersion}}
+  preferred_api_version: {{.PreferredCpiAPIVersion}}
 
 nats:
   server_ca_path: "{{ .AssetsPath }}/nats/certs/rootCA.pem"
