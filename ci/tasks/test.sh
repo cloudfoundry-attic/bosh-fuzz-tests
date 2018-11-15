@@ -11,7 +11,7 @@ export DB='postgresql'
 
 echo 'Starting DB...'
 su postgres -c '
-  export PATH=/usr/lib/postgresql/9.4/bin:$PATH
+  export PATH=/usr/lib/postgresql/10/bin:$PATH
   export PGDATA=/tmp/postgres
   export PGLOGS=/tmp/log/postgres
   mkdir -p $PGDATA
