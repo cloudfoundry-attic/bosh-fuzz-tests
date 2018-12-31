@@ -224,7 +224,7 @@ var _ = Describe("Analyzer", func() {
 	})
 
 	Context("when some of the inputs are dry-run", func() {
-		It("only considers non dry-run inputs when building expectations", func(){
+		It("only considers non dry-run inputs when building expectations", func() {
 			normalInput1 := bftinput.Input{
 				InstanceGroups: []bftinput.InstanceGroup{
 					{
@@ -313,6 +313,69 @@ var _ = Describe("Analyzer", func() {
 				{
 					Name:              "foo-instance-group",
 					AvailabilityZones: []string{"z2"},
+					Networks: []bftinput.InstanceGroupNetworkConfig{
+						{
+							Name: "foo-network",
+							StaticIps: []string{
+								"192.168.2.232",
+							},
+						},
+					},
+				},
+			},
+		}
+
+		result := analyzer.Analyze([]bftinput.Input{previousInput, input})
+
+		Expect(result[0].DeploymentWillFail).To(BeFalse())
+		Expect(result[1].DeploymentWillFail).To(BeTrue())
+	})
+
+	It("does not move an existing instance's static IP to another instance group", func() {
+		previousInput := bftinput.Input{
+			CloudConfig: bftinput.CloudConfig{
+				Networks: []bftinput.NetworkConfig{
+					{
+						Name: "foo-network",
+						Subnets: []bftinput.SubnetConfig{
+							{
+								IpPool: bftinput.NewIpPool("192.168.2", 1, []string{}),
+							},
+						},
+					},
+				},
+			},
+			InstanceGroups: []bftinput.InstanceGroup{
+				{
+					Name: "foo-instance-group",
+					Networks: []bftinput.InstanceGroupNetworkConfig{
+						{
+							Name: "foo-network",
+							StaticIps: []string{
+								"192.168.2.232",
+							},
+						},
+					},
+				},
+			},
+		}
+
+		input := bftinput.Input{
+			CloudConfig: bftinput.CloudConfig{
+				Networks: []bftinput.NetworkConfig{
+					{
+						Name: "foo-network",
+						Subnets: []bftinput.SubnetConfig{
+							{
+								IpPool: bftinput.NewIpPool("192.168.2", 1, []string{}),
+							},
+						},
+					},
+				},
+			},
+			InstanceGroups: []bftinput.InstanceGroup{
+				{
+					Name: "foo-instance-group-renamed",
 					Networks: []bftinput.InstanceGroupNetworkConfig{
 						{
 							Name: "foo-network",

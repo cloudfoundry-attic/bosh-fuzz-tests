@@ -46,8 +46,7 @@ func (a *analyzer) Analyze(inputs []bftinput.Input) []Case {
 				expectations = append(expectations, a.nothingChangedComparator.Compare(filteredInputs, input)...)
 
 				filteredLastInput := filteredInputs[len(filteredInputs)-1]
-				deploymentWillFail = a.isMigratingFromAzsToNoAzsAndReusingStaticIps(filteredLastInput, input)
-				deploymentWillFail = deploymentWillFail || a.isMovingInstancesStaticIPToAnotherAZ(filteredLastInput, input)
+				deploymentWillFail = a.isReusingStaticIps(filteredLastInput, input)
 			}
 			expectations = append(expectations, a.variablesComparator.Compare(nil, input)...)
 			deploymentWillFail = deploymentWillFail || a.hasVariablesCertificateWithoutCA(input)
@@ -115,6 +114,12 @@ func (a *analyzer) hasVariablesCertificateWithoutCA(currentInput bftinput.Input)
 	return false
 }
 
+func (a *analyzer) isReusingStaticIps(previousInput bftinput.Input, currentInput bftinput.Input) bool {
+	return a.isMigratingFromAzsToNoAzsAndReusingStaticIps(previousInput, currentInput) ||
+		a.isMovingInstancesStaticIPToAnotherAZ(previousInput, currentInput) ||
+		a.isMovingInstancesStaticIPToAnotherInstanceGroup(previousInput, currentInput)
+}
+
 func (a *analyzer) isMigratingFromAzsToNoAzsAndReusingStaticIps(previousInput bftinput.Input, currentInput bftinput.Input) bool {
 	for _, instanceGroup := range currentInput.InstanceGroups {
 		previousInstanceGroup, found := previousInput.FindInstanceGroupByName(instanceGroup.Name)
@@ -170,6 +175,30 @@ func (a *analyzer) isMovingInstancesStaticIPToAnotherAZ(previousInput bftinput.I
 
 	if len(missingAZs) > 0 {
 		return true
+	}
+
+	return false
+}
+
+func (a *analyzer) isMovingInstancesStaticIPToAnotherInstanceGroup(previousInput bftinput.Input, currentInput bftinput.Input) bool {
+	for _, instanceGroup := range currentInput.InstanceGroups {
+		for _, previousInstanceGroup := range previousInput.InstanceGroups {
+			if previousInstanceGroup.Name == instanceGroup.Name {
+				continue
+			}
+
+			for _, network := range instanceGroup.Networks {
+				for _, currentIP := range network.StaticIps {
+					for _, previousNetwork := range previousInstanceGroup.Networks {
+						for _, previousIP := range previousNetwork.StaticIps {
+							if currentIP == previousIP {
+								return true
+							}
+						}
+					}
+				}
+			}
+		}
 	}
 
 	return false

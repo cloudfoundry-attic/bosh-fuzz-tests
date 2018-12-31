@@ -3,9 +3,7 @@
 To install:
 
 ```
-cd ~/workspace
-git clone git@github.com:cloudfoundry-incubator/bosh-fuzz-tests.git
-cd bosh-fuzz-tests/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests
+cd src/github.com/cloudfoundry-incubator/bosh-fuzz-tests
 ```
 
 To run ginkgo (to test changes):
@@ -16,12 +14,11 @@ go get github.com/onsi/gomega
 bin/env ginkgo -r .
 ```
 
-To run fuzz tests locally with BOSH director from local source (`/Users/pivotal/workspace/bosh` or
-as defined in `config.json`):
+To run fuzz tests locally with BOSH director from local source or as defined in [`config.json`](config.json):
 
 ```
-cp ~/workspace/bosh-fuzz-tests/assets/ssl/* /tmp/
-DB=postgresql bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json
+cp ../../../../assets/ssl/* /tmp/
+DB=postgresql bin/env go run main.go ../../../../config.json
 ```
 
 Note, on the local workstation this will leave processes behind.
@@ -38,5 +35,5 @@ To re-create failures seen on Concourse:
 * Run the following command:
 
 ```
-bin/env go run main.go ~/workspace/bosh-fuzz-tests/config.json <SEED_NUMBER>
+bin/env go run main.go ../../../../config.json <SEED_NUMBER>
 ```

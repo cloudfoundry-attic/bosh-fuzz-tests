@@ -1,30 +1,30 @@
 {
-  "assets_path": "/Users/pivotal/workspace/bosh-fuzz-tests/assets",
+  "assets_path": "/Users/pivotal/workspace/src/github.com/cloudfoundry-incubator/bosh-fuzz-tests/assets",
   "environment": "dummy",
-  "director_migration_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/bosh/src/bosh-director/bin/bosh-director-migrate",
-  "director_start_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/bosh/src/bosh-director/bin/bosh-director",
-  "worker_start_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/bosh/src/bosh-director/bin/bosh-director-worker",
-  "nginx_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/integration-nginx/sbin/nginx",
-  "verify_multidigest": "/Users/pivotal/workspace/bosh/src/tmp/verify-multidigest",
-  "nats_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/gnatsd/gnatsd",
+  "director_migration_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/bosh-director/bin/bosh-director-migrate",
+  "director_start_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/bosh-director/bin/bosh-director",
+  "worker_start_cmd": "BUNDLE_GEMFILE=/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/Gemfile bundle exec /Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/bosh-director/bin/bosh-director-worker",
+  "nginx_start_cmd": "/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/tmp/integration-nginx/sbin/nginx",
+  "verify_multidigest": "/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/tmp/verify-multidigest",
+  "nats_start_cmd": "/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/tmp/gnatsd/gnatsd",
   "uaa": {
     "enabled": true,
-    "tomcat_path": "/Users/pivotal/workspace/bosh/src/tmp/integration-uaa/cloudfoundry-identity-uaa-3.5.0/apache-tomcat-8.0.21"
+    "tomcat_path": "/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/tmp/integration-uaa/cloudfoundry-identity-uaa-3.5.0/apache-tomcat-8.0.21"
   },
   "config_server": {
     "enabled": true,
-    "config_server_start_cmd": "/Users/pivotal/workspace/bosh/src/tmp/integration-config-server/bosh-config-server-executable"
+    "config_server_start_cmd": "/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/tmp/integration-config-server/bosh-config-server-executable"
   },
   "cpi": {
     "max_supported_api_version": 2
   },
   "cli_cmd": "bosh",
-  "dummy_cpi_path": "/Users/pivotal/workspace/bosh/src/bosh-director/bin/dummy_cpi",
+  "dummy_cpi_path": "/Users/pivotal/workspace/src/github.com/cloudfoundry/bosh/src/bosh-director/bin/dummy_cpi",
   "number_of_workers": 3,
   "placeholder_exclusions": ["jobs", "jobs.templates", "jobs.templates.properties"],
   "parameters": {
-    "NOTE": "name_length is 253 - 65 (DNS name limit - BOSH UUID domain name)",
-    "name_length": [5, 188],
+    "NOTE" : "name_length is 253 - 65 (DNS name limit - BOSH UUID domain name)",
+    "name_length" : [5, 188],
     "instances": [1, 4, 5],
     "availability_zones": [null, ["z1"], ["z1", "z2"], ["z3", "z1", "z2"]],
     "persistent_disk_size": [0, 100, 200],
