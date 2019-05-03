@@ -44,15 +44,6 @@ func (i Input) FindAzByName(azName string) (AvailabilityZone, bool) {
 	return AvailabilityZone{}, false
 }
 
-func (i Input) FindDiskPoolByName(diskName string) (DiskConfig, bool) {
-	for _, disk := range i.CloudConfig.PersistentDiskPools {
-		if disk.Name == diskName {
-			return disk, true
-		}
-	}
-	return DiskConfig{}, false
-}
-
 func (i Input) FindDiskTypeByName(diskName string) (DiskConfig, bool) {
 	for _, disk := range i.CloudConfig.PersistentDiskTypes {
 		if disk.Name == diskName {
@@ -69,15 +60,6 @@ func (i Input) FindNetworkByName(networkName string) (NetworkConfig, bool) {
 		}
 	}
 	return NetworkConfig{}, false
-}
-
-func (i Input) FindResourcePoolByName(resourcePoolName string) (ResourcePoolConfig, bool) {
-	for _, resourcePool := range i.CloudConfig.ResourcePools {
-		if resourcePool.Name == resourcePoolName {
-			return resourcePool, true
-		}
-	}
-	return ResourcePoolConfig{}, false
 }
 
 func (i Input) FindVmTypeByName(vmTypeName string) (VmTypeConfig, bool) {
@@ -112,12 +94,10 @@ func (i Input) FindStemcellByName(stemcellName string) (StemcellConfig, bool) {
 
 type CloudConfig struct {
 	AvailabilityZones   []AvailabilityZone
-	PersistentDiskPools []DiskConfig
 	PersistentDiskTypes []DiskConfig
 	Networks            []NetworkConfig
 	Compilation         CompilationConfig
 	VmTypes             []VmTypeConfig
-	ResourcePools       []ResourcePoolConfig
 }
 
 type DiskConfig struct {
@@ -153,16 +133,6 @@ type VmTypeConfig struct {
 
 func (v VmTypeConfig) IsEqual(other VmTypeConfig) bool {
 	return reflect.DeepEqual(v, other)
-}
-
-type ResourcePoolConfig struct {
-	Name            string
-	Stemcell        StemcellConfig
-	CloudProperties map[string]string
-}
-
-func (r ResourcePoolConfig) IsEqual(other ResourcePoolConfig) bool {
-	return reflect.DeepEqual(r, other)
 }
 
 type UpdateConfig struct {

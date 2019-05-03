@@ -53,11 +53,6 @@ func (s *stemcell) Apply(input bftinput.Input, previousInput bftinput.Input) bft
 			}
 		}
 	} else {
-		for r, _ := range input.CloudConfig.ResourcePools {
-			stemcellConfig.Version = s.stemcellVersions[rand.Intn(len(s.stemcellVersions))]
-			input.CloudConfig.ResourcePools[r].Stemcell = stemcellConfig
-		}
-
 		for j := range input.InstanceGroups {
 			input.InstanceGroups[j].Stemcell = ""
 		}

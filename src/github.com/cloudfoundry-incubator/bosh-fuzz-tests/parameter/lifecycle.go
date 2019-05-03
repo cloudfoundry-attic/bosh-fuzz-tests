@@ -11,8 +11,7 @@ type Lifecycle struct{}
 func lifecycles(instanceGroup, previousInstanceGroup bftinput.InstanceGroup) []string {
 	lifecycles := []string{"service"}
 
-	if instanceGroup.PersistentDiskPool == "" && previousInstanceGroup.PersistentDiskPool == "" &&
-		instanceGroup.PersistentDiskType == "" && previousInstanceGroup.PersistentDiskType == "" &&
+	if instanceGroup.PersistentDiskType == "" && previousInstanceGroup.PersistentDiskType == "" &&
 		instanceGroup.PersistentDiskSize == 0 && previousInstanceGroup.PersistentDiskSize == 0 {
 		lifecycles = append(lifecycles, "errand")
 	}

@@ -51,7 +51,7 @@ var _ = Describe("Manifest/Renderer", func() {
 					Instances:          2,
 					Lifecycle:          "errand",
 					AvailabilityZones:  []string{"z3", "z4"},
-					PersistentDiskPool: "fast-disks",
+					PersistentDiskType: "fast-disks",
 					VmType:             "default",
 					Stemcell:           "default",
 					Jobs: []bftinput.Job{
@@ -85,16 +85,6 @@ var _ = Describe("Manifest/Renderer", func() {
 					{Name: "z2"},
 					{Name: "z3"},
 					{Name: "z4"},
-				},
-				PersistentDiskPools: []bftinput.DiskConfig{
-					{
-						Name: "fast-disks",
-						Size: 200,
-						CloudProperties: map[string]string{
-							"foo": "bar",
-							"baz": "qux",
-						},
-					},
 				},
 				VmTypes: []bftinput.VmTypeConfig{
 					{
@@ -222,7 +212,7 @@ instance_groups:
   instances: 2
   lifecycle: errand
   vm_type: default
-  persistent_disk_pool: fast-disks
+  persistent_disk_type: fast-disks
   stemcell: default
   migrated_from:
   - name: baz-instance-group
@@ -248,13 +238,6 @@ variables:
   type: certificate
   options:
     is_ca: true
-
-disk_pools:
-- name: fast-disks
-  disk_size: 200
-  cloud_properties:
-    baz: qux
-    foo: bar
 `
 
 		manifestContents, err := fs.ReadFileString(manifestPath)
@@ -330,6 +313,7 @@ vm_types:
 						Name:      "foo-instance-group",
 						Instances: 5,
 						Networks:  []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
+						VmType:    "default",
 						Jobs: []bftinput.Job{
 							{Name: "simple"},
 						},
@@ -384,6 +368,7 @@ update:
 instance_groups:
 - name: foo-instance-group
   instances: 5
+  vm_type: default
   jobs:
   - name: simple
     release: foo-release
@@ -421,118 +406,6 @@ compilation:
 		})
 	})
 
-	It("uses the disk pool specified for instance group", func() {
-		input := bftinput.Input{
-			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			InstanceGroups: []bftinput.InstanceGroup{
-				{
-					Name:               "foo-instance-group",
-					Instances:          5,
-					PersistentDiskPool: "fast-disks",
-					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
-					Jobs: []bftinput.Job{
-						{Name: "simple"},
-					},
-				},
-			},
-			Update: bftinput.UpdateConfig{
-				Canaries:    3,
-				MaxInFlight: 5,
-				Serial:      "true",
-			},
-			CloudConfig: bftinput.CloudConfig{
-				PersistentDiskPools: []bftinput.DiskConfig{
-					{
-						Name: "fast-disks",
-						Size: 100,
-					},
-				},
-				Networks: []bftinput.NetworkConfig{
-					{
-						Name: "default",
-						Type: "manual",
-						Subnets: []bftinput.SubnetConfig{
-							{},
-						},
-					},
-					{
-						Name: "no-az",
-						Type: "dynamic",
-						Subnets: []bftinput.SubnetConfig{
-							{},
-						},
-					},
-				},
-				Compilation: bftinput.CompilationConfig{
-					Network:         "default",
-					NumberOfWorkers: 3,
-				},
-			},
-		}
-
-		err := renderer.Render(input, manifestPath, cloudConfigPath)
-		Expect(err).ToNot(HaveOccurred())
-		expectedManifestContents := `---
-name: foo-deployment
-
-director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
-
-releases:
-- name: foo-release
-  version: latest
-
-update:
-  canaries: 3
-  canary_watch_time: 4000
-  max_in_flight: 5
-  update_watch_time: 20
-  serial: true
-
-instance_groups:
-- name: foo-instance-group
-  instances: 5
-  persistent_disk_pool: fast-disks
-  jobs:
-  - name: simple
-    release: foo-release
-  networks:
-  - name: default
-
-disk_pools:
-- name: fast-disks
-  disk_size: 100
-  cloud_properties: {}
-
-networks:
-- name: default
-  type: manual
-  subnets:
-  - cloud_properties: {}
-    dns: ["8.8.8.8"]
-- name: no-az
-  type: dynamic
-  subnets:
-  - cloud_properties: {}
-    dns: ["8.8.8.8"]
-
-compilation:
-  workers: 3
-  network: default
-  cloud_properties: {}
-`
-
-		manifestContents, err := fs.ReadFileString(manifestPath)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(manifestContents).To(Equal(expectedManifestContents))
-
-		expectedCloudConfigContents := `--- {}
-`
-
-		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
-	})
-
 	It("uses the disk type", func() {
 		input := bftinput.Input{
 			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
@@ -540,6 +413,7 @@ compilation:
 				{
 					Name:               "foo-instance-group",
 					Instances:          5,
+					VmType:             "default",
 					PersistentDiskType: "fast-disks",
 					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
 					Jobs: []bftinput.Job{
@@ -610,6 +484,7 @@ update:
 instance_groups:
 - name: foo-instance-group
   instances: 5
+  vm_type: default
   persistent_disk_type: fast-disks
   jobs:
   - name: simple
@@ -650,142 +525,6 @@ disk_types:
   cloud_properties:
     baz: qux
     foo: bar
-`
-
-		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(cloudConfigContents).To(Equal(expectedCloudConfigContents))
-	})
-
-	It("uses the resource pool specified for instance group", func() {
-		input := bftinput.Input{
-			DirectorUUID: "d820eb0d-13db-4777-8c9b-7a9bc55e3628",
-			InstanceGroups: []bftinput.InstanceGroup{
-				{
-					Name:               "foo-instance-group",
-					Instances:          5,
-					ResourcePool:       "foo-pool",
-					PersistentDiskPool: "fast-disks",
-					Networks:           []bftinput.InstanceGroupNetworkConfig{{Name: "default"}},
-					Jobs: []bftinput.Job{
-						{Name: "simple"},
-					},
-				},
-			},
-			Update: bftinput.UpdateConfig{
-				Canaries:    3,
-				MaxInFlight: 5,
-				Serial:      "true",
-			},
-			CloudConfig: bftinput.CloudConfig{
-				PersistentDiskPools: []bftinput.DiskConfig{
-					{
-						Name: "fast-disks",
-						Size: 100,
-					},
-				},
-				Networks: []bftinput.NetworkConfig{
-					{
-						Name: "default",
-						Type: "manual",
-						Subnets: []bftinput.SubnetConfig{
-							{},
-						},
-					},
-					{
-						Name: "no-az",
-						Type: "dynamic",
-						Subnets: []bftinput.SubnetConfig{
-							{},
-						},
-					},
-				},
-				ResourcePools: []bftinput.ResourcePoolConfig{
-					{
-						Name: "foo-pool",
-						Stemcell: bftinput.StemcellConfig{
-							Name:    "foo",
-							Version: "1",
-						},
-						CloudProperties: map[string]string{
-							"foo": "bar",
-							"baz": "qux",
-						},
-					},
-				},
-				Compilation: bftinput.CompilationConfig{
-					Network:         "default",
-					NumberOfWorkers: 3,
-				},
-			},
-		}
-
-		err := renderer.Render(input, manifestPath, cloudConfigPath)
-		Expect(err).ToNot(HaveOccurred())
-		expectedManifestContents := `---
-name: foo-deployment
-
-director_uuid: d820eb0d-13db-4777-8c9b-7a9bc55e3628
-
-releases:
-- name: foo-release
-  version: latest
-
-update:
-  canaries: 3
-  canary_watch_time: 4000
-  max_in_flight: 5
-  update_watch_time: 20
-  serial: true
-
-instance_groups:
-- name: foo-instance-group
-  instances: 5
-  resource_pool: foo-pool
-  persistent_disk_pool: fast-disks
-  jobs:
-  - name: simple
-    release: foo-release
-  networks:
-  - name: default
-
-resource_pools:
-- name: foo-pool
-  stemcell:
-    version: 1
-    name: foo
-  cloud_properties:
-    baz: qux
-    foo: bar
-
-disk_pools:
-- name: fast-disks
-  disk_size: 100
-  cloud_properties: {}
-
-networks:
-- name: default
-  type: manual
-  subnets:
-  - cloud_properties: {}
-    dns: ["8.8.8.8"]
-- name: no-az
-  type: dynamic
-  subnets:
-  - cloud_properties: {}
-    dns: ["8.8.8.8"]
-
-compilation:
-  workers: 3
-  network: default
-  cloud_properties: {}
-`
-
-		manifestContents, err := fs.ReadFileString(manifestPath)
-		Expect(err).ToNot(HaveOccurred())
-		Expect(manifestContents).To(Equal(expectedManifestContents))
-
-		expectedCloudConfigContents := `--- {}
 `
 
 		cloudConfigContents, err := fs.ReadFileString(cloudConfigPath)

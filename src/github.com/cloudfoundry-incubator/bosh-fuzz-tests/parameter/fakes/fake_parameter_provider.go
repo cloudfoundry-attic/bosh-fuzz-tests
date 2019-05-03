@@ -19,11 +19,11 @@ type FakeParameterProvider struct {
 	Lifecycle         *FakeLifecycle
 }
 
-func NewFakeParameterProvider(persistentDiskDef string, vmTypeDef string) *FakeParameterProvider {
+func NewFakeParameterProvider(persistentDiskDef string) *FakeParameterProvider {
 	return &FakeParameterProvider{
 		Stemcell:          NewFakeStemcell(),
 		PersistentDisk:    NewFakePersistentDisk(persistentDiskDef),
-		VmType:            NewFakeVmType(vmTypeDef),
+		VmType:            NewFakeVmType(),
 		AvailabilityZone:  NewFakeAvailabilityZone(),
 		Job:               NewFakeJob(),
 		Compilation:       NewFakeCompilation(),

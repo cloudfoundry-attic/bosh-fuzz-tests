@@ -44,32 +44,6 @@ var _ = Describe("Stemcell", func() {
 				}))
 			})
 		})
-
-		Context("when input has resource pools", func() {
-			It("adds stemcell each resource pool", func() {
-				input := bftinput.Input{
-					CloudConfig: bftinput.CloudConfig{
-						ResourcePools: []bftinput.ResourcePoolConfig{
-							{Name: "fake-vm-type-1"},
-						},
-					},
-				}
-
-				result := stemcell.Apply(input, bftinput.Input{})
-				Expect(result).To(Equal(bftinput.Input{
-					CloudConfig: bftinput.CloudConfig{
-						ResourcePools: []bftinput.ResourcePoolConfig{
-							{
-								Name: "fake-vm-type-1",
-								Stemcell: bftinput.StemcellConfig{
-									OS: "toronto-os", Version: "1",
-								},
-							},
-						},
-					},
-				}))
-			})
-		})
 	})
 
 	Context("when definition is name", func() {
@@ -96,32 +70,6 @@ var _ = Describe("Stemcell", func() {
 					},
 					Stemcells: []bftinput.StemcellConfig{
 						{Alias: "stemcell-1", Name: "ubuntu-stemcell", Version: "1"},
-					},
-				}))
-			})
-		})
-
-		Context("when input has resource pools", func() {
-			It("adds stemcell each resource pool", func() {
-				input := bftinput.Input{
-					CloudConfig: bftinput.CloudConfig{
-						ResourcePools: []bftinput.ResourcePoolConfig{
-							{Name: "fake-vm-type-1"},
-						},
-					},
-				}
-
-				result := stemcell.Apply(input, bftinput.Input{})
-				Expect(result).To(Equal(bftinput.Input{
-					CloudConfig: bftinput.CloudConfig{
-						ResourcePools: []bftinput.ResourcePoolConfig{
-							{
-								Name: "fake-vm-type-1",
-								Stemcell: bftinput.StemcellConfig{
-									Name: "ubuntu-stemcell", Version: "1",
-								},
-							},
-						},
 					},
 				}))
 			})
@@ -177,58 +125,6 @@ var _ = Describe("Stemcell", func() {
 				Stemcells: []bftinput.StemcellConfig{
 					{Alias: "stemcell-1", Name: "ubuntu-stemcell", Version: "1"},
 					{Alias: "stemcell-2", Name: "ubuntu-stemcell", Version: "2"},
-				},
-			}))
-		})
-
-		It("generates stemcell version for each resource pool and assigns stemcell to corresponding instance group", func() {
-			input := bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:         "fake-instance-group-1",
-						ResourcePool: "fake-resource-pool-1",
-					},
-					{
-						Name:         "fake-instance-group-2",
-						ResourcePool: "fake-resource-pool-2",
-						Stemcell:     "unused-stemcell-from-previous-input",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
-						{Name: "fake-resource-pool-1"},
-						{Name: "fake-resource-pool-2"},
-					},
-				},
-			}
-
-			result := stemcell.Apply(input, bftinput.Input{})
-			Expect(result).To(Equal(bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:         "fake-instance-group-1",
-						ResourcePool: "fake-resource-pool-1",
-					},
-					{
-						Name:         "fake-instance-group-2",
-						ResourcePool: "fake-resource-pool-2",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
-						{
-							Name: "fake-resource-pool-1",
-							Stemcell: bftinput.StemcellConfig{
-								Name: "ubuntu-stemcell", Version: "1",
-							},
-						},
-						{
-							Name: "fake-resource-pool-2",
-							Stemcell: bftinput.StemcellConfig{
-								Name: "ubuntu-stemcell", Version: "2",
-							},
-						},
-					},
 				},
 			}))
 		})

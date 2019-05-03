@@ -28,7 +28,6 @@ var badPathPatterns [][]interface{} = [][]interface{}{
 	{"jobs", Integer, "jobs", Integer, "properties"},
 	{"name"},
 	{"properties"},
-	{"resource_pools", Integer, "env"},
 	{"variables", Integer, String},
 	{"variables", Integer},
 	{"variables"},

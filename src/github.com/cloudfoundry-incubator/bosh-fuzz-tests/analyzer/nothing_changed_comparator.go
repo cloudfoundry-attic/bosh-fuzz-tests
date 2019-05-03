@@ -64,26 +64,10 @@ func (n *nothingChangedComparator) nothingChanged(instanceGroup bftinput.Instanc
 		}
 	}
 
-	if instanceGroup.PersistentDiskPool != "" {
-		currentPersistentDiskPool, _ := currentInput.FindDiskPoolByName(instanceGroup.PersistentDiskPool)
-		prevPersistentDiskPool, _ := mostRecentInput.FindDiskPoolByName(instanceGroup.PersistentDiskPool)
-		if !currentPersistentDiskPool.IsEqual(prevPersistentDiskPool) {
-			return false
-		}
-	}
-
 	if instanceGroup.PersistentDiskType != "" {
 		currentPersistentDiskType, _ := currentInput.FindDiskTypeByName(instanceGroup.PersistentDiskType)
 		prevPersistentDiskType, _ := mostRecentInput.FindDiskTypeByName(instanceGroup.PersistentDiskType)
 		if !currentPersistentDiskType.IsEqual(prevPersistentDiskType) {
-			return false
-		}
-	}
-
-	if instanceGroup.ResourcePool != "" {
-		currentResourcePool, _ := currentInput.FindResourcePoolByName(instanceGroup.ResourcePool)
-		prevResourcePool, _ := mostRecentInput.FindResourcePoolByName(instanceGroup.ResourcePool)
-		if !currentResourcePool.IsEqual(prevResourcePool) {
 			return false
 		}
 	}

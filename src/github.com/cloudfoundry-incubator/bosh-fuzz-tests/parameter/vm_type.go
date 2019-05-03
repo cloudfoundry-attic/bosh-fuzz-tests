@@ -29,14 +29,11 @@ func NewVmType(
 
 func (s *vmType) Apply(input bftinput.Input, previousInput bftinput.Input) bftinput.Input {
 	input.CloudConfig.VmTypes = nil
-	input.CloudConfig.ResourcePools = nil
 
 	usedVmTypes := map[string]bool{}
 
 	for j, _ := range input.InstanceGroups {
 		if input.IsV2() {
-			input.InstanceGroups[j].ResourcePool = ""
-
 			reuseFromOtherInstanceGroup := s.reuseDecider.IsYes()
 			if reuseFromOtherInstanceGroup && j > 0 {
 				previousInstanceGroup := input.InstanceGroups[rand.Intn(j)]
@@ -56,31 +53,6 @@ func (s *vmType) Apply(input bftinput.Input, previousInput bftinput.Input) bftin
 				)
 			}
 			usedVmTypes[input.InstanceGroups[j].VmType] = true
-
-		} else {
-			input.InstanceGroups[j].VmType = ""
-
-			reuseFromOtherInstanceGroup := s.reuseDecider.IsYes()
-			if reuseFromOtherInstanceGroup && j > 0 {
-				previousInstanceGroup := input.InstanceGroups[rand.Intn(j)]
-				input.InstanceGroups[j].ResourcePool = previousInstanceGroup.ResourcePool
-
-			} else {
-				reuseFromPreviousDeploy := s.reuseDecider.IsYes()
-				if !reuseFromPreviousDeploy || input.InstanceGroups[j].ResourcePool == "" {
-					input.InstanceGroups[j].ResourcePool = s.nameGenerator.Generate(10)
-				}
-			}
-
-			if usedVmTypes[input.InstanceGroups[j].ResourcePool] != true {
-				input.CloudConfig.ResourcePools = append(
-					input.CloudConfig.ResourcePools,
-					bftinput.ResourcePoolConfig{
-						Name: input.InstanceGroups[j].ResourcePool,
-					},
-				)
-			}
-			usedVmTypes[input.InstanceGroups[j].ResourcePool] = true
 		}
 	}
 

@@ -14,15 +14,15 @@ var _ = Describe("PersistentDisk", func() {
 		persistentDisk Parameter
 	)
 
-	Context("when definition is disk_pool", func() {
+	Context("when definition is disk_type", func() {
 		BeforeEach(func() {
 			fakeNameGenerator := &fakebftnamegen.FakeNameGenerator{
 				Names: []string{"fake-disk-config"},
 			}
-			persistentDisk = NewPersistentDisk("disk_pool", []int{100}, fakeNameGenerator)
+			persistentDisk = NewPersistentDisk("disk_type", []int{100}, fakeNameGenerator)
 		})
 
-		It("adds disk_pools to the input", func() {
+		It("adds disk_types to the input", func() {
 			input := bftinput.Input{
 				InstanceGroups: []bftinput.InstanceGroup{
 					{
@@ -37,11 +37,11 @@ var _ = Describe("PersistentDisk", func() {
 				InstanceGroups: []bftinput.InstanceGroup{
 					{
 						Name:               "fake-instance-group",
-						PersistentDiskPool: "fake-disk-config",
+						PersistentDiskType: "fake-disk-config",
 					},
 				},
 				CloudConfig: bftinput.CloudConfig{
-					PersistentDiskPools: []bftinput.DiskConfig{
+					PersistentDiskTypes: []bftinput.DiskConfig{
 						{
 							Name: "fake-disk-config",
 							Size: 100,

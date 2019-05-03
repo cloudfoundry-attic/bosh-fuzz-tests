@@ -142,45 +142,6 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 	})
 
-	Context("when PersistentDiskPool properties was changed", func() {
-		BeforeEach(func() {
-			previousInputs = []bftinput.Input{
-				{
-					InstanceGroups: []bftinput.InstanceGroup{
-						{
-							Name:               "foo-instance-group",
-							PersistentDiskPool: "foo-disk-pool",
-						},
-					},
-					CloudConfig: bftinput.CloudConfig{
-						PersistentDiskPools: []bftinput.DiskConfig{
-							{Name: "foo-disk-pool", Size: 200},
-						},
-					},
-				},
-			}
-
-			currentInput = bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:               "foo-instance-group",
-						PersistentDiskPool: "foo-disk-pool",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					PersistentDiskPools: []bftinput.DiskConfig{
-						{Name: "foo-disk-pool", Size: 100},
-					},
-				},
-			}
-		})
-
-		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
-			Expect(expectations).To(BeEmpty())
-		})
-	})
-
 	Context("when PersistentDiskType properties was changed", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
@@ -285,55 +246,6 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 	})
 
-	Context("when ResourcePool property was changed", func() {
-		BeforeEach(func() {
-			previousInputs = []bftinput.Input{
-				{
-					InstanceGroups: []bftinput.InstanceGroup{
-						{
-							Name:         "foo-instance-group",
-							ResourcePool: "foo-resource-pool",
-						},
-					},
-					CloudConfig: bftinput.CloudConfig{
-						ResourcePools: []bftinput.ResourcePoolConfig{
-							{
-								Name: "foo-resource-pool",
-								Stemcell: bftinput.StemcellConfig{
-									Name: "foo-name-one",
-								},
-							},
-						},
-					},
-				},
-			}
-
-			currentInput = bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:         "foo-instance-group",
-						ResourcePool: "foo-resource-pool",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
-						{
-							Name: "foo-resource-pool",
-							Stemcell: bftinput.StemcellConfig{
-								Name: "foo-name-two",
-							},
-						},
-					},
-				},
-			}
-		})
-
-		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
-			Expect(expectations).To(BeEmpty())
-		})
-	})
-
 	Context("when VmType property was changed", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
@@ -424,102 +336,6 @@ var _ = Describe("NothingChangedComparator", func() {
 		})
 	})
 
-	Context("when persistent disk was removed in previous input", func() {
-		BeforeEach(func() {
-			previousInputs = []bftinput.Input{
-				{
-					InstanceGroups: []bftinput.InstanceGroup{
-						{
-							Name:               "foo-instance-group",
-							PersistentDiskPool: "foo-disk-pool",
-						},
-					},
-					CloudConfig: bftinput.CloudConfig{
-						PersistentDiskPools: []bftinput.DiskConfig{
-							{
-								Name: "foo-disk-pool",
-								Size: 100,
-							},
-						},
-					},
-				},
-				{
-					InstanceGroups: []bftinput.InstanceGroup{
-						{
-							Name: "foo-instance-group",
-						},
-					},
-				},
-			}
-
-			currentInput = bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name: "foo-instance-group",
-					},
-				},
-			}
-		})
-
-		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
-			Expect(expectations).To(BeEmpty())
-		})
-	})
-
-	Context("when persistent disk was removed and instance group was migrated in previous input", func() {
-		BeforeEach(func() {
-			previousInputs = []bftinput.Input{
-				{
-					InstanceGroups: []bftinput.InstanceGroup{
-						{
-							Name:               "bar-instance-group",
-							PersistentDiskPool: "foo-disk-pool",
-						},
-					},
-					CloudConfig: bftinput.CloudConfig{
-						PersistentDiskPools: []bftinput.DiskConfig{
-							{
-								Name: "foo-disk-pool",
-								Size: 100,
-							},
-						},
-					},
-				},
-				{
-					InstanceGroups: []bftinput.InstanceGroup{
-						{
-							Name: "foo-instance-group",
-							MigratedFrom: []bftinput.MigratedFromConfig{
-								{
-									Name: "bar-instance-group",
-								},
-							},
-						},
-					},
-				},
-			}
-
-			currentInput = bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name: "foo-instance-group",
-						MigratedFrom: []bftinput.MigratedFromConfig{
-							{
-								Name: "bar-instance-group",
-							},
-						},
-					},
-				},
-			}
-		})
-
-		It("returns no expectations", func() {
-			expectations := nothingChangedComparator.Compare(previousInputs, currentInput)
-			Expect(expectations).To(BeEmpty())
-		})
-	})
-
 	Context("when Lifecycle property is errand", func() {
 		BeforeEach(func() {
 			previousInputs = []bftinput.Input{
@@ -555,7 +371,7 @@ var _ = Describe("NothingChangedComparator", func() {
 				{
 					InstanceGroups: []bftinput.InstanceGroup{
 						{
-							Name:      "foo-instance-group",
+							Name: "foo-instance-group",
 						},
 					},
 				},
@@ -564,7 +380,7 @@ var _ = Describe("NothingChangedComparator", func() {
 			currentInput = bftinput.Input{
 				InstanceGroups: []bftinput.InstanceGroup{
 					{
-						Name:      "foo-instance-group",
+						Name: "foo-instance-group",
 					},
 				},
 				IsDryRun: true,

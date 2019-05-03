@@ -165,46 +165,4 @@ var _ = Describe("VmType", func() {
 			})
 		})
 	})
-
-	Context("when it is decided to share resource pool", func() {
-		BeforeEach(func() {
-			fakeDecider.IsYesYes = true
-			vmType = NewVmType(fakeNameGenerator, fakeDecider, logger)
-		})
-
-		It("sets same vm type on input instance groups", func() {
-			input := bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name: "fake-instance-group-1",
-					},
-					{
-						Name: "fake-instance-group-2",
-					},
-				},
-			}
-
-			result := vmType.Apply(input, bftinput.Input{})
-
-			Expect(result).To(Equal(bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{
-						Name:         "fake-instance-group-1",
-						ResourcePool: "fake-vm-type",
-					},
-					{
-						Name:         "fake-instance-group-2",
-						ResourcePool: "fake-vm-type",
-					},
-				},
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
-						{
-							Name: "fake-vm-type",
-						},
-					},
-				},
-			}))
-		})
-	})
 })

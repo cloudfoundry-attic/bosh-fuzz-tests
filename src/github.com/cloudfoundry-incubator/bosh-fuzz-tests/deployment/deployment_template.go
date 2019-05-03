@@ -26,9 +26,7 @@ instance_groups:{{ range .InstanceGroups }}
 - name: {{ .Name }}
   instances: {{ .Instances }}{{ if .Lifecycle }}
   lifecycle: {{ .Lifecycle }}{{ end }}{{ if .VmType }}
-  vm_type: {{ .VmType }}{{ end }}{{ if .ResourcePool }}
-  resource_pool: {{ .ResourcePool }}{{ end }}{{ if .PersistentDiskPool }}
-  persistent_disk_pool: {{ .PersistentDiskPool }}{{ else if .PersistentDiskType }}
+  vm_type: {{ .VmType }}{{ end }}{{ if .PersistentDiskType }}
   persistent_disk_type: {{ .PersistentDiskType }}{{ else if .PersistentDiskSize }}
   persistent_disk: {{ .PersistentDiskSize }}{{ end }}{{ if .Stemcell }}
   stemcell: {{ .Stemcell }}{{ end }}{{ if .MigratedFrom }}
@@ -50,23 +48,7 @@ variables:{{ range .Variables }}
 - name: {{ .Name }}
   type: {{ .Type }}{{ if .Options }}
   options:{{ range $key, $value := .Options }}
-    {{ $key }}: {{ $value }}{{ end }}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.ResourcePools }}
-
-resource_pools:{{ range .CloudConfig.ResourcePools }}
-- name: {{ .Name }}
-  stemcell:
-    version: {{ .Stemcell.Version }}{{ if .Stemcell.Name }}
-    name: {{ .Stemcell.Name }}{{ end }}{{ if .Stemcell.Alias }}
-    alias: {{ .Stemcell.Alias }}{{ end }}{{ if .Stemcell.OS }}
-    os: {{ .Stemcell.OS }}{{ end }}
-  cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if .CloudConfig.PersistentDiskPools }}
-
-disk_pools:{{ range .CloudConfig.PersistentDiskPools }}
-- name: {{ .Name }}
-  disk_size: {{ .Size }}
-  cloud_properties:{{ if .CloudProperties }}{{ range $key, $value := .CloudProperties }}
-    {{ $key }}: {{ $value }}{{ end }}{{ else }} {}{{ end }}{{ end }}{{ end }}{{ if not .CloudConfig.AvailabilityZones }}
+    {{ $key }}: {{ $value }}{{ end }}{{ end }}{{ end }}{{ end }}{{ if not .CloudConfig.AvailabilityZones }}
 
 networks:{{ range .CloudConfig.Networks }}
 - name: {{ .Name }}

@@ -47,15 +47,6 @@ var _ = Describe("Lifecycle", func() {
 		}
 	})
 
-	Context("when instance group has a persistent disk pool", func() {
-		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{PersistentDiskPool: "diskpool"}}}
-			Consistently(func() string {
-				return lifecycle.Apply(input, bftinput.Input{}).InstanceGroups[0].Lifecycle
-			}).Should(Equal("service"))
-		})
-	})
-
 	Context("when instance group has a persistent disk type", func() {
 		It("always sets lifecycle to service, never to errand", func() {
 			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{PersistentDiskType: "diskpool"}}}
@@ -74,16 +65,6 @@ var _ = Describe("Lifecycle", func() {
 		})
 	})
 
-	Context("when previous instance group has a persistent disk pool", func() {
-		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo"}}}
-			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskPool: "diskpool"}}}
-			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
-			}).Should(Equal("service"))
-		})
-	})
-
 	Context("when previous instance group has a persistent disk type", func() {
 		It("always sets lifecycle to service, never to errand", func() {
 			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo"}}}
@@ -98,20 +79,6 @@ var _ = Describe("Lifecycle", func() {
 		It("always sets lifecycle to service, never to errand", func() {
 			input := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo"}}}
 			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskSize: 100}}}
-			Consistently(func() string {
-				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
-			}).Should(Equal("service"))
-		})
-	})
-
-	Context("when previous migrated from instance group has a persistent disk pool", func() {
-		It("always sets lifecycle to service, never to errand", func() {
-			input := bftinput.Input{
-				InstanceGroups: []bftinput.InstanceGroup{
-					{MigratedFrom: []bftinput.MigratedFromConfig{{Name: "foo"}}},
-				},
-			}
-			previousInput := bftinput.Input{InstanceGroups: []bftinput.InstanceGroup{{Name: "foo", PersistentDiskPool: "diskpool"}}}
 			Consistently(func() string {
 				return lifecycle.Apply(input, previousInput).InstanceGroups[0].Lifecycle
 			}).Should(Equal("service"))

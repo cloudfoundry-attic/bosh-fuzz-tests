@@ -9,16 +9,6 @@ import (
 
 var _ = Describe("InstanceGroup", func() {
 	Describe("HasPersistentDisk", func() {
-		Context("when InstanceGroup has persistent disk pool", func() {
-			It("should return true", func() {
-				instanceGroup := InstanceGroup{
-					Name:               "foo",
-					PersistentDiskPool: "disk-pool",
-				}
-				Expect(instanceGroup.HasPersistentDisk()).To(BeTrue())
-			})
-		})
-
 		Context("when InstanceGroup has persistent disk type", func() {
 			It("should return true", func() {
 				instanceGroup := InstanceGroup{

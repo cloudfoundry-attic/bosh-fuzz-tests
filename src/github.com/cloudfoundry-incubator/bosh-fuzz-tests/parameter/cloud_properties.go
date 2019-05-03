@@ -37,19 +37,9 @@ func (c *cloudProperties) Apply(input bftinput.Input, previousInput bftinput.Inp
 		input.CloudConfig.VmTypes[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
-	for i, subject := range input.CloudConfig.PersistentDiskPools {
-		prevSubject, found := previousInput.FindDiskPoolByName(subject.Name)
-		input.CloudConfig.PersistentDiskPools[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
-	}
-
 	for i, subject := range input.CloudConfig.PersistentDiskTypes {
-		prevSubject, found := previousInput.FindDiskPoolByName(subject.Name)
+		prevSubject, found := previousInput.FindDiskTypeByName(subject.Name)
 		input.CloudConfig.PersistentDiskTypes[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
-	}
-
-	for i, subject := range input.CloudConfig.ResourcePools {
-		prevSubject, found := previousInput.FindResourcePoolByName(subject.Name)
-		input.CloudConfig.ResourcePools[i].CloudProperties = c.FuzzCloudProperties(found, prevSubject.CloudProperties)
 	}
 
 	// we can't really detect when a previous input has used cloud properties since we could

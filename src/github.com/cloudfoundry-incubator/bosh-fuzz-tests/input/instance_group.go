@@ -7,12 +7,10 @@ type InstanceGroup struct {
 	Instances          int
 	AvailabilityZones  []string
 	PersistentDiskSize int
-	PersistentDiskPool string
 	PersistentDiskType string
 	Networks           []InstanceGroupNetworkConfig
 	MigratedFrom       []MigratedFromConfig
 	VmType             string
-	ResourcePool       string
 	Stemcell           string
 	Jobs               []Job
 	Lifecycle          string
@@ -23,7 +21,7 @@ func (j InstanceGroup) IsEqual(other InstanceGroup) bool {
 }
 
 func (j InstanceGroup) HasPersistentDisk() bool {
-	return j.PersistentDiskSize != 0 || j.PersistentDiskPool != "" || j.PersistentDiskType != ""
+	return j.PersistentDiskSize != 0 || j.PersistentDiskType != ""
 }
 
 func (j InstanceGroup) FindNetworkByName(networkName string) (InstanceGroupNetworkConfig, bool) {

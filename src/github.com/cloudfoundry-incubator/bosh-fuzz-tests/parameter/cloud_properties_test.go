@@ -103,44 +103,6 @@ var _ = Describe("CloudProperties", func() {
 			}))
 		})
 
-		It("fuzz Disk Pools", func() {
-			rand.Seed(64)
-			fakeReuseDecider := &fakebftdecider.FakeDecider{}
-			cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
-
-			input := bftinput.Input{
-				CloudConfig: bftinput.CloudConfig{
-					PersistentDiskPools: []bftinput.DiskConfig{
-						{
-							Name:            "z1",
-							CloudProperties: map[string]string{},
-						},
-					},
-				},
-			}
-			result := cloudProperties.Apply(input, bftinput.Input{})
-
-			Expect(result).To(Equal(bftinput.Input{
-				CloudConfig: bftinput.CloudConfig{
-					PersistentDiskPools: []bftinput.DiskConfig{
-						{
-							Name: "z1",
-							CloudProperties: map[string]string{
-								"steve": "alvin",
-								"jack":  "bob",
-							},
-						},
-					},
-					Compilation: bftinput.CompilationConfig{
-						CloudProperties: map[string]string{
-							"anderson": "robinson",
-							"hook":     "molimo",
-						},
-					},
-				},
-			}))
-		})
-
 		It("fuzz Disk Types", func() {
 			rand.Seed(64)
 			fakeReuseDecider := &fakebftdecider.FakeDecider{}
@@ -161,44 +123,6 @@ var _ = Describe("CloudProperties", func() {
 			Expect(result).To(Equal(bftinput.Input{
 				CloudConfig: bftinput.CloudConfig{
 					PersistentDiskTypes: []bftinput.DiskConfig{
-						{
-							Name: "z1",
-							CloudProperties: map[string]string{
-								"steve": "alvin",
-								"jack":  "bob",
-							},
-						},
-					},
-					Compilation: bftinput.CompilationConfig{
-						CloudProperties: map[string]string{
-							"anderson": "robinson",
-							"hook":     "molimo",
-						},
-					},
-				},
-			}))
-		})
-
-		It("fuzz Resource Pool", func() {
-			rand.Seed(64)
-			fakeReuseDecider := &fakebftdecider.FakeDecider{}
-			cloudProperties = NewCloudProperties([]int{2}, &fakeNameGenerator, fakeReuseDecider)
-
-			input := bftinput.Input{
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
-						{
-							Name:            "z1",
-							CloudProperties: map[string]string{},
-						},
-					},
-				},
-			}
-			result := cloudProperties.Apply(input, bftinput.Input{})
-
-			Expect(result).To(Equal(bftinput.Input{
-				CloudConfig: bftinput.CloudConfig{
-					ResourcePools: []bftinput.ResourcePoolConfig{
 						{
 							Name: "z1",
 							CloudProperties: map[string]string{
