@@ -22,7 +22,7 @@ update:
   update_watch_time: 20{{ if ne .Update.Serial "not_specified" }}
   serial: {{ .Update.Serial }}{{ end }}
 
-jobs:{{ range .InstanceGroups }}
+instance_groups:{{ range .InstanceGroups }}
 - name: {{ .Name }}
   instances: {{ .Instances }}{{ if .Lifecycle }}
   lifecycle: {{ .Lifecycle }}{{ end }}{{ if .VmType }}
@@ -37,7 +37,7 @@ jobs:{{ range .InstanceGroups }}
     az: {{ .AvailabilityZone }}{{ end }}{{ end }}{{ end }}{{ if .AvailabilityZones }}
   azs:{{ range .AvailabilityZones }}
   - {{ . }}{{ end }}{{ end }}
-  templates:{{ range .Jobs }}
+  jobs:{{ range .Jobs }}
   - name: {{ .Name }}
     release: foo-release{{ end }}
   networks:{{ range .Networks }}

@@ -12,7 +12,7 @@ import (
 	. "github.com/cloudfoundry-incubator/bosh-fuzz-tests/variables/variablesfakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var _ = Describe("Sprinkler", func() {
@@ -90,13 +90,13 @@ update:
   max_in_flight: 2
   update_watch_time: 20
 
-jobs:
+instance_groups:
   name: zRD
   instances: 5
   persistent_disk_type: czcuBXB7WY
   stemcell: stemcell-2
   vm_type: nkmS20KU9m
-  templates:
+  jobs:
   - name: foo
     release: foo-release
   - name: bar

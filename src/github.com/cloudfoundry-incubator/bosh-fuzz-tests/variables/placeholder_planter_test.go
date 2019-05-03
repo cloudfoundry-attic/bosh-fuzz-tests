@@ -6,7 +6,7 @@ import (
 	"github.com/cloudfoundry-incubator/bosh-fuzz-tests/name_generator/fakes"
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var _ = Describe("PlaceholderPlanter", func() {
@@ -157,13 +157,13 @@ update:
   max_in_flight: 2
   update_watch_time: 20
 
-jobs:
+instance_groups:
   name: zRD
   instances: 5
   persistent_disk_type: czcuBXB7WY
   stemcell: stemcell-2
   vm_type: nkmS20KU9m
-  templates:
+  jobs:
   - name: foo
     release: foo-release
   - name: bar
@@ -183,7 +183,7 @@ jobs:
 					{"update"},
 					{"releases", 1, "version"},
 					{"stemcells", 0},
-					{"jobs", "templates"},
+					{"instance_groups", "jobs"},
 				}
 				nameGenerator = fakes.FakeNameGenerator{
 					Names: []string{"placeholder1", "placeholder2", "placeholder3", "placeholder4", "placeholder5"},
@@ -205,8 +205,8 @@ jobs:
 				stemcellsArray := manifestMap["stemcells"].([]interface{})
 				Expect(stemcellsArray[0]).To(Equal("((placeholder4))"))
 
-				instanceGroupsMap := manifestMap["jobs"].(map[interface{}]interface{})
-				Expect(instanceGroupsMap["templates"].(string)).To(Equal("((placeholder5))"))
+				instanceGroupsMap := manifestMap["instance_groups"].(map[interface{}]interface{})
+				Expect(instanceGroupsMap["jobs"].(string)).To(Equal("((placeholder5))"))
 			})
 
 			It("should return the placeholder map with the substituted values", func() {
@@ -234,7 +234,7 @@ jobs:
 				valueMap["version"] = "latest"
 				Expect(substitutions["placeholder4"]).To(Equal(valueMap))
 
-				// {"jobs", "templates"}
+				// {"instance_groups", "jobs"}
 				valueMap1 := map[interface{}]interface{}{}
 				valueMap1["name"] = "foo"
 				valueMap1["release"] = "foo-release"

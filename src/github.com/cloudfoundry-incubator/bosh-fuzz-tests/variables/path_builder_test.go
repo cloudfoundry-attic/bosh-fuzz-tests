@@ -5,7 +5,7 @@ import (
 
 	. "github.com/onsi/ginkgo"
 	. "github.com/onsi/gomega"
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 var _ = Describe("PathBuilder", func() {
@@ -186,13 +186,13 @@ update:
   max_in_flight: 2
   update_watch_time: 20
 
-jobs:
+instance_groups:
   name: zRD
   instances: 5
   persistent_disk_type: czcuBXB7WY
   stemcell: stemcell-2
   vm_type: nkmS20KU9m
-  templates:
+  jobs:
   - name: foo
     release: foo-release
   - name: bar
@@ -227,21 +227,21 @@ jobs:
 				{"update", "canary_watch_time"},
 				{"update", "max_in_flight"},
 				{"update", "update_watch_time"},
-				{"jobs"},
-				{"jobs", "name"},
-				{"jobs", "instances"},
-				{"jobs", "persistent_disk_type"},
-				{"jobs", "stemcell"},
-				{"jobs", "vm_type"},
-				{"jobs", "templates"},
-				{"jobs", "templates", 0},
-				{"jobs", "templates", 0, "name"},
-				{"jobs", "templates", 0, "release"},
-				{"jobs", "templates", 1},
-				{"jobs", "templates", 1, "name"},
-				{"jobs", "templates", 1, "release"},
-				{"jobs", "templates", 1, "notes"},
-				{"jobs", "templates", 1, "quality"},
+				{"instance_groups"},
+				{"instance_groups", "name"},
+				{"instance_groups", "instances"},
+				{"instance_groups", "persistent_disk_type"},
+				{"instance_groups", "stemcell"},
+				{"instance_groups", "vm_type"},
+				{"instance_groups", "jobs"},
+				{"instance_groups", "jobs", 0},
+				{"instance_groups", "jobs", 0, "name"},
+				{"instance_groups", "jobs", 0, "release"},
+				{"instance_groups", "jobs", 1},
+				{"instance_groups", "jobs", 1, "name"},
+				{"instance_groups", "jobs", 1, "release"},
+				{"instance_groups", "jobs", 1, "notes"},
+				{"instance_groups", "jobs", 1, "quality"},
 			}
 			Expect(len(paths)).To(Equal(len(expectedPaths)))
 			Expect(paths).To(ConsistOf(expectedPaths))

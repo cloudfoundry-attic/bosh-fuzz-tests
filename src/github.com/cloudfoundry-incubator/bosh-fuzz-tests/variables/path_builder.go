@@ -15,7 +15,7 @@ func NewPathBuilder() PathBuilder {
 // array of locations of possible placeholder locations in the format:
 // map item name or array index
 // for example [ ['hi', 3, 'there', 'property'], ]
-// for example [ ['jobs', 'templates', 0, 'name'], ]
+// for example [ ['jobs', 'jobs', 0, 'name'], ]
 func (b pathBuilder) BuildPaths(obj interface{}) [][]interface{} {
 	output := [][]interface{}{}
 	b.buildPaths(nil, obj, &output)

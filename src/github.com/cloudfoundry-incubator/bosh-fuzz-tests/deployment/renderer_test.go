@@ -200,7 +200,7 @@ update:
   update_watch_time: 20
   serial: true
 
-jobs:
+instance_groups:
 - name: foo-instance-group
   instances: 5
   lifecycle: service
@@ -210,7 +210,7 @@ jobs:
   azs:
   - z1
   - z2
-  templates:
+  jobs:
   - name: simple
     release: foo-release
   networks:
@@ -230,7 +230,7 @@ jobs:
   azs:
   - z3
   - z4
-  templates:
+  jobs:
   - name: simple
     release: foo-release
   networks:
@@ -381,10 +381,10 @@ update:
   max_in_flight: 3
   update_watch_time: 20
 
-jobs:
+instance_groups:
 - name: foo-instance-group
   instances: 5
-  templates:
+  jobs:
   - name: simple
     release: foo-release
   networks:
@@ -488,11 +488,11 @@ update:
   update_watch_time: 20
   serial: true
 
-jobs:
+instance_groups:
 - name: foo-instance-group
   instances: 5
   persistent_disk_pool: fast-disks
-  templates:
+  jobs:
   - name: simple
     release: foo-release
   networks:
@@ -607,11 +607,11 @@ update:
   update_watch_time: 20
   serial: false
 
-jobs:
+instance_groups:
 - name: foo-instance-group
   instances: 5
   persistent_disk_type: fast-disks
-  templates:
+  jobs:
   - name: simple
     release: foo-release
   networks:
@@ -738,12 +738,12 @@ update:
   update_watch_time: 20
   serial: true
 
-jobs:
+instance_groups:
 - name: foo-instance-group
   instances: 5
   resource_pool: foo-pool
   persistent_disk_pool: fast-disks
-  templates:
+  jobs:
   - name: simple
     release: foo-release
   networks:
