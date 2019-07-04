@@ -28,8 +28,6 @@ bosh_src_path="$PWD/$BOSH_SRC_PATH"
 echo 'Installing dependencies...'
 
 gem install -f bundler
-bundle update --bundler
-
 gem install cf-uaac --no-document
 
 agent_path=bosh-src/src/go/src/github.com/cloudfoundry/
@@ -38,6 +36,7 @@ cp -r bosh-agent $agent_path
 
 (
   cd $bosh_src_path
+  bundle update --bundler
   bundle install --local
   bundle exec rake spec:integration:install_dependencies
 
